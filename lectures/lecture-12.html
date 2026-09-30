@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 13 of Discrete Mathematics for BSAI: graph vocabulary, adjacency, and Euler routes.">
+  <title>Week 13 · Graphs and Euler Routes</title>
+  <style>
+
+
+
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "V  E"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    
+    /* Week 13 graph model and route interaction. */
+    .route-map { width: 100%; max-width: 650px; }
+    .route-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .7rem; }
+    .route-controls select { font: inherit; padding: .4rem .55rem; border: 1px solid #9eb9c5; border-radius: .45rem; }
+    .route-controls button, .edge-list button { font: inherit; cursor: pointer; border-radius: .5rem; padding: .48rem .75rem; }
+    .route-controls button { color: white; background: var(--teal); border: 1px solid var(--teal); }
+    .edge-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin: 1rem 0; }
+    .edge-list button { border: 1px solid var(--teal); background: white; color: var(--navy); text-align: left; }
+    .edge-list button:hover { background: #e8f6f4; }
+    .edge-list button.used { background: #edf0f3; border-color: #c8d5db; text-decoration: line-through; color: #667889; cursor: default; }
+    .route-trace { background: #f2eef9; border-left: 4px solid var(--violet); padding: .75rem 1rem; overflow-wrap: anywhere; }
+    .graph-cards { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .7rem; }
+    .graph-cards > div { padding: .9rem; border-radius: .6rem; background: #f1f6f8; border: 1px solid var(--line); }
+    .matrix { font-variant-numeric: tabular-nums; }
+    .matrix td, .matrix th { text-align: center; }
+    @media (max-width: 680px) { .edge-list, .graph-cards { grid-template-columns: 1fr; } }
+    @media print { .route-controls, .edge-list { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 13</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Graphs and Euler Routes</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 13 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening challenge</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#model">03 Graph model</a>
+      <a href="#routes">04 Walk, trail, path</a>
+      <a href="#degree">05 Degree</a>
+      <a href="#adjacency">06 Adjacency</a>
+      <a href="#euler">07 Euler routes</a>
+      <a href="#test">08 Degree test</a>
+      <a href="#case">09 Campus case setup</a>
+      <a href="#reason">10 Case reasoning</a>
+      <a href="#activity">11 Route Inspector</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#practice">13 Practice</a>
+      <a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a>
+      <a href="#map">16 Concept map</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Challenge: Inspect Every Walkway Once</h2>
+        <p class="lead">A campus robot must inspect each walkway <strong>exactly once</strong>. It may pass a building more than once. Could a route cover all the walkways without repeating one, and must the robot finish where it started?</p>
+        <p><strong>Predict informally:</strong> Imagine tracing the network with a pencil without lifting it or drawing an edge twice. An arrival at a middle building usually needs a different walkway to leave. We will turn that observation into a precise test and then try an actual route.</p>
+        <div class="pipeline three" role="img" aria-label="Map buildings and walkways, count connections, then test a complete route">
+          <div><strong>MAP</strong><br>Buildings and walkways</div>
+          <div><strong>COUNT</strong><br>Connections at each building</div>
+          <div><strong>ROUTE</strong><br>Each walkway once?</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>Can the route use every <em>edge</em> exactly once? The word “edge” will mean a walkway; revisiting a building is allowed for this question.</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 13, you should be able to draw a small graph from a route description; identify vertices and edges; distinguish a walk, trail, path and cycle; read degree and adjacency representations; apply the Euler trail/circuit degree test to a connected graph; and justify a campus inspection route or explain why none exists.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>60 min</td><td>Human graph, vocabulary, degree and adjacency drawings</td></tr>
+          <tr><td>50 min</td><td>Euler reasoning and degree-test challenges</td></tr>
+          <tr><td>50 min</td><td>Major Case Study 4 setup and route sketch</td></tr>
+          <tr><td>20 min</td><td>Route Inspector and exit check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–11 and Practice 1–6. <span class="core extension">Optional self-study</span> Colab and Practice 7. The campus case continues in Week 14 with a different route question.</p>
+      </section>
+
+      <!-- Graph Model -->
+      <section class="chapter" id="model">
+        <h2>03 · From a Map to a Graph</h2>
+        <p>A <strong>graph</strong> describes objects and their connections. In our campus model, a <strong>vertex</strong> is a building and an <strong>edge</strong> is a two-way walkway directly connecting two buildings. Drawing positions do not affect which buildings are connected.</p>
+        <p>For a first tiny example, let <span class="formula">V={A,B,C}</span> and <span class="formula">E={{A,B},{B,C},{A,C}}</span>. Each pair in <span class="formula">E</span> is one undirected edge; <span class="formula">{A,B}</span> is the same edge as <span class="formula">{B,A}</span>. This triangle has three vertices and three edges.</p>
+        <div class="example"><h3>Read the drawing, not its appearance</h3><p>If we move vertex C on the page but preserve all three connections, it is still the same graph for today's route questions. If we add or remove a walkway, the edge set changes and so may the possible route.</p></div>
+        <p>We model one undirected walkway between a pair of buildings, with no walkway from a building to itself. These assumptions make the subsequent degree counts and adjacency table unambiguous.</p>
+      </section>
+
+      <!-- Walk Trail Path Cycle -->
+      <section class="chapter" id="routes">
+        <h2>04 · Walk, Trail, Path and Cycle</h2>
+        <p>A <strong>walk</strong> is a sequence of vertices where each consecutive pair is joined by an edge. It may repeat vertices or edges. A <strong>trail</strong> is a walk with <em>no repeated edge</em>; a vertex may still repeat. A <strong>path</strong> is a walk with <em>no repeated vertex</em>. A <strong>cycle</strong> is a closed route returning to its starting vertex without repeating other vertices or edges.</p>
+        <div class="table-wrap"><table><thead><tr><th>Route on triangle A–B–C–A</th><th>Walk?</th><th>Trail?</th><th>Path or cycle?</th></tr></thead><tbody>
+          <tr><td>A–B–A</td><td>Yes</td><td>No: AB repeats</td><td>No</td></tr>
+          <tr><td>A–B–C</td><td>Yes</td><td>Yes</td><td>Path</td></tr>
+          <tr><td>A–B–C–A</td><td>Yes</td><td>Yes</td><td>Cycle, not a path with distinct endpoints</td></tr>
+        </tbody></table></div>
+        <p>For a path we do not call the closing repetition in a cycle a new distinct vertex; “cycle” names that special closed pattern. In our inspection task, the key restriction is on <em>edges</em>, so a trail is the useful type of route. A trail can revisit a building.</p>
+      </section>
+
+      <!-- Degree -->
+      <section class="chapter" id="degree">
+        <h2>05 · Degree Counts Incident Walkways</h2>
+        <p>The <strong>degree</strong> of a vertex is the number of edges meeting there. In the triangle A–B–C–A, each vertex has degree 2. Every edge contributes one to the degree of each of its two endpoints, so the sum of all degrees is twice the number of edges:</p>
+        <div class="mathline"><span class="formula">∑ degrees = 2×|E|.</span></div>
+        <p>For the triangle: <span class="formula">2+2+2=6=2×3</span>. This is a useful check on a small undirected graph. An <strong>odd-degree</strong> vertex has 1,3,5,… connections; an <strong>even-degree</strong> vertex has 0,2,4,… .</p>
+        <div class="callout caution"><strong>Quick check:</strong> Count each edge once at each endpoint. A three-edge triangle has degree 2 at every vertex, not degree 3 merely because the graph has three edges.</div>
+      </section>
+
+      <!-- Adjacency Representations -->
+      <section class="chapter" id="adjacency">
+        <h2>06 · Two Ways to Record Adjacency</h2>
+        <p>Two vertices are <strong>adjacent</strong> if an edge joins them. For the triangle, a neighbor list says <span class="formula">A: B,C</span>; <span class="formula">B: A,C</span>; <span class="formula">C: A,B</span>. An <strong>adjacency matrix</strong> gives a 1 if a pair is directly connected and 0 otherwise.</p>
+        <div class="table-wrap"><table class="matrix"><thead><tr><th></th><th>A</th><th>B</th><th>C</th></tr></thead><tbody>
+          <tr><th>A</th><td>0</td><td>1</td><td>1</td></tr>
+          <tr><th>B</th><td>1</td><td>0</td><td>1</td></tr>
+          <tr><th>C</th><td>1</td><td>1</td><td>0</td></tr>
+        </tbody></table></div>
+        <p>The matrix is symmetric because our walkways are two-way. Its diagonal entries are zero because the model has no walkway from a building back to itself. A row's 1s count that vertex's degree. We will use a compact neighbor list for the larger campus graph.</p>
+      </section>
+
+      <!-- Euler Routes -->
+      <section class="chapter" id="euler">
+        <h2>07 · Use Every Edge Exactly Once</h2>
+        <p>An <strong>Euler trail</strong> uses every edge in the graph exactly once; it may start and end at different vertices. An <strong>Euler circuit</strong> is an Euler trail that returns to its starting vertex. In both cases, <em>every edge</em> must be included. These names describe a route condition, not a method for computing the route.</p>
+        <div class="graph-cards">
+          <div><p><strong>Triangle.</strong> A–B–C–A uses each of its three edges once and returns. It is an Euler circuit.</p></div>
+          <div><p><strong>Chain A–B–C–D.</strong> A–B–C–D uses all three edges once and ends at D. It is an Euler trail, but no circuit exists.</p></div>
+          <div><p><strong>Four-spoke star.</strong> The center joins four leaves. Any complete inspection would need to stop and restart at too many leaves; no Euler trail exists.</p></div>
+        </div>
+        <p>A simple cycle is also an Euler circuit if it includes every edge in the graph. But an Euler circuit in a larger graph may revisit a vertex and therefore need not be a simple cycle.</p>
+      </section>
+
+      <!-- Degree Test -->
+      <section class="chapter" id="test">
+        <h2>08 · Why Odd Degrees Matter</h2>
+        <p>At a building used <em>in the middle</em> of a trail, each arrival needs a different edge for departure. Those edges pair up, so the degree at that building is even. The starting point of an open trail can have one unmatched departure, and its ending point can have one unmatched arrival. These are its two odd-degree vertices.</p>
+        <div class="table-wrap"><table><thead><tr><th>Connected undirected graph</th><th>What the degree test says</th></tr></thead><tbody>
+          <tr><td>All vertices have even degree</td><td>An Euler circuit exists (and hence an Euler trail).</td></tr>
+          <tr><td>Exactly two vertices have odd degree</td><td>An open Euler trail exists, from one odd vertex to the other; no Euler circuit.</td></tr>
+          <tr><td>More than two vertices have odd degree</td><td>No Euler trail exists.</td></tr>
+        </tbody></table></div>
+        <p>The test is stated here for a <strong>connected</strong> finite undirected graph: every building can be reached through the network. If two groups of walkways are disconnected, one uninterrupted route cannot inspect edges in both groups, regardless of the degree counts.</p>
+        <div class="example"><h3>Check the three small graphs</h3><p>The triangle has three even degrees and a circuit. The chain has degrees <span class="formula">1,2,2,1</span>, so its two odd endpoints allow an open trail. The four-spoke star has four degree-1 leaves, so it has no Euler trail, even though the center has even degree 4.</p></div>
+      </section>
+
+      <!-- Major Case Study 4 Setup -->
+      <section class="chapter" id="case">
+        <h2>09 · Major Case Study 4 Begins: Campus Inspection and Delivery Robot</h2>
+        <p><strong>Scenario.</strong> Five buildings are connected by six two-way walkways. The inspection robot must traverse <em>each walkway exactly once</em>. It may pass a building several times. We treat each named walkway as one edge, and assume all six are open and connected.</p>
+        <div class="table-wrap"><table><thead><tr><th>Code</th><th>Building</th><th>Code</th><th>Building</th></tr></thead><tbody>
+          <tr><td>L</td><td>Library</td><td>H</td><td>Hall</td></tr>
+          <tr><td>C</td><td>Café</td><td>G</td><td>Gate</td></tr>
+          <tr><td>S</td><td>Science Building</td><td></td><td></td></tr>
+        </tbody></table></div>
+        <p>The six walkways are <span class="formula">LH, HC, CG, GL, LS, SH</span>. In this undirected graph, <span class="formula">LH</span> and <span class="formula">HL</span> name the <em>same</em> walkway. Use the drawing to understand adjacency, then rely on the edge list when checking a route.</p>
+        <figure class="campus-figure route-map">
+          <svg viewBox="0 0 600 310" role="img" aria-labelledby="campus-title">
+            <title id="campus-title">Campus graph with L and H of degree three, C, G and S of degree two; edges LH, HC, CG, GL, LS and SH</title>
+            <g stroke="#087f84" stroke-width="5" fill="none" stroke-linecap="round"><line x1="130" y1="67" x2="470" y2="67"/><line x1="470" y1="67" x2="470" y2="240"/><line x1="470" y1="240" x2="130" y2="240"/><line x1="130" y1="240" x2="130" y2="67"/><line x1="130" y1="67" x2="300" y2="157"/><line x1="300" y1="157" x2="470" y2="67"/></g>
+            <g fill="#10263f" stroke="#ffffff" stroke-width="4"><circle cx="130" cy="67" r="27"/><circle cx="470" cy="67" r="27"/><circle cx="470" cy="240" r="27"/><circle cx="130" cy="240" r="27"/><circle cx="300" cy="157" r="27"/></g>
+            <g fill="white" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,Arial" font-size="22" font-weight="bold"><text x="130" y="67">L</text><text x="470" y="67">H</text><text x="470" y="240">C</text><text x="130" y="240">G</text><text x="300" y="157">S</text></g>
+          </svg>
+          <figcaption>Figure 1. Buildings are vertices; drawn lines are walkways. The drawing is a graph model, not a distance map.</figcaption>
+        </figure>
+        <div class="callout"><strong>Predict:</strong> Without consulting the degree test yet, try to trace all six lines exactly once. Record the first and last buildings of any route you find.</div>
+      </section>
+
+      <!-- Major Case Study 4 Reasoning -->
+      <section class="chapter" id="reason">
+        <h2>10 · Represent, Reason and Interpret</h2>
+        <h3>Represent the same graph in a neighbor list</h3>
+        <div class="table-wrap"><table><thead><tr><th>Building</th><th>Direct neighbors</th><th>Degree</th></tr></thead><tbody>
+          <tr><td>L</td><td>H, G, S</td><td>3</td></tr>
+          <tr><td>H</td><td>L, C, S</td><td>3</td></tr>
+          <tr><td>C</td><td>H, G</td><td>2</td></tr>
+          <tr><td>G</td><td>C, L</td><td>2</td></tr>
+          <tr><td>S</td><td>L, H</td><td>2</td></tr>
+        </tbody></table></div>
+        <p>Check: <span class="formula">3+3+2+2+2=12=2×6</span>, consistent with six edges. The graph is connected. Exactly two vertices, L and H, have odd degree. Therefore an <strong>open Euler trail exists</strong> starting at L and ending at H, or vice versa. A closed Euler circuit does not exist.</p>
+        <h3>Test one route edge by edge</h3>
+        <div class="mathline"><span class="formula">L → H → C → G → L → S → H.</span></div>
+        <p>The consecutive walkways are <span class="formula">LH, HC, CG, GL, LS, SH</span>: all six appear once. Vertex L occurs twice, which is allowed in a trail. The route starts at L and ends at H, matching the two odd-degree vertices.</p>
+        <h3>Interpret the decision</h3>
+        <p>The robot can inspect every walkway once <em>if it may finish at a different building</em>. If the task additionally requires returning to L without reusing an inspected walkway, the requirement cannot be met on this graph. The model does not include travel time, walkway length, direction restrictions, or temporary closures.</p>
+      </section>
+
+      <!-- Route Inspector Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>11 · Route Inspector</h2>
+        <p><span class="core">Predict → Test → Explain</span> Choose a start, then select one walkway at a time. Only a walkway touching your current building can be used next, and each walkway can be used once. Try L first; then try an even-degree building and explain what changes.</p>
+        <div class="interactive screen-only" id="route-inspector">
+          <h3>Build an inspection trail</h3>
+          <div class="route-controls">
+            <label for="start-vertex">Start at:</label>
+            <select id="start-vertex"><option value="L">L · Library</option><option value="H">H · Hall</option><option value="C">C · Café</option><option value="G">G · Gate</option><option value="S">S · Science</option></select>
+            <button type="button" id="reset-route">Start / reset route</button>
+          </div>
+          <p><strong>Current building:</strong> <output id="current-vertex">L</output> · <strong>Walkways used:</strong> <output id="used-count">0</output> of 6</p>
+          <div id="edge-buttons" class="edge-list" aria-label="Available walkway choices"></div>
+          <p id="route-feedback" class="status" aria-live="polite">Choose an unused walkway touching L.</p>
+          <p id="route-trace" class="route-trace" aria-live="polite">Route: L</p>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Route Inspector</h3>
+          <p>Graph edges: <span class="formula">LH, HC, CG, GL, LS, SH</span>. Start at L. Record each consecutive walkway exactly once, then name the ending building.</p>
+          <div class="table-wrap"><table><thead><tr><th>Step</th><th>Current building</th><th>Unused adjacent walkway chosen</th><th>Next building</th></tr></thead><tbody>
+            <tr><td>0</td><td>L</td><td>—</td><td>—</td></tr><tr><td>1</td><td>____</td><td>____</td><td>____</td></tr><tr><td>2</td><td>____</td><td>____</td><td>____</td></tr><tr><td>3</td><td>____</td><td>____</td><td>____</td></tr><tr><td>4</td><td>____</td><td>____</td><td>____</td></tr><tr><td>5</td><td>____</td><td>____</td><td>____</td></tr><tr><td>6</td><td>____</td><td>____</td><td>____</td></tr>
+          </tbody></table></div>
+          <p><strong>Explain:</strong> Why can L be visited twice? Why can this route not return to its starting building while using every edge once?</p>
+        </div>
+        <div class="callout"><strong>Team challenge:</strong> Use cards for buildings and strings for walkways. Find a different valid L-to-H trail, then compare its edge list with the one in Section 10. Different valid routes may inspect the same six edges in different orders.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab: Read Neighbors and Degrees</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Draw the campus graph and fill its neighbor table before running Python. A <strong>dictionary</strong> pairs a <em>key</em> with a <em>value</em>. Here a building code is a key, and its value is a list of directly adjacent building codes. The colon means “maps to”; commas separate entries.</p>
+        <pre><code>neighbors = {
+    "L": ["H", "G", "S"],
+    "H": ["L", "C", "S"],
+    "C": ["H", "G"],
+    "G": ["C", "L"],
+    "S": ["L", "H"]
+}
+print(neighbors["L"])</code></pre>
+        <p>Predict <code>["H", "G", "S"]</code>. Notice that if L lists H, H also lists L: the walkway is two-way. The list contains neighbors, not a full inspection route.</p>
+        <h3>Check degrees after the hand count</h3>
+        <p>The familiar <code>for</code> loop visits each key. <code>len(...)</code> counts the entries in that neighbor list, so it reports the degree in this simple graph.</p>
+        <pre><code>for building in neighbors:
+    print(building, len(neighbors[building]))</code></pre>
+        <p>Predict L 3, H 3, C 2, G 2, S 2. Explain why degree data alone is used with the <em>connectedness</em> condition in the Euler test; the code here verifies the table but does not construct a route.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice and Case Record</h2>
+        <p>Use a small drawing or edge list for every route question. Selected solutions appear at the end.</p>
+        <ol>
+          <li>The graph has <span class="formula">V={A,B,C,D}</span> and <span class="formula">E={{A,B},{B,C},{C,D}}</span>. Find each degree and decide whether an Euler trail or circuit exists.</li>
+          <li>For the triangle with edges AB, BC, CA, classify <span class="formula">A–B–A</span>, <span class="formula">A–B–C</span>, and <span class="formula">A–B–C–A</span> as walk/trail/path/cycle where applicable.</li>
+          <li>The campus graph has edges LH, HC, CG, GL, LS, SH. Give the neighbors and degree of S. Check the sum of all degrees.</li>
+          <li>Find an Euler trail on the campus graph different from <span class="formula">L–H–C–G–L–S–H</span>. List its six edges and justify why none repeats.</li>
+          <li>Four leaves A, B, C, D each connect only to center O. Count odd-degree vertices. Could one trail use all four edges?</li>
+          <li>A connected graph has exactly two odd-degree vertices P and Q. Where must an Euler trail begin and end? Can it be a circuit?</li>
+          <li>Draw two disconnected triangles. All six vertices have degree 2. Explain why one uninterrupted route still cannot inspect every edge.</li>
+        </ol>
+        <div class="workbook"><h3>Major Case Study 4 record for Week 14</h3><p>Submit the campus drawing or edge list, neighbor table, degree calculation, one valid inspection trail, and the assumptions used. Keep the graph available: in Week 14 we will ask a <em>different</em> question about visiting buildings rather than inspecting walkways.</p></div>
+        <div class="callout"><strong>20-minute exit check:</strong> Define one edge and one vertex in the campus graph; distinguish a trail from a path; then say which buildings are the endpoints of an Euler trail and why.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Forbid revisiting any building on an inspection trail.</td><td>Only edges must be unique; a vertex may repeat.</td></tr>
+          <tr><td>Count LH and HL as two walkways.</td><td>They are the same undirected edge in this model.</td></tr>
+          <tr><td>Ignore the starting vertex when using the degree test.</td><td>With two odd vertices, start and finish at those vertices.</td></tr>
+          <tr><td>Conclude a circuit exists because an open trail exists.</td><td>A circuit needs all degrees even in a connected graph.</td></tr>
+          <tr><td>Use the degree test on a disconnected collection of edges.</td><td>Check connectedness as well as degree parity.</td></tr>
+          <tr><td>Call a route valid after using most, but not all, edges.</td><td>Write its edge list and verify every required edge appears exactly once.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <ul>
+          <li>A graph consists of vertices and edges. For a two-way campus walkway, one undirected edge joins its two endpoint buildings.</li>
+          <li>A trail cannot repeat an edge; a path cannot repeat a vertex. An Euler trail uses <em>every</em> edge once, and an Euler circuit also returns to its start.</li>
+          <li>Degree counts incident edges; the sum of degrees equals twice the number of edges in a finite undirected graph.</li>
+          <li>For a connected graph, all even degrees allow an Euler circuit; exactly two odd degrees allow an open Euler trail; more than two odd degrees do not allow one.</li>
+          <li>The campus graph has odd endpoints L and H and admits an L-to-H inspection trail, conditional on the stated walkway assumptions.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 330" role="img" aria-labelledby="map-title">
+            <title id="map-title">Buildings and walkways create a graph; adjacency gives degrees; connectedness and odd-degree count decide Euler circuit, open trail, or neither</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M350 76 V100 H175 V119 M350 100 H525 V119"/><path d="M175 188 V220 H350 V241 M525 188 V220 H350"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="213" y="15" width="274" height="62" rx="12" fill="#e8f6f4"/><rect x="20" y="119" width="310" height="72" rx="12" fill="#e8f6f4"/><rect x="370" y="119" width="310" height="72" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="190" y="240" width="320" height="74" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="17" font-weight="bold"><text x="350" y="42">CAMPUS GRAPH</text><text x="175" y="151">ADJACENCY</text><text x="525" y="151">DEGREE</text><text x="350" y="270">EULER ROUTE TEST</text></g>
+              <g fill="#203349" font-size="13"><text x="350" y="63">buildings + walkways</text><text x="175" y="175">who is directly connected?</text><text x="525" y="175">how many edges meet here?</text><text x="350" y="296">connected? 0, 2, or more odd vertices?</text></g></g>
+          </svg>
+          <figcaption>Check the graph's edges and connectedness before deciding what kind of complete edge route is possible.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>Week 14 returns to the campus graph and asks about visiting every <em>building</em> once, which is different from inspecting every <em>walkway</em> once. It also introduces crossing-free drawings and coloring a separate conflict graph. The Euler degree test from this week answers the edge question only.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Route Inspector</h3><p>One valid L-to-H route is <span class="formula">L–H–C–G–L–S–H</span>, using <span class="formula">LH, HC, CG, GL, LS, SH</span> exactly once. It revisits L but no edge. Starting at an even-degree building cannot finish a trail covering every edge in this graph; its two odd-degree vertices must be the endpoints.</p>
+        <h3>1 · Chain</h3><p>Degrees are <span class="formula">1,2,2,1</span> for A,B,C,D. The connected graph has an open Euler trail <span class="formula">A–B–C–D</span>, no Euler circuit.</p>
+        <h3>2 · Route vocabulary</h3><p><span class="formula">A–B–A</span> is a walk but not a trail because AB repeats. <span class="formula">A–B–C</span> is a walk, trail and path. <span class="formula">A–B–C–A</span> is a walk, trail and cycle; it also covers all three edges and is an Euler circuit on this triangle.</p>
+        <h3>3 · Campus degree check</h3><p>S has neighbors L and H, so degree 2. The full degree sum is <span class="formula">3+3+2+2+2=12=2×6</span>.</p>
+        <h3>4 · Another inspection trail</h3><p><span class="formula">L–S–H–C–G–L–H</span> uses <span class="formula">LS, SH, HC, CG, GL, LH</span>. Those are precisely the six different edges.</p>
+        <h3>5 · Four-spoke star</h3><p>A,B,C,D each have degree 1; O has degree 4. Four odd-degree vertices prevent an Euler trail.</p>
+        <h3>6 · Odd endpoints</h3><p>An Euler trail must begin at P and end at Q, or begin at Q and end at P. It cannot return to its start using every edge once, so it is not a circuit.</p>
+        <h3>7 · Disconnected triangles</h3><p>Degree parity alone is insufficient. One route cannot move from one component to the other through a graph edge, so it cannot cover both triangles without stopping or leaving the graph.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 13 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Each undirected walkway is stored once. Labels are independent of the route logic.
+    const campusEdges = [
+      { id: "LH", from: "L", to: "H", label: "L–H · Library–Hall" },
+      { id: "HC", from: "H", to: "C", label: "H–C · Hall–Café" },
+      { id: "CG", from: "C", to: "G", label: "C–G · Café–Gate" },
+      { id: "GL", from: "G", to: "L", label: "G–L · Gate–Library" },
+      { id: "LS", from: "L", to: "S", label: "L–S · Library–Science" },
+      { id: "SH", from: "S", to: "H", label: "S–H · Science–Hall" }
+    ];
+    let currentVertex = "L";
+    let usedEdges = new Set();
+    let routeVertices = ["L"];
+
+    function renderRoute() {
+      document.getElementById("current-vertex").textContent = currentVertex;
+      document.getElementById("used-count").textContent = String(usedEdges.size);
+      document.getElementById("route-trace").textContent = "Route: " + routeVertices.join(" → ");
+      const list = document.getElementById("edge-buttons");
+      list.replaceChildren();
+      campusEdges.forEach(function (edge) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = edge.label;
+        button.className = usedEdges.has(edge.id) ? "used" : "";
+        button.disabled = usedEdges.has(edge.id);
+        button.addEventListener("click", function () { chooseEdge(edge); });
+        list.append(button);
+      });
+    }
+
+    function resetRoute() {
+      currentVertex = document.getElementById("start-vertex").value;
+      usedEdges = new Set();
+      routeVertices = [currentVertex];
+      document.getElementById("route-feedback").textContent = "Choose an unused walkway touching " + currentVertex + ".";
+      document.getElementById("route-feedback").className = "status";
+      renderRoute();
+    }
+
+    function chooseEdge(edge) {
+      const feedback = document.getElementById("route-feedback");
+      if (usedEdges.has(edge.id)) return;
+      if (edge.from !== currentVertex && edge.to !== currentVertex) {
+        feedback.textContent = "That walkway does not touch " + currentVertex + ". Choose a walkway from your current building.";
+        feedback.className = "status bad";
+        return;
+      }
+      const previous = currentVertex;
+      currentVertex = edge.from === previous ? edge.to : edge.from;
+      usedEdges.add(edge.id);
+      routeVertices.push(currentVertex);
+      if (usedEdges.size === campusEdges.length) {
+        feedback.textContent = "Complete: all six walkways used exactly once. The route begins at " + routeVertices[0] + " and ends at " + currentVertex + ".";
+        feedback.className = "status good";
+      } else {
+        const hasNext = campusEdges.some(function (candidate) {
+          return !usedEdges.has(candidate.id) && (candidate.from === currentVertex || candidate.to === currentVertex);
+        });
+        feedback.textContent = hasNext ? "Good: " + previous + " to " + currentVertex + ". Choose another unused adjacent walkway." : "No unused walkway leaves " + currentVertex + ", but some remain elsewhere. Reset and try another order or starting point.";
+        feedback.className = "status " + (hasNext ? "good" : "bad");
+      }
+      renderRoute();
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("reset-route").addEventListener("click", resetRoute);
+      document.getElementById("start-vertex").addEventListener("change", resetRoute);
+      resetRoute();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>

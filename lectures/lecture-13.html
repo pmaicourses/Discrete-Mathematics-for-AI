@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 14 of Discrete Mathematics for BSAI: planar drawings, graph coloring, and Hamiltonian routes.">
+  <title>Week 14 · Planar Graphs, Coloring and Hamiltonian Routes</title>
+  <style>
+
+
+
+
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "V  E"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    
+    
+    /* Week 14 diagrams and time-slot interaction. */
+    .graph-figure { width: 100%; max-width: 700px; }
+    .slot-controls { display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr)); gap: .6rem; margin: 1rem 0; }
+    .slot-controls label { display: grid; gap: .25rem; font-weight: 700; color: var(--navy); }
+    .slot-controls select { font: inherit; border: 1px solid #9eb9c5; border-radius: .45rem; padding: .45rem; width: 100%; background: white; }
+    .slot-actions { display: flex; flex-wrap: wrap; gap: .65rem; margin: .8rem 0; }
+    .slot-actions button, .prediction-buttons button { font: inherit; cursor: pointer; color: var(--teal); border: 1px solid var(--teal); border-radius: .5rem; background: white; padding: .48rem .8rem; }
+    .slot-actions button:hover, .prediction-buttons button:hover, .prediction-buttons button[aria-pressed="true"] { background: var(--teal); color: white; }
+    .prediction-buttons { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .slot-readout { padding: .8rem 1rem; border-left: 4px solid var(--violet); background: #f2eef9; }
+    .slot-node { transition: fill .15s ease; }
+    .figure-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; }
+    .figure-pair .mini { text-align: center; }
+    @media (max-width: 650px) { .figure-pair { grid-template-columns: 1fr; } }
+    @media print { .slot-controls, .slot-actions, .prediction-buttons { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 14</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Planar Graphs, Coloring and Hamiltonian Routes</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 14 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Two route questions</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#planar">03 Crossing-free drawings</a>
+      <a href="#faces">04 Count faces</a>
+      <a href="#coloring">05 Coloring as scheduling</a>
+      <a href="#conflicts">06 Conflict graph</a>
+      <a href="#strategy">07 Three-slot argument</a>
+      <a href="#activity">08 Schedule Studio</a>
+      <a href="#hamiltonian">09 Visit every building</a>
+      <a href="#case">10 Campus case conclusion</a>
+      <a href="#compare">11 Compare the tasks</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#practice">13 Practice</a>
+      <a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a>
+      <a href="#map">16 Concept map</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Challenge: Same Campus, Two Missions</h2>
+        <p class="lead">Last week the robot inspected <strong>every walkway once</strong>. Today it must visit <strong>every building once</strong> and may return to its starting building at the end. Will the old route answer the new question?</p>
+        <p><strong>Predict:</strong> The Week 13 inspection trail <span class="formula">L–H–C–G–L–S–H</span> uses every walkway once, but it visits L and H again. It does not meet “visit every building once.” The new mission asks us to track vertices instead of edges.</p>
+        <div class="pipeline three" role="img" aria-label="A campus graph supports separate edge inspection and building visit questions">
+          <div><strong>GRAPH</strong><br>Same five buildings</div>
+          <div><strong>MISSION</strong><br>Edges or vertices?</div>
+          <div><strong>ROUTE</strong><br>Check that rule</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>What changes when a route must use each walkway once versus visit each building once? We will also use graphs to represent a separate scheduling problem.</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 14, you should be able to recognize a crossing-free drawing; count faces including the outside region and check <span class="formula">V−E+F=2</span> for a simple connected planar drawing; assign time slots as a proper vertex coloring; recognize Hamiltonian paths and cycles on small graphs; and distinguish building-visit routes from walkway-inspection routes.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>35 min</td><td>Redraw a crossing graph and count faces</td></tr>
+          <tr><td>60 min</td><td>Hands-on time-slot coloring game and peer explanation</td></tr>
+          <tr><td>45 min</td><td>Hamiltonian paths/cycles on small drawings</td></tr>
+          <tr><td>40 min</td><td>Major Case Study 4 conclusion and route comparison</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–11 and Practice 1–6. <span class="core extension">Optional self-study</span> The short Python checker and Practice 7. Draw and reason by hand before using a checker.</p>
+      </section>
+
+      <!-- Planar Drawings -->
+      <section class="chapter" id="planar">
+        <h2>03 · A Crossing Can Be a Drawing Choice</h2>
+        <p>A graph is <strong>planar</strong> if it can be drawn so edges meet only at their shared endpoints, with no unintended crossings. A crossing in one sketch does not prove the graph is nonplanar: the same vertices and edges may be redrawn.</p>
+        <p>The four-cycle has edges <span class="formula">AB, BC, CD, DA</span>. The left sketch below crosses two edges; the right sketch keeps exactly the same edge list but has no crossing. The intersection in the first sketch is <em>not</em> a vertex: there is no dot and the edge list contains no junction there.</p>
+        <figure class="redraw-figure graph-figure">
+          <svg viewBox="0 0 700 280" role="img" aria-labelledby="redraw-title">
+            <title id="redraw-title">The four-cycle drawn first as a crossed bow tie and then as a crossing-free square, preserving edges AB BC CD DA</title>
+            <g fill="none" stroke="#087f84" stroke-width="4"><path d="M75 55 L255 215 L75 215 L255 55 L75 55"/><path d="M410 55 L590 55 L590 215 L410 215 Z"/></g>
+            <g fill="#10263f" stroke="white" stroke-width="3"><circle cx="75" cy="55" r="20"/><circle cx="255" cy="215" r="20"/><circle cx="75" cy="215" r="20"/><circle cx="255" cy="55" r="20"/><circle cx="410" cy="55" r="20"/><circle cx="590" cy="55" r="20"/><circle cx="590" cy="215" r="20"/><circle cx="410" cy="215" r="20"/></g>
+            <g fill="white" font-family="DejaVu Sans,Arial" font-size="16" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="75" y="55">A</text><text x="255" y="215">B</text><text x="75" y="215">C</text><text x="255" y="55">D</text><text x="410" y="55">A</text><text x="590" y="55">B</text><text x="590" y="215">C</text><text x="410" y="215">D</text></g>
+            <g fill="#506579" font-family="DejaVu Sans,Arial" font-size="15" text-anchor="middle"><text x="165" y="261">Crossed sketch</text><text x="500" y="261">Crossing-free sketch</text></g>
+          </svg>
+          <figcaption>Figure 1. Both pictures have the same four vertices and four edges. The right-hand drawing shows this graph is planar.</figcaption>
+        </figure>
+        <div class="callout caution"><strong>Quick check:</strong> Adding a dot at the crossing would create a different graph with another vertex and different edge segments. Do not silently change the graph while redrawing it.</div>
+      </section>
+
+      <!-- Faces and Euler Formula -->
+      <section class="chapter" id="faces">
+        <h2>04 · Count Regions in a Connected Planar Drawing</h2>
+        <p>In a crossing-free drawing, a <strong>face</strong> is a region bounded by the drawing. Count the unbounded <strong>outside region</strong> as one face. For a <em>simple connected planar graph</em>, Euler's formula states:</p>
+        <div class="mathline"><span class="formula">V−E+F=2.</span></div>
+        <p>The four-cycle has <span class="formula">V=4</span> vertices and <span class="formula">E=4</span> edges. Its crossing-free square has one inside face and one outside face, so <span class="formula">F=2</span>, and <span class="formula">4−4+2=2</span>.</p>
+        <div class="example"><h3>The Week 13 campus drawing</h3><p>Its five buildings and six walkways form a connected graph drawn without crossings. The drawing has two bounded faces: the triangle L–H–S–L and the remaining region L–S–H–C–G–L. Include the outside face to get <span class="formula">F=3</span>. Thus <span class="formula">V−E+F=5−6+3=2</span>.</p></div>
+        <p>Use this equation as a check after you have a valid simple connected crossing-free drawing. The formula does not make a crossing disappear and does not apply in this stated form to an arbitrary disconnected sketch.</p>
+      </section>
+
+      <!-- Coloring Intuition -->
+      <section class="chapter" id="coloring">
+        <h2>05 · A Time Slot Is a Color</h2>
+        <p>Suppose two examinations share students and therefore cannot run at the same time. Represent each exam by a vertex and each stated <strong>conflict</strong> by an edge. Give every vertex a time slot, shown as a color. A <strong>proper vertex coloring</strong> assigns different colors to the two endpoints of every edge.</p>
+        <div class="pipeline three" role="img" aria-label="Exams become vertices, conflicts become edges, and colors become time slots">
+          <div><strong>EXAM</strong><br>Vertex</div>
+          <div><strong>CONFLICT</strong><br>Edge</div>
+          <div><strong>TIME SLOT</strong><br>Color</div>
+        </div>
+        <p>Nonadjacent exams may share a slot under the stated conflict data. A coloring checks conflicts encoded by edges; if a real conflict was omitted, the schedule could be unsuitable despite being mathematically proper for the incomplete graph.</p>
+        <div class="callout caution"><strong>Quick check:</strong> Different slots for <em>every</em> exam would be valid but could waste slots. The mathematical aim here is a valid assignment using the available slots, then a justified minimum for this small graph.</div>
+      </section>
+
+      <!-- Conflict Graph -->
+      <section class="chapter" id="conflicts">
+        <h2>06 · Five Exams, Six Stated Conflicts</h2>
+        <p>Let exams A, B, C, D and E be distinct tasks. The assumed conflict pairs are <span class="formula">AB, AC, BC, CD, DE, EA</span>. Only these six pairs are recorded as conflicts for this exercise. The graph is separate from the campus walkway graph, even though both have five vertices and six edges.</p>
+        <figure class="conflict-figure graph-figure">
+          <svg viewBox="0 0 600 330" role="img" aria-labelledby="conflict-title">
+            <title id="conflict-title">Conflict graph A B C D E with edges AB AC BC CD DE EA; A B C form a triangle</title>
+            <g stroke="#087f84" stroke-width="5" fill="none" stroke-linecap="round"><line x1="100" y1="70" x2="320" y2="50"/><line x1="100" y1="70" x2="340" y2="150"/><line x1="320" y1="50" x2="340" y2="150"/><line x1="340" y1="150" x2="430" y2="260"/><line x1="430" y1="260" x2="80" y2="260"/><line x1="80" y1="260" x2="100" y2="70"/></g>
+            <g fill="#10263f" stroke="white" stroke-width="4"><circle cx="100" cy="70" r="27"/><circle cx="320" cy="50" r="27"/><circle cx="340" cy="150" r="27"/><circle cx="430" cy="260" r="27"/><circle cx="80" cy="260" r="27"/></g>
+            <g fill="white" font-family="DejaVu Sans,Arial" font-size="21" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="100" y="70">A</text><text x="320" y="50">B</text><text x="340" y="150">C</text><text x="430" y="260">D</text><text x="80" y="260">E</text></g>
+          </svg>
+          <figcaption>Figure 2. A, B and C form a triangle: each pair among those three conflicts. D and E add three more conflicts.</figcaption>
+        </figure>
+        <div class="table-wrap"><table><thead><tr><th>Exam</th><th>Conflicting neighbors</th><th>Number of conflicts</th></tr></thead><tbody>
+          <tr><td>A</td><td>B, C, E</td><td>3</td></tr><tr><td>B</td><td>A, C</td><td>2</td></tr><tr><td>C</td><td>A, B, D</td><td>3</td></tr><tr><td>D</td><td>C, E</td><td>2</td></tr><tr><td>E</td><td>D, A</td><td>2</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Coloring Strategy -->
+      <section class="chapter" id="strategy">
+        <h2>07 · Predict the Minimum, Then Construct a Schedule</h2>
+        <p>Exams A, B and C are pairwise adjacent, so none of them may share a slot with either of the other two. <strong>At least three slots are necessary.</strong> This is a lower bound: it rules out two slots, but we must still construct a valid three-slot assignment.</p>
+        <div class="table-wrap"><table><thead><tr><th>Exam</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead><tbody><tr><th>Slot</th><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td></tr></tbody></table></div>
+        <p>Now check every edge: AB has 1/2; AC 1/3; BC 2/3; CD 3/1; DE 1/2; EA 2/1. Each conflict has different slots. Three slots <em>suffice</em>. Because two are impossible and three work, the minimum for this graph is exactly <span class="formula">3</span>.</p>
+        <div class="callout"><strong>Predict → Test → Explain:</strong> Try changing D to Slot 3. Which edge breaks? It is CD, because C already uses Slot 3. Try changing E to Slot 1: EA breaks because A uses Slot 1, and DE also breaks when D is in Slot 1.</div>
+      </section>
+
+      <!-- Schedule Studio Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>08 · Schedule Studio</h2>
+        <p><span class="core">Predict → Test → Explain</span> First predict whether two or three slots are necessary. Then assign slots to all five exams. The checker tests each listed conflict and explains any collision. Work with a partner: one proposes a schedule and the other audits every edge.</p>
+        <div class="interactive screen-only" id="schedule-studio">
+          <h3>Part 1 · How many slots at minimum?</h3>
+          <div id="prediction-buttons" class="prediction-buttons"><button type="button" data-guess="2">2 slots</button><button type="button" data-guess="3">3 slots</button></div>
+          <p id="prediction-feedback" class="status" aria-live="polite">Look at triangle A–B–C before selecting.</p>
+          <h3>Part 2 · Build a schedule with slots 1, 2 and 3</h3>
+          <p>Use the conflict list <span class="formula">AB, AC, BC, CD, DE, EA</span>. The node colors in the small diagram respond to your choices.</p>
+          <svg viewBox="0 0 500 240" role="img" aria-labelledby="studio-title" class="graph-figure">
+            <title id="studio-title">Live five-exam conflict graph; colored vertices show the selected time slots</title>
+            <g stroke="#7ba5ab" stroke-width="4" fill="none"><line x1="80" y1="65" x2="260" y2="45"/><line x1="80" y1="65" x2="280" y2="123"/><line x1="260" y1="45" x2="280" y2="123"/><line x1="280" y1="123" x2="405" y2="195"/><line x1="405" y1="195" x2="65" y2="195"/><line x1="65" y1="195" x2="80" y2="65"/></g>
+            <g stroke="white" stroke-width="3"><circle id="node-A" class="slot-node" cx="80" cy="65" r="22" fill="#10263f"/><circle id="node-B" class="slot-node" cx="260" cy="45" r="22" fill="#10263f"/><circle id="node-C" class="slot-node" cx="280" cy="123" r="22" fill="#10263f"/><circle id="node-D" class="slot-node" cx="405" cy="195" r="22" fill="#10263f"/><circle id="node-E" class="slot-node" cx="65" cy="195" r="22" fill="#10263f"/></g>
+            <g fill="white" font-family="DejaVu Sans,Arial" font-size="18" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="80" y="65">A</text><text x="260" y="45">B</text><text x="280" y="123">C</text><text x="405" y="195">D</text><text x="65" y="195">E</text></g>
+          </svg>
+          <div id="slot-controls" class="slot-controls"></div>
+          <div class="slot-actions"><button id="check-schedule" type="button">Check all conflicts</button><button id="reset-schedule" type="button">Clear schedule</button></div>
+          <p id="schedule-feedback" class="status" aria-live="polite">Assign a slot to every exam, then check.</p>
+          <p id="edge-audit" class="slot-readout" aria-live="polite">Edge audit appears here after checking.</p>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Schedule Studio</h3>
+          <p><strong>Predict:</strong> Can two slots work? _____ Why? __________________________________</p>
+          <p>Assign Slot 1, 2 or 3 to each exam in the graph with edges AB, AC, BC, CD, DE, EA.</p>
+          <div class="table-wrap"><table><thead><tr><th>Exam</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr></thead><tbody><tr><th>Your slot</th><td>___</td><td>___</td><td>___</td><td>___</td><td>___</td></tr></tbody></table></div>
+          <p><strong>Edge audit:</strong> AB ____; AC ____; BC ____; CD ____; DE ____; EA ____. Circle any pair placed in the same slot and revise.</p>
+          <p><strong>Explain:</strong> Why are three slots both necessary and sufficient? ____________________________</p>
+        </div>
+        <div class="callout"><strong>Classroom game:</strong> Use five exam cards and six conflict strings. Students first try two slot colors, explain the obstruction at A–B–C, then construct and exchange three-slot schedules for peer checking.</div>
+      </section>
+
+      <!-- Hamiltonian Paths and Cycles -->
+      <section class="chapter" id="hamiltonian">
+        <h2>09 · Visit Every Vertex Exactly Once</h2>
+        <p>A <strong>Hamiltonian path</strong> visits every vertex exactly once, with no requirement to use every edge. A <strong>Hamiltonian cycle</strong> visits every vertex exactly once before returning to its starting vertex. The start appears again only to close the cycle. These ideas ask about <em>vertices</em>; Euler routes ask about <em>edges</em>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Route goal</th><th>What must appear once?</th><th>May other object repeat or remain unused?</th></tr></thead><tbody>
+          <tr><td>Euler trail</td><td>Every edge</td><td>Vertices may repeat; no edge remains unused.</td></tr>
+          <tr><td>Hamiltonian path</td><td>Every vertex</td><td>Some edges may remain unused.</td></tr>
+          <tr><td>Hamiltonian cycle</td><td>Every vertex before return</td><td>Returns to start; some edges may remain unused.</td></tr>
+        </tbody></table></div>
+        <p>There is no direct analogue here of the simple Euler odd-degree test that decides Hamiltonian paths in general. On our small graph, we justify a Hamiltonian route by writing it and checking every consecutive edge and every vertex.</p>
+        <div class="callout caution"><strong>Quick check:</strong> A route through all five buildings that repeats one building before it has visited all five is not a Hamiltonian path, even if it is a valid walk.</div>
+      </section>
+
+      <!-- Major Case Study 4 Conclusion -->
+      <section class="chapter" id="case">
+        <h2>10 · Major Case Study 4 Concludes: Campus Inspection and Delivery Robot</h2>
+        <p><strong>Scenario → Understand → Represent → Reason → Test → Interpret.</strong> Continue with the <em>same</em> Week 13 campus graph. Buildings are <span class="formula">L,H,C,G,S</span>; walkways are <span class="formula">LH, HC, CG, GL, LS, SH</span>. All are two-way and open. The drawing below has no unintended crossings.</p>
+        <figure class="campus-figure graph-figure">
+          <svg viewBox="0 0 600 310" role="img" aria-labelledby="campus-title14">
+            <title id="campus-title14">Week 13 campus graph: edges LH HC CG GL LS SH, with bounded faces LHS and LSHCGL plus the outside face</title>
+            <g stroke="#087f84" stroke-width="5" fill="none" stroke-linecap="round"><line x1="130" y1="67" x2="470" y2="67"/><line x1="470" y1="67" x2="470" y2="240"/><line x1="470" y1="240" x2="130" y2="240"/><line x1="130" y1="240" x2="130" y2="67"/><line x1="130" y1="67" x2="300" y2="157"/><line x1="300" y1="157" x2="470" y2="67"/></g>
+            <g fill="#10263f" stroke="white" stroke-width="4"><circle cx="130" cy="67" r="27"/><circle cx="470" cy="67" r="27"/><circle cx="470" cy="240" r="27"/><circle cx="130" cy="240" r="27"/><circle cx="300" cy="157" r="27"/></g>
+            <g fill="white" text-anchor="middle" dominant-baseline="central" font-family="DejaVu Sans,Arial" font-size="22" font-weight="bold"><text x="130" y="67">L</text><text x="470" y="67">H</text><text x="470" y="240">C</text><text x="130" y="240">G</text><text x="300" y="157">S</text></g>
+            <g fill="#66539c" font-family="DejaVu Sans,Arial" font-size="16" font-weight="bold"><text x="290" y="97">F₁</text><text x="292" y="212">F₂</text><text x="20" y="32">F₃ outside</text></g>
+          </svg>
+          <figcaption>Figure 3. Two bounded faces and the outside face give F=3. The positions are schematic, not distances.</figcaption>
+        </figure>
+        <h3>Mission A · Inspect every walkway</h3>
+        <p>Degrees are <span class="formula">3,3,2,2,2</span> at L,H,C,G,S. The connected graph has exactly two odd vertices L and H. An open Euler trail is <span class="formula">L–H–C–G–L–S–H</span>; it uses all six edges once. It revisits buildings, and it cannot be a closed Euler circuit.</p>
+        <h3>Mission B · Visit every building</h3>
+        <p>A Hamiltonian path is <span class="formula">L–S–H–C–G</span>. It visits L,S,H,C,G exactly once through walkways LS, SH, HC, CG. A Hamiltonian cycle is <span class="formula">L–S–H–C–G–L</span>; it uses LS, SH, HC, CG, GL and returns to L. The walkway LH is unused in both building-visit routes, which is allowed for this mission.</p>
+        <h3>Interpret the robot's decision</h3>
+        <p>The robot can satisfy each task on its own, but the written routes certify <em>different requirements</em>. An inspection trail may revisit a building; a building-visit cycle may leave a walkway uninspected. Travel times, directions, closures and battery constraints have not been modelled. We have exhibited routes for this specific small graph, not a universal Hamiltonian test.</p>
+      </section>
+
+      <!-- Compare the Tasks -->
+      <section class="chapter" id="compare">
+        <h2>11 · One Graph, Two Precise Decisions</h2>
+        <div class="table-wrap"><table><thead><tr><th>Question</th><th>Valid route</th><th>Verification</th></tr></thead><tbody>
+          <tr><td>Inspect each walkway once?</td><td>L–H–C–G–L–S–H</td><td>Six different edges used; L and H are odd endpoints.</td></tr>
+          <tr><td>Visit each building once?</td><td>L–S–H–C–G</td><td>Five distinct buildings visited; four walkways used.</td></tr>
+          <tr><td>Visit each building, then return?</td><td>L–S–H–C–G–L</td><td>Five distinct buildings before return; LH unused.</td></tr>
+        </tbody></table></div>
+        <p>The Euler degree test supports the first question for connected graphs. It does <strong>not</strong> decide the second or third question. For the campus case we verify the Hamiltonian routes directly from the named edge list.</p>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab: Check a Proposed Schedule</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Construct and audit a three-slot coloring on paper. Then use a short checker for the six stated conflict edges. This cell reuses Week 13's dictionary of keys and values and an already familiar <code>for</code> loop.</p>
+        <pre><code>conflicts = [("A", "B"), ("A", "C"), ("B", "C"),
+             ("C", "D"), ("D", "E"), ("E", "A")]
+slot = {"A": 1, "B": 2, "C": 3, "D": 1, "E": 2}
+for left, right in conflicts:
+    print(left, right, slot[left] != slot[right])</code></pre>
+        <p>Each pair in <code>conflicts</code> is one edge. <code>slot[left]</code> looks up that exam's assigned slot. <code>!=</code> asks whether two conflicting exams have different slots. Predict six <code>True</code> results. Change <code>slot["D"]</code> to 3 and predict which edge prints <code>False</code> before running again.</p>
+        <p>This code checks the supplied assignment against the <em>listed</em> conflicts. It does not find an optimal schedule or detect conflicts absent from the input.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice and Case Submission</h2>
+        <p>Justify answers with the relevant graph and state which object is being counted or visited.</p>
+        <ol>
+          <li>Redraw the four-cycle with edges AB, BC, CD, DA without crossings. Count V, E and F including the outside region; check Euler's formula.</li>
+          <li>On the campus graph, list its two bounded faces and the outside face. Verify <span class="formula">V−E+F=2</span>.</li>
+          <li>For conflicts AB, AC, BC, CD, DE, EA, explain why two slots are impossible. Give and check a three-slot assignment.</li>
+          <li>A proposed schedule is A=1, B=2, C=3, D=3, E=2. Identify every conflicting pair sharing a slot and repair the schedule by changing D alone, if possible.</li>
+          <li>For the campus graph, write a Hamiltonian path and a Hamiltonian cycle. State one edge each route leaves unused.</li>
+          <li>Explain why <span class="formula">L–H–C–G–L–S–H</span> meets the Week 13 inspection requirement but is not a Hamiltonian path.</li>
+          <li>A connected graph has two odd-degree vertices. A classmate concludes it cannot have a Hamiltonian cycle. Explain why the inference is invalid; use the campus graph as a counterexample.</li>
+        </ol>
+        <div class="workbook"><h3>Major Case Study 4 submission</h3><p>Using the same L,H,C,G,S graph from Weeks 13–14, submit the two route questions, the edge list, degree reasoning for the inspection task, explicit verified routes for both tasks, the face check, and one paragraph explaining which unmodelled conditions could affect a real robot. State that the Euler degree test applies only to the edge task.</p></div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Declare a graph nonplanar because one sketch has crossings.</td><td>Try a different drawing while preserving the same vertices and edges.</td></tr>
+          <tr><td>Count only bounded regions in Euler's formula.</td><td>Include the unbounded outside face.</td></tr>
+          <tr><td>Use V−E+F=2 on any disconnected sketch.</td><td>This week's form assumes a simple connected planar drawing.</td></tr>
+          <tr><td>Give conflicting exams the same slot.</td><td>Check every edge's endpoints, not only the triangle.</td></tr>
+          <tr><td>Call a proper three-slot assignment “minimum” without a reason.</td><td>The triangle proves at least three; the assignment proves at most three.</td></tr>
+          <tr><td>Use the Euler odd-degree test to decide Hamiltonian routes.</td><td>The degree test concerns every edge; inspect vertex visits separately.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <ul>
+          <li>A graph is planar if some drawing has no unintended edge crossings. A crossed sketch can sometimes be redrawn.</li>
+          <li>For a simple connected planar drawing, count the outside face and check <span class="formula">V−E+F=2</span>.</li>
+          <li>A proper vertex coloring gives adjacent vertices different colors. In the exam model, adjacent exams cannot share a time slot.</li>
+          <li>A Hamiltonian path visits every vertex once; a Hamiltonian cycle returns to its start after visiting every vertex once. Edges may remain unused.</li>
+          <li>The campus graph has an open Euler inspection trail and a Hamiltonian building-visit cycle. Each route answers its own precise question.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 320" role="img" aria-labelledby="map-title">
+            <title id="map-title">A graph supports crossing-free drawings and face counting, proper coloring of conflict edges, and separate edge and vertex route questions</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M350 76 V103 H125 V126 M350 103 H350 V126 M350 103 H575 V126"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="210" y="15" width="280" height="62" rx="12" fill="#e8f6f4"/><rect x="15" y="126" width="220" height="118" rx="12" fill="#e8f6f4"/><rect x="240" y="126" width="220" height="118" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="465" y="126" width="220" height="118" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="17" font-weight="bold"><text x="350" y="43">GRAPH</text><text x="125" y="160">DRAWING</text><text x="350" y="160">COLORING</text><text x="575" y="160">ROUTES</text></g>
+              <g fill="#203349" font-size="13"><text x="350" y="65">vertices + edges</text><text x="125" y="188">Crossings? Faces?</text><text x="125" y="213">V−E+F=2</text><text x="350" y="188">Conflict edge?</text><text x="350" y="213">Different slots</text><text x="575" y="188">Every edge: Euler</text><text x="575" y="213">Every vertex: Hamiltonian</text></g></g>
+          </svg>
+          <figcaption>The same graph language supports distinct questions. State the rule before applying a test.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>Week 15 studies rooted trees and the order in which their vertices can be visited. A tree is a special graph, but its traversal task will ask for a specified visit order rather than an Euler or Hamiltonian route.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Schedule Studio</h3><p>Two slots fail because A, B and C conflict pairwise. One valid coloring is <span class="formula">A=1, B=2, C=3, D=1, E=2</span>. Audit AB: 1/2, AC: 1/3, BC: 2/3, CD: 3/1, DE: 1/2, EA: 2/1. All six conflicting pairs have different slots. Therefore exactly three slots are required.</p>
+        <h3>1 · Redrawing a cycle</h3><p>Draw A–B–C–D–A as a square. It has <span class="formula">V=4,E=4,F=2</span> (one inside, one outside); <span class="formula">4−4+2=2</span>.</p>
+        <h3>2 · Campus faces</h3><p>The bounded triangle L–H–S–L, the bounded region L–S–H–C–G–L, and the outside give <span class="formula">F=3</span>. With <span class="formula">V=5,E=6</span>, <span class="formula">5−6+3=2</span>.</p>
+        <h3>3–4 · Time slots</h3><p>The A–B–C triangle forces three distinct slots; the assignment in Schedule Studio proves three suffice. In <span class="formula">A=1,B=2,C=3,D=3,E=2</span>, CD is the sole conflict (C and D both in Slot 3). Changing D to Slot 1 repairs it: CD becomes 3/1 and DE becomes 1/2.</p>
+        <h3>5 · Building visits</h3><p><span class="formula">L–S–H–C–G</span> is a Hamiltonian path and leaves LH and GL unused. <span class="formula">L–S–H–C–G–L</span> is a Hamiltonian cycle and leaves LH unused.</p>
+        <h3>6 · Inspection versus visit</h3><p><span class="formula">L–H–C–G–L–S–H</span> uses LH, HC, CG, GL, LS, SH exactly once. It repeats L and H, so it is not a Hamiltonian path.</p>
+        <h3>7 · Invalid inference</h3><p>The campus graph has odd-degree vertices L and H, so it has no Euler circuit. Yet <span class="formula">L–S–H–C–G–L</span> is a Hamiltonian cycle. The Euler degree test cannot rule it out.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 14 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Conflict data and slot colors are separate from interaction handlers.
+    const exams = ["A", "B", "C", "D", "E"];
+    const conflictEdges = [["A", "B"], ["A", "C"], ["B", "C"], ["C", "D"], ["D", "E"], ["E", "A"]];
+    const slotColors = { "": "#10263f", "1": "#087f84", "2": "#66539c", "3": "#b06b18" };
+
+    function renderSlotControls() {
+      const container = document.getElementById("slot-controls");
+      exams.forEach(function (exam) {
+        const label = document.createElement("label");
+        label.setAttribute("for", "slot-" + exam);
+        label.textContent = "Exam " + exam;
+        const select = document.createElement("select");
+        select.id = "slot-" + exam;
+        [["", "Choose a slot"], ["1", "Slot 1"], ["2", "Slot 2"], ["3", "Slot 3"]].forEach(function (item) {
+          const option = document.createElement("option");
+          option.value = item[0];
+          option.textContent = item[1];
+          select.append(option);
+        });
+        select.addEventListener("change", updateNodeColors);
+        label.append(select);
+        container.append(label);
+      });
+    }
+
+    function assignments() {
+      const slots = {};
+      exams.forEach(function (exam) { slots[exam] = document.getElementById("slot-" + exam).value; });
+      return slots;
+    }
+
+    function updateNodeColors() {
+      const slots = assignments();
+      exams.forEach(function (exam) {
+        document.getElementById("node-" + exam).setAttribute("fill", slotColors[slots[exam]]);
+      });
+      document.getElementById("schedule-feedback").textContent = "Check all six conflict edges after assigning every exam.";
+      document.getElementById("schedule-feedback").className = "status";
+      document.getElementById("edge-audit").textContent = "Edge audit appears here after checking.";
+    }
+
+    function checkMinimum(guess, button) {
+      document.querySelectorAll("#prediction-buttons button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", String(choice === button));
+      });
+      const feedback = document.getElementById("prediction-feedback");
+      feedback.textContent = guess === 3
+        ? "Yes. A, B and C conflict pairwise, so at least three slots are needed. Now construct a valid three-slot schedule."
+        : "Two cannot work: A, B and C each conflict with the other two. They require three different slots.";
+      feedback.className = "status " + (guess === 3 ? "good" : "bad");
+    }
+
+    function checkSchedule() {
+      const slots = assignments();
+      const missing = exams.filter(function (exam) { return slots[exam] === ""; });
+      const feedback = document.getElementById("schedule-feedback");
+      if (missing.length) {
+        feedback.textContent = "Assign a slot to every exam first: " + missing.join(", ") + " still missing.";
+        feedback.className = "status bad";
+        return;
+      }
+      const collisions = conflictEdges.filter(function (edge) { return slots[edge[0]] === slots[edge[1]]; });
+      const audit = conflictEdges.map(function (edge) {
+        const same = slots[edge[0]] === slots[edge[1]];
+        return edge.join("–") + " (" + slots[edge[0]] + "/" + slots[edge[1]] + ") " + (same ? "CONFLICT" : "OK");
+      });
+      document.getElementById("edge-audit").textContent = audit.join(" · ");
+      feedback.textContent = collisions.length
+        ? "Revise " + collisions.map(function (edge) { return edge.join("–"); }).join(", ") + ": the endpoints share a slot."
+        : "Valid! All six conflict edges have different endpoint slots. The A–B–C triangle proves that three slots are the minimum.";
+      feedback.className = "status " + (collisions.length ? "bad" : "good");
+    }
+
+    function resetSchedule() {
+      exams.forEach(function (exam) { document.getElementById("slot-" + exam).value = ""; });
+      updateNodeColors();
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      renderSlotControls();
+      document.querySelectorAll("#prediction-buttons button").forEach(function (button) {
+        button.addEventListener("click", function () { checkMinimum(Number(button.dataset.guess), button); });
+      });
+      document.getElementById("check-schedule").addEventListener("click", checkSchedule);
+      document.getElementById("reset-schedule").addEventListener("click", resetSchedule);
+      resetSchedule();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>

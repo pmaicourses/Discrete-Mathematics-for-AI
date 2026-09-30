@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 12 of Discrete Mathematics for BSAI: permutations, combinations, and feature-set counting.">
+  <title>Week 12 · Permutations, Combinations and Feature Sets</title>
+  <style>
+
+
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "aₙ  ∑"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    /* Week 12 choice and ranking activity. */
+    .counting-options { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1rem 0; }
+    .counting-options button, .activity-actions button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .5rem .9rem; }
+    .counting-options button:hover, .counting-options button[aria-pressed="true"], .activity-actions button { background: var(--teal); color: white; }
+    .counting-options button:disabled, .activity-actions button:disabled { opacity: .55; cursor: default; }
+    .reasoning-reveal { border-left: 4px solid var(--violet); background: #f2eef9; padding: .75rem 1rem; margin-top: .8rem; }
+    .activity-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .8rem; }
+    .figure-wide { width: 100%; max-width: 700px; }
+    .feature-code { font-weight: 700; color: var(--teal); }
+    .decision-line { border-left: 4px solid var(--teal); padding: .7rem 1rem; background: #e8f6f4; margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 12</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Permutations, Combinations and Feature Sets</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 12 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening challenge</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#rank">03 Ordered positions</a>
+      <a href="#restricted">04 Restrictions</a>
+      <a href="#group">05 Grouping orders</a>
+      <a href="#factorial">06 Factorial notation</a>
+      <a href="#formulas">07 Compact counts</a>
+      <a href="#decision">08 Choose the method</a>
+      <a href="#activity">09 Choice or Rank?</a>
+      <a href="#case-study">10 Feature-set resolution</a>
+      <a href="#interpret">11 Interpret the count</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#practice">13 Practice</a>
+      <a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a>
+      <a href="#map">16 Concept map</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Challenge: Same Features, Different Order?</h2>
+        <p class="lead">A learning-support team has eight candidate measurements. It can <strong>select three</strong> for a dashboard, or <strong>rank the top three</strong> in first, second and third place. Are those two tasks asking for the same number?</p>
+        <p><strong>Predict:</strong> The selections <span class="formula">{Q,E,A}</span> and <span class="formula">{A,Q,E}</span> contain the same measurements. The rankings <span class="formula">(Q,E,A)</span> and <span class="formula">(A,Q,E)</span> assign different roles. Week 11 counted <span class="formula">8×7×6=336</span> rankings. We now find how many <em>distinct selected sets</em> those rankings represent.</p>
+        <div class="pipeline three" role="img" aria-label="Define one outcome, ask whether order matters, then count without repeated copies">
+          <div><strong>OUTCOME</strong><br>What is chosen?</div>
+          <div><strong>ORDER</strong><br>Does a swap change it?</div>
+          <div><strong>COUNT</strong><br>Account for repeats</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>When do different written orders represent genuinely different outcomes, and when are they repeated descriptions of one choice?</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 12, you should be able to count ordered assignments with simple restrictions; group ordered listings that give one unordered selection; explain factorial, permutation and combination notation; choose an appropriate counting method; and complete the eight-feature case with justified counts and limits on interpretation.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>50 min</td><td>Restricted arrangements and order checks</td></tr>
+          <tr><td>55 min</td><td>Selections, grouping, factorial and combinations</td></tr>
+          <tr><td>60 min</td><td>Major Case Study 3 resolution and peer explanation</td></tr>
+          <tr><td>15 min</td><td>Short count-and-justify check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–11 and Practice 1–6. <span class="core extension">Optional self-study</span> Colab and Practice 7–8. List tiny outcomes before relying on a formula.</p>
+      </section>
+
+      <!-- Ordered Positions -->
+      <section class="chapter" id="rank">
+        <h2>03 · First Count Ordered Positions</h2>
+        <p>Four distinct applicants fill the roles of chairperson and deputy, with no person in both roles. There are four choices for chairperson. Once chosen, three remain for deputy: <span class="formula">4×3=12</span> assignments. Swapping the two people changes who has which role.</p>
+        <p>With <span class="formula">n</span> distinct candidates and <span class="formula">r</span> ordered positions, filled without reuse, the number of choices decreases one by one:</p>
+        <div class="mathline"><span class="formula">n×(n−1)×(n−2)×···</span> for <span class="formula">r</span> factors.</div>
+        <div class="example"><h3>Worked ranking</h3><p>Choose first, second and third place from five distinct cards: <span class="formula">5×4×3=60</span>. One outcome is an ordered triple such as <span class="formula">(A,C,E)</span>. The triple <span class="formula">(C,A,E)</span> is another outcome because first and second place were exchanged.</p></div>
+        <div class="callout caution"><strong>Quick check:</strong> <span class="formula">5×5×5</span> would allow the same card in several positions. Here each card can be used only once.</div>
+      </section>
+
+      <!-- Restricted Arrangements -->
+      <section class="chapter" id="restricted">
+        <h2>04 · Apply a Restriction Before Multiplying</h2>
+        <p>With five distinct applicants, assign a chairperson and deputy. If applicant A <strong>must be chairperson</strong>, the first position has one choice and the deputy has four: <span class="formula">1×4=4</span>. If A <strong>cannot be chairperson</strong>, the first position has four choices, and each leaves four people for deputy: <span class="formula">4×4=16</span>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Condition</th><th>First position</th><th>Second position</th><th>Assignments</th></tr></thead><tbody>
+          <tr><td>No restriction</td><td>5</td><td>4</td><td>20</td></tr>
+          <tr><td>A first</td><td>1</td><td>4</td><td>4</td></tr>
+          <tr><td>A not first</td><td>4</td><td>4</td><td>16</td></tr>
+        </tbody></table></div>
+        <p>The final check <span class="formula">4+16=20</span> works because “A first” and “A not first” are separate cases covering every unrestricted assignment. The repeated number 4 in <span class="formula">4×4</span> has two different meanings: four eligible first choices, then four remaining people for the second role.</p>
+      </section>
+
+      <!-- Unordered Selection -->
+      <section class="chapter" id="group">
+        <h2>05 · Group Orders That Make the Same Selection</h2>
+        <p>From three distinct codes Q, E, A, Week 11 listed six <em>ordered</em> pairs: <span class="formula">QE, QA, EQ, EA, AQ, AE</span>. But choosing two codes for a set has only three outcomes:</p>
+        <div class="table-wrap"><table><thead><tr><th>Selected set</th><th>Ordered pairs describing it</th></tr></thead><tbody>
+          <tr><td>{Q,E}</td><td>QE and EQ</td></tr>
+          <tr><td>{Q,A}</td><td>QA and AQ</td></tr>
+          <tr><td>{E,A}</td><td>EA and AE</td></tr>
+        </tbody></table></div>
+        <p>Each two-element set was counted <strong>twice</strong> in the ordered list. Therefore <span class="formula">3×2÷2=3</span> selections. More generally, for three selected distinct objects, there are <span class="formula">3×2×1=6</span> internal orders of those same objects. Dividing an ordered count by six gives the number of three-object selections when every selected triple has all six possible orders and there are no restrictions favoring one order.</p>
+        <figure class="group-figure figure-wide">
+          <svg viewBox="0 0 700 260" role="img" aria-labelledby="group-title">
+            <title id="group-title">Six ordered pairs group into three unordered two-feature sets</title>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle" font-size="18" fill="#10263f">
+              <g fill="#e8f6f4" stroke="#087f84" stroke-width="2"><rect x="20" y="40" width="200" height="65" rx="12"/><rect x="250" y="40" width="200" height="65" rx="12"/><rect x="480" y="40" width="200" height="65" rx="12"/></g>
+              <text x="120" y="80">QE, EQ</text><text x="350" y="80">QA, AQ</text><text x="580" y="80">EA, AE</text>
+              <g fill="#f2eef9" stroke="#66539c" stroke-width="2"><rect x="20" y="157" width="200" height="64" rx="12"/><rect x="250" y="157" width="200" height="64" rx="12"/><rect x="480" y="157" width="200" height="64" rx="12"/></g>
+              <text x="120" y="196">{Q,E}</text><text x="350" y="196">{Q,A}</text><text x="580" y="196">{E,A}</text>
+            </g>
+            <g stroke="#087f84" stroke-width="3"><path d="M120 105 V157 M350 105 V157 M580 105 V157"/></g>
+          </svg>
+          <figcaption>Figure 1. Reversing an ordered pair changes the ranking, but not the two-element set.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Factorial -->
+      <section class="chapter" id="factorial">
+        <h2>06 · Factorial Is Shorthand for a Falling Product</h2>
+        <p>For a positive whole number <span class="formula">n</span>, <strong>factorial</strong> is the product <span class="formula">n!=n×(n−1)×···×2×1</span>. For example, <span class="formula">4!=4×3×2×1=24</span>. We set <span class="formula">0!=1</span>; this makes the counting formulas work when no choices remain to be arranged.</p>
+        <div class="mathline"><span class="formula">5!=5×4×3×2×1=120;</span> <span class="formula">3!=3×2×1=6.</span></div>
+        <p>Factorial is a compact way to write a product, not a new kind of outcome. To count only the first three ordered positions from five, use <span class="formula">5×4×3=60</span>, not all <span class="formula">5!=120</span> full arrangements.</p>
+      </section>
+
+      <!-- Permutations and Combinations -->
+      <section class="chapter" id="formulas">
+        <h2>07 · Compact Notation After the Reasoning</h2>
+        <p>Let <span class="formula">0≤r≤n</span>. We use <span class="formula">P(n,r)</span>, also written <span class="formula">ₙPᵣ</span>, for <strong>ordered</strong> arrangements of <span class="formula">r</span> distinct choices from <span class="formula">n</span> without reuse. Its formula shortens the falling product:</p>
+        <div class="mathline"><span class="formula">P(n,r)=n!/(n−r)!.</span></div>
+        <p>We use <span class="formula">C(n,r)</span>, also written <span class="formula">(ⁿᵣ)</span> or “<span class="formula">n</span> choose <span class="formula">r</span>,” for <strong>unordered</strong> selections. Each selected set of <span class="formula">r</span> distinct objects appears in <span class="formula">r!</span> different orders, so:</p>
+        <div class="mathline"><span class="formula">C(n,r)=P(n,r)/r!=n!/[r!(n−r)!].</span></div>
+        <div class="example"><h3>Five objects, choose three</h3><p>Ordered: <span class="formula">P(5,3)=5×4×3=60</span>. Each three-object set has <span class="formula">3!=6</span> orders, so unordered: <span class="formula">C(5,3)=60÷6=10</span>. The division corrects repeated descriptions of the same selection.</p></div>
+        <p>These formulas require distinct objects, no repetition, and the stated order interpretation. For a small task, a list or stage-by-stage count is often clearer than substituting immediately.</p>
+      </section>
+
+      <!-- Method Decision -->
+      <section class="chapter" id="decision">
+        <h2>08 · Choose the Counting Method</h2>
+        <div class="decision-line"><strong>Ask first:</strong> What counts as one outcome? Are there separate cases, consecutive stages, overlapping groups, or a forced shared category? If selecting several objects, does swapping their positions change the result?</div>
+        <div class="table-wrap"><table><thead><tr><th>Structure</th><th>Useful approach</th><th>Small cue</th></tr></thead><tbody>
+          <tr><td>Separate, nonoverlapping cases</td><td>Add</td><td>One soup or one salad</td></tr>
+          <tr><td>Consecutive stages</td><td>Multiply branch counts</td><td>One route and one mode</td></tr>
+          <tr><td>Two overlapping groups</td><td>Add, then subtract overlap</td><td>Chose coding or design</td></tr>
+          <tr><td>More objects than a capacity permits</td><td>Pigeonhole argument</td><td>Seven files in three folders</td></tr>
+          <tr><td>Distinct roles / order matters</td><td>Ordered stage count, P(n,r)</td><td>First and second place</td></tr>
+          <tr><td>Only membership matters</td><td>Group repeated orders, C(n,r)</td><td>Select a feature set</td></tr>
+        </tbody></table></div>
+        <p>Problems may combine methods. For example, a restriction can be applied first, followed by a product count; disjoint restricted cases can then be added. Give a reason for each step.</p>
+      </section>
+
+      <!-- Choice or Rank Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>09 · Choice or Rank?</h2>
+        <p><span class="core">Predict → Test → Explain</span> Each card asks for a count. Identify whether roles matter, select an answer, and read the correction for repeated orders or restrictions.</p>
+        <div class="interactive screen-only" id="choice-rank-activity">
+          <h3 id="activity-heading">Challenge 1 of 6</h3>
+          <p id="activity-prompt" class="decision-line"></p>
+          <div id="activity-options" class="counting-options" aria-label="Possible counts"></div>
+          <p id="activity-feedback" class="status" aria-live="polite">Predict before selecting.</p>
+          <div id="activity-reveal" class="reasoning-reveal" hidden></div>
+          <div class="activity-actions"><button id="activity-next" type="button" disabled>Next challenge</button><button id="activity-reset" type="button">Start over</button></div>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Choice or Rank?</h3>
+          <p>Write a count and one reason for each. Explain any division by repeated orderings.</p>
+          <ol>
+            <li>Rank first and second from 4 distinct cards: ____ Reason: __________________</li>
+            <li>Select 2 cards from 4 distinct cards: ____ Reason: __________________</li>
+            <li>Rank the top 3 of 5 distinct cards: ____ Reason: __________________</li>
+            <li>Select 3 cards from 5 distinct cards: ____ Reason: __________________</li>
+            <li>Five applicants fill chairperson and deputy; A must be chairperson: ____ Reason: __________________</li>
+            <li>Five applicants fill chairperson and deputy; A cannot be chairperson: ____ Reason: __________________</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Major Case Study 3 Resolution -->
+      <section class="chapter" id="case-study">
+        <h2>10 · Major Case Study 3 Concludes: Exploring Possible Feature Sets</h2>
+        <p><strong>Scenario → Understand → Represent → Reason → Check → Interpret.</strong> We continue with the <em>same eight distinct candidate measurements</em> from Week 11. No measurement may be repeated within a set or ranking.</p>
+        <div class="table-wrap"><table><thead><tr><th>Code</th><th>Candidate measurement</th><th>Code</th><th>Candidate measurement</th></tr></thead><tbody>
+          <tr><td>Q</td><td>Quizzes completed</td><td>E</td><td>Exercises attempted</td></tr>
+          <tr><td>A</td><td>Practice accuracy</td><td>T</td><td>Time between attempts</td></tr>
+          <tr><td>R</td><td>Revision sessions</td><td>M</td><td>Missed checkpoints</td></tr>
+          <tr><td>H</td><td>Hints requested</td><td>C</td><td>Topics completed</td></tr>
+        </tbody></table></div>
+        <h3>Understand and represent</h3>
+        <p>A two-feature <strong>set</strong> treats <span class="formula">{Q,E}</span> and <span class="formula">{E,Q}</span> as the same outcome. An <strong>ordered pair</strong> treats <span class="formula">(Q,E)</span> and <span class="formula">(E,Q)</span> as different. A ranking of the top three also uses distinct positions.</p>
+        <h3>Reason: base counts</h3>
+        <div class="table-wrap"><table><thead><tr><th>Question</th><th>Reason</th><th>Count</th></tr></thead><tbody>
+          <tr><td>Ordered pairs</td><td>8 first choices, then 7 remaining second choices</td><td>8×7=56</td></tr>
+          <tr><td>Two-feature sets</td><td>Each set appears in 2 orders; 56÷2</td><td>C(8,2)=28</td></tr>
+          <tr><td>Ranked top three</td><td>8 first, 7 second, 6 third</td><td>P(8,3)=336</td></tr>
+          <tr><td>Three-feature sets</td><td>Each set appears in 3!=6 orders; 336÷6</td><td>C(8,3)=56</td></tr>
+        </tbody></table></div>
+        <h3>Reason: a required measurement</h3>
+        <p>Suppose every selected <strong>pair must contain Q</strong>. Fix Q and choose its partner from the seven other codes: <span class="formula">7</span> sets. Do not multiply by two: <span class="formula">{Q,E}</span> and <span class="formula">{E,Q}</span> are one set. If every selected <strong>triple must contain Q</strong>, choose two from the other seven: <span class="formula">C(7,2)=7×6÷2=21</span> triples.</p>
+        <h3>Reason: an incompatible pair</h3>
+        <p>For a hypothetical design constraint, say <strong>Q and E may not appear together</strong> in a selected pair. Among 28 two-feature sets, exactly one is the forbidden set <span class="formula">{Q,E}</span>. Therefore <span class="formula">28−1=27</span> valid two-feature sets. If Q is also required, its allowed partner is one of the other six codes, so <span class="formula">6</span> valid pairs. The incompatibility is an exercise condition, not a finding about the actual measurements.</p>
+        <div class="pipeline three" role="img" aria-label="Start from all possibilities, identify forbidden outcomes, subtract them once">
+          <div><strong>ALL PAIRS</strong><br>28 distinct sets</div>
+          <div><strong>FORBIDDEN</strong><br>Only {Q,E}</div>
+          <div><strong>ALLOWED</strong><br>28−1=27</div>
+        </div>
+        <h3>Check and submit</h3>
+        <p>Check the ordered-pair count against the set count: <span class="formula">28×2=56</span>. Check the triple count: <span class="formula">56×6=336</span>. A case submission should state (1) what one outcome is, (2) whether order matters, (3) the count and reason for each row above, (4) the two restrictions, and (5) one sentence about what these counts cannot tell us.</p>
+      </section>
+
+      <!-- Interpretation -->
+      <section class="chapter" id="interpret">
+        <h2>11 · What the Counts Mean</h2>
+        <p>The result <span class="formula">28</span> counts possible two-feature <em>sets</em> under the stated distinctness rule. It does not tell us whether any pair is useful. The result <span class="formula">27</span> depends on the additional prohibition of <span class="formula">{Q,E}</span>; removing that policy returns 28. The result <span class="formula">56</span> for three-feature sets is an inventory of possible selections, not a score for the best dashboard.</p>
+        <div class="callout caution"><strong>Interpretation limit:</strong> Choosing candidate measurements for a real system would also require evidence about data quality, relevance, fairness, and performance. Counting alone evaluates none of these properties.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab: Check a Hand Count</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> First list the six two-feature sets from four codes <span class="formula">Q,E,A,T</span>: QE, QA, QT, EA, ET, AT. Python can verify the count after you have reasoned that <span class="formula">C(4,2)=4×3÷2=6</span>.</p>
+        <h3>1 · Reuse loops and indices</h3>
+        <p><code>range(4)</code> supplies positions 0,1,2,3. For a chosen first position <code>i</code>, <code>range(i + 1, 4)</code> supplies only positions after it, so the pair is printed once and no code is paired with itself.</p>
+        <pre><code>features = ["Q", "E", "A", "T"]
+for i in range(4):
+    for j in range(i + 1, 4):
+        print(features[i], features[j])</code></pre>
+        <p>Predict the six printed pairs before running. This small list checks your hand enumeration; it does not prove a general formula on its own.</p>
+        <h3>2 · Optional ready-made enumeration</h3>
+        <p>The standard-library function <code>combinations</code> lists selections without order. <code>import</code> makes that function available. With the same four-code list, the printed result should again contain six pairs.</p>
+        <pre><code>from itertools import combinations
+features = ["Q", "E", "A", "T"]
+print(list(combinations(features, 2)))</code></pre>
+        <p>To check the eight-feature case, extend the list to all eight codes and change nothing else. The output should contain <span class="formula">C(8,2)=28</span> pairs; explain why it prints <span class="formula">(Q,E)</span> only once and no <span class="formula">(E,Q)</span> separately.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice and Case Submission</h2>
+        <p>Decide first whether order matters, then justify the count. Selected solutions are at the end.</p>
+        <ol>
+          <li>From five distinct books, select two to borrow. Count selections. Separately, how many first-and-second reading orders can be formed from the five books?</li>
+          <li>From six distinct applicants, rank first, second and third. Count rankings. How many three-applicant sets?</li>
+          <li>Four distinct tasks are arranged in a row. How many orders? Expand the factorial rather than giving only a symbol.</li>
+          <li>From five distinct applicants, assign chairperson and deputy, but applicant A must be chairperson. Count. Repeat when A cannot be chairperson.</li>
+          <li>For the eight case-study features, count selected pairs containing Q. How many selected pairs remain if {Q,E} is forbidden? How many remain if both restrictions apply?</li>
+          <li>For eight features, find the number of three-feature sets by grouping the 336 rankings. Explain exactly why you divide by <span class="formula">3!</span>.</li>
+          <li>At a student event, 12 joined coding, 10 joined design, and 3 joined both. How many joined at least one? State the counting method.</li>
+          <li>Seven papers are distributed among three folders. What minimum folder size is guaranteed? Give a short capacity argument.</li>
+        </ol>
+        <div class="workbook"><h3>Major Case Study 3 submission prompt</h3><p>Using the eight-code table in Section 10, submit a one-page case record with counts for ordered pairs, selected pairs, ranked triples, selected triples, pairs requiring Q, pairs excluding {Q,E}, and pairs satisfying both restrictions. Show how you avoid counting repeated orders. End with the interpretation limit in your own words.</p></div>
+        <div class="callout"><strong>15-minute exit check:</strong> “Select two of five distinct cards” versus “award first and second to two of five distinct cards.” Give both counts and one sentence explaining the difference.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Use P(8,2) for an unordered feature pair.</td><td>Each pair appears in two orders; use C(8,2)=28.</td></tr>
+          <tr><td>Divide every restricted ranking count by r! automatically.</td><td>First verify each selected set still has the same allowed number of orderings under the restriction.</td></tr>
+          <tr><td>Use 5! for three ordered positions from five items.</td><td>Stop after three factors: 5×4×3=60.</td></tr>
+          <tr><td>Count {Q,E} and {E,Q} as separate sets.</td><td>Order is absent from a set; they are identical selections.</td></tr>
+          <tr><td>Exclude both QE and EQ separately from an unordered-pair count.</td><td>There is only one forbidden set {Q,E} among the 28 sets.</td></tr>
+          <tr><td>Conclude that the most numerous feature type predicts best.</td><td>Counts measure possibilities, not relevance or model performance.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <ul>
+          <li>For ordered positions without reuse, multiply the number of remaining choices at each stage: <span class="formula">P(n,r)=n!/(n−r)!</span>.</li>
+          <li>For selections without order, each selected set has <span class="formula">r!</span> orders: <span class="formula">C(n,r)=P(n,r)/r!</span>.</li>
+          <li>Factorial is a product shorthand, with <span class="formula">0!=1</span>.</li>
+          <li>Handle a restriction by defining allowed outcomes first; add separate cases or subtract forbidden outcomes only when they have been counted correctly.</li>
+          <li>In the eight-feature case, there are 56 ordered pairs, 28 two-feature sets, 336 ranked triples, and 56 three-feature sets under the stated assumptions.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 320" role="img" aria-labelledby="map-title">
+            <title id="map-title">Define an outcome; if order matters count ordered positions, otherwise group repeated orders; then apply and check restrictions</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M350 76 V99 H175 V119 M350 99 H525 V119"/><path d="M175 191 V222 H350 V240 M525 191 V222 H350"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="215" y="15" width="270" height="62" rx="12" fill="#e8f6f4"/><rect x="20" y="119" width="310" height="75" rx="12" fill="#e8f6f4"/><rect x="370" y="119" width="310" height="75" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="190" y="240" width="320" height="65" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="17" font-weight="bold"><text x="350" y="42">DEFINE ONE OUTCOME</text><text x="175" y="150">ORDER MATTERS</text><text x="525" y="150">ORDER DOES NOT MATTER</text><text x="350" y="267">APPLY RESTRICTIONS</text></g>
+              <g fill="#203349" font-size="13"><text x="350" y="63">Does swapping change it?</text><text x="175" y="177">P(n,r): remaining choices</text><text x="525" y="177">C(n,r): group r! orders</text><text x="350" y="290">Required? Forbidden? Count once.</text></g></g>
+          </svg>
+          <figcaption>Use notation only after deciding what counts as a distinct outcome.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>Week 13 begins graph theory. We will model buildings and walkways as vertices and edges, then examine routes that inspect each walkway. The skill of stating exactly what counts as a distinct object or route continues to matter.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Choice or Rank?</h3><p>1: <span class="formula">4×3=12</span> rankings. 2: <span class="formula">12÷2=6</span> selections, because each pair has two orders. 3: <span class="formula">5×4×3=60</span> rankings. 4: <span class="formula">60÷3!=10</span> selections. 5: <span class="formula">1×4=4</span> assignments with A first. 6: <span class="formula">4×4=16</span> assignments with A not first.</p>
+        <h3>1 · Books</h3><p><span class="formula">C(5,2)=5×4÷2=10</span> two-book sets. Ranking first and second from five gives <span class="formula">P(5,2)=5×4=20</span> reading orders.</p>
+        <h3>2 · Applicants</h3><p><span class="formula">P(6,3)=6×5×4=120</span> rankings; each set has <span class="formula">3!=6</span> rankings, so <span class="formula">C(6,3)=120÷6=20</span> sets.</p>
+        <h3>3 · Four tasks</h3><p><span class="formula">4!=4×3×2×1=24</span> full orders.</p>
+        <h3>4 · Restricted roles</h3><p>A first: <span class="formula">1×4=4</span>. A not first: <span class="formula">4×4=16</span>. These separate cases sum to the unrestricted <span class="formula">5×4=20</span>.</p>
+        <h3>5–6 · Feature sets</h3><p>Pairs containing Q: <span class="formula">7</span>. Excluding <span class="formula">{Q,E}</span> from all 28 pairs leaves <span class="formula">27</span>. Requiring Q and excluding E leaves <span class="formula">6</span>. Three-feature sets: <span class="formula">336÷3!=336÷6=56</span>, because each chosen triple can be placed in six distinct orders.</p>
+        <h3>7 · Overlap</h3><p><span class="formula">12+10−3=19</span> students joined at least one; subtract the double-counted overlap once.</p>
+        <h3>8 · Folder guarantee</h3><p>If each folder held at most two papers, three folders would hold at most six. Seven papers therefore force some folder to have at least three.</p>
+        <h3>Exit check</h3><p>Selected pairs: <span class="formula">C(5,2)=10</span>. Awarding first and second: <span class="formula">P(5,2)=20</span>. Each selected pair can be ordered in two ways.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 12 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Challenge data is easy to edit without changing the interaction functions.
+    const challenges = [
+      { prompt: "Rank first and second from four distinct cards, without reuse.", options: [6, 12, 16], answer: 12, explanation: "Order matters: 4 first choices × 3 remaining second choices = 12 rankings." },
+      { prompt: "Select two of four distinct cards. The order in which they are named does not matter.", options: [6, 8, 12], answer: 6, explanation: "There are 4 × 3 = 12 ordered pairs; each selected pair occurs in two orders. Thus 12 ÷ 2 = 6." },
+      { prompt: "Rank the top three of five distinct cards, without reuse.", options: [10, 60, 125], answer: 60, explanation: "First, second and third have different roles: 5 × 4 × 3 = 60 rankings." },
+      { prompt: "Select three of five distinct cards, without order.", options: [10, 30, 60], answer: 10, explanation: "The 60 rankings include 3! = 6 orders for each selected triple. Thus 60 ÷ 6 = 10 sets." },
+      { prompt: "Five applicants fill chairperson and deputy. Applicant A must be chairperson.", options: [4, 5, 20], answer: 4, explanation: "A fills the first role. Any of the remaining four can be deputy: 1 × 4 = 4." },
+      { prompt: "Five applicants fill chairperson and deputy. Applicant A cannot be chairperson.", options: [12, 16, 20], answer: 16, explanation: "Choose the chairperson from four others, then the deputy from four remaining people (including A): 4 × 4 = 16." }
+    ];
+    let currentChallenge = 0;
+
+    function displayChallenge() {
+      const data = challenges[currentChallenge];
+      document.getElementById("activity-heading").textContent = "Challenge " + (currentChallenge + 1) + " of " + challenges.length;
+      document.getElementById("activity-prompt").textContent = data.prompt;
+      const options = document.getElementById("activity-options");
+      options.replaceChildren();
+      data.options.forEach(function (number) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = String(number);
+        button.addEventListener("click", function () { checkChoice(number); });
+        options.append(button);
+      });
+      const feedback = document.getElementById("activity-feedback");
+      feedback.textContent = "Predict before selecting.";
+      feedback.className = "status";
+      const reveal = document.getElementById("activity-reveal");
+      reveal.hidden = true;
+      reveal.textContent = "";
+      document.getElementById("activity-next").disabled = true;
+      document.getElementById("activity-next").textContent = currentChallenge === challenges.length - 1 ? "Review from start" : "Next challenge";
+    }
+
+    function checkChoice(number) {
+      const data = challenges[currentChallenge];
+      const feedback = document.getElementById("activity-feedback");
+      const correct = number === data.answer;
+      feedback.textContent = correct ? "Correct. Check your reason below." : "Recheck whether a swap changes the outcome.";
+      feedback.className = "status " + (correct ? "good" : "bad");
+      const reveal = document.getElementById("activity-reveal");
+      reveal.textContent = data.explanation;
+      reveal.hidden = false;
+      document.querySelectorAll("#activity-options button").forEach(function (button) {
+        button.disabled = true;
+        button.setAttribute("aria-pressed", String(Number(button.textContent) === number));
+      });
+      document.getElementById("activity-next").disabled = false;
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("activity-next").addEventListener("click", function () {
+        currentChallenge = (currentChallenge + 1) % challenges.length;
+        displayChallenge();
+      });
+      document.getElementById("activity-reset").addEventListener("click", function () {
+        currentChallenge = 0;
+        displayChallenge();
+      });
+      displayChallenge();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 6 of Discrete Mathematics for BSAI: relations, equivalence classes, partial orders and Hasse diagrams.">
+  <title>Week 6 · Relations: Grouping and Ordering</title>
+  <style>
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "∼  ≼"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    /* Week 4 interactive mosaic */
+    .mosaic-grid { display: grid; gap: 3px; width: max-content; margin: 1rem auto; padding: .5rem; background: #e8f6f4; border-radius: .6rem; }
+    .mosaic-tile { width: 24px; height: 24px; border-radius: 3px; background: #087f84; }
+    .mosaic-tile.new { background: #66539c; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 1.4rem; }
+    .button-row button { border: 0; border-radius: .5rem; background: var(--teal); color: white; padding: .48rem .82rem; }
+    .button-row button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .button-row button:disabled { opacity: .5; cursor: default; }
+    .concept-figure .diagram-title { font: bold 17px system-ui, sans-serif; fill: #10263f; }
+    .concept-figure .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    dl { display: grid; grid-template-columns: minmax(125px, 170px) 1fr; gap: .5rem 1rem; }
+    dt { font-weight: 700; color: var(--navy); }
+    dd { margin: 0; }
+    @media (max-width: 600px) { dl { grid-template-columns: 1fr; } }
+    @media print { .solutions { break-before: page; } }
+  
+    /* Week 5 mapping activity and notation */
+    .mapping-card { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; text-align: center; font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    .arrow-pair { display: inline-block; min-width: 5.8rem; padding: .45rem .7rem; background: white; border: 1px solid #a7ced0; border-radius: .5rem; }
+    .page-footer { color: var(--muted); text-align: center; font-size: .83rem; padding: 1rem; }
+    @media print { .page-footer { display: none; } }
+  
+    /* Week 6 relation-property interaction */
+    .relation-pairs { padding: 1rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .7rem; font: 700 1.02rem/1.6 "DejaVu Sans", Georgia, serif; overflow-x: auto; }
+    .property-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem .9rem; margin: 1rem 0; border: 1px solid #a7ced0; border-radius: .7rem; padding: .7rem 1rem 1rem; }
+    .property-fieldset legend { font-weight: 700; color: var(--navy); padding: 0 .35rem; }
+    .property-fieldset label { display: flex; gap: .5rem; align-items: center; cursor: pointer; }
+    .property-fieldset input { accent-color: var(--teal); width: 1.1rem; height: 1.1rem; }
+    .diagram-title { font: bold 18px system-ui, sans-serif; fill: #10263f; }
+    .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    @media (max-width: 600px) { .property-fieldset { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 06</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Relations: Grouping and Ordering</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 6 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives</a>
+      <a href="#relation">03 Ordered pairs</a>
+      <a href="#properties">04 Four tests</a>
+      <a href="#equivalence">05 Equivalent grouping</a>
+      <a href="#partitions">06 Partitions</a>
+      <a href="#orders">07 Partial orders</a>
+      <a href="#hasse">08 Hasse diagrams</a>
+      <a href="#activity">09 Relation Detective</a>
+      <a href="#case">10 Major case study</a>
+      <a href="#python">11 Optional Colab</a>
+      <a href="#practice">12 Practice</a>
+      <a href="#mistakes">13 Common mistakes</a>
+      <a href="#summary">14 Summary</a>
+      <a href="#map">15 Concept map</a>
+      <a href="#terms">16 Key terms</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Two Kinds of Relationship</h2>
+        <p class="lead">A learning-support system records a current support category for each learner and prerequisite links between learning modules. It asks two questions: “Which learners are in the same category?” and “Which modules must come before Relations?” Both questions connect objects, yet they behave differently.</p>
+        <p><strong>Predict:</strong> If Amina and Chen have the same category, the statement works in either direction. If Logic must come before Relations, that does not mean Relations must come before Logic. We need to know which kind of relationship the system is using before drawing conclusions.</p>
+        <div class="pipeline three" role="img" aria-label="Objects, relationship rule, and supported conclusion">
+          <div><strong>OBJECTS</strong><br>Learners or modules</div>
+          <div><strong>RELATION</strong><br>Same category or before</div>
+          <div><strong>CONCLUSION</strong><br>Group or order</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>Given pairs that satisfy a rule, what structure do they reveal: groups of equivalent objects, an order of dependencies, or neither?</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 6, you should be able to read a relation as ordered pairs; test reflexivity, symmetry, transitivity and antisymmetry on a small set; form equivalence classes and a partition; recognize a partial order; and draw a simple Hasse diagram from prerequisite information.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>55 min</td><td>Relation cards and four property tests</td></tr>
+          <tr><td>50 min</td><td>Equivalence classes and grouping activity</td></tr>
+          <tr><td>40 min</td><td>Prerequisite order and manual Hasse diagram</td></tr>
+          <tr><td>35 min</td><td>Major case study and short check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–10 and Problems 1–5. <span class="core extension">Optional self-study</span> Colab and extended practice. Relation Detective and the group activities provide ungraded feedback; a short assessment may be collected separately.</p>
+      </section>
+
+      <!-- Relations as Pairs -->
+      <section class="chapter" id="relation">
+        <h2>03 · A Relation Records Which Pairs Are Connected</h2>
+        <p>Week 5 gave us <span class="formula">A×B</span>, the set of all possible ordered pairs with first entry in <span class="formula">A</span> and second in <span class="formula">B</span>. A <strong>relation</strong> from <span class="formula">A</span> to <span class="formula">B</span> selects some of those pairs. We write <span class="formula">R⊆A×B</span>; <span class="formula">aRb</span> is shorthand for <span class="formula">(a,b)∈R</span>.</p>
+        <div class="example"><h3>Worked example</h3><p>Let <span class="formula">A={1,2,3}</span>. Define “is smaller than” on <span class="formula">A</span>. Its pair set is <span class="formula">R={(1,2),(1,3),(2,3)}</span>. Thus <span class="formula">1R3</span> is true, but <span class="formula">3R1</span> is false. The order inside a pair matters.</p></div>
+        <p>For properties such as symmetry and transitivity, we usually examine a relation <em>on one set</em>: <span class="formula">R⊆A×A</span>. Unlike a function, a relation may link one object to several others or to none. A prerequisite list, for example, need not assign each module exactly one successor.</p>
+      </section>
+
+      <!-- Four Properties -->
+      <section class="chapter" id="properties">
+        <h2>04 · Four Questions to Ask of a Relation</h2>
+        <p>Each property is a rule about <em>all</em> relevant elements of the stated set. One missing required pair disproves it. Test the pair set, rather than judging by a familiar name.</p>
+        <div class="table-wrap"><table><thead><tr><th>Property</th><th>Plain-language test</th><th>Symbolic version</th></tr></thead><tbody>
+          <tr><td>Reflexive</td><td>Every object is related to itself.</td><td>For every x, xRx.</td></tr>
+          <tr><td>Symmetric</td><td>Every forward pair has a reverse pair.</td><td>If xRy, then yRx.</td></tr>
+          <tr><td>Transitive</td><td>A two-step chain has its shortcut.</td><td>If xRy and yRz, then xRz.</td></tr>
+          <tr><td>Antisymmetric</td><td>Two different objects cannot point both ways.</td><td>If xRy and yRx, then x=y.</td></tr>
+        </tbody></table></div>
+        <div class="example"><h3>Test a small relation</h3><p>On <span class="formula">A={a,b,c}</span>, let <span class="formula">Q={(a,a),(b,b),(c,c),(a,b),(b,c)}</span>. It is reflexive because all three self-pairs appear. It is not symmetric because <span class="formula">(a,b)</span> appears but <span class="formula">(b,a)</span> does not. It is not transitive because <span class="formula">(a,b)</span> and <span class="formula">(b,c)</span> appear but <span class="formula">(a,c)</span> is missing. It is antisymmetric because no two distinct objects have pairs in both directions.</p></div>
+        <div class="callout caution"><strong>Two cautions:</strong> Antisymmetric does <em>not</em> mean “never symmetric”: the relation containing only self-pairs has both properties. Transitivity asks for the shortcut whenever a two-step chain actually occurs.</div>
+      </section>
+
+      <!-- Equivalence Relations -->
+      <section class="chapter" id="equivalence">
+        <h2>05 · Same Category Makes an Equivalence Relation</h2>
+        <p>Imagine each learner has exactly one current support category. Write <span class="formula">x∼y</span> when the two learners have the <em>same</em> category. This relation is reflexive (each learner matches themself), symmetric (if x matches y, y matches x), and transitive (if x matches y and y matches z, x matches z). A relation with these three properties is an <strong>equivalence relation</strong>.</p>
+        <div class="example"><h3>Represent the pairs</h3><p>For <span class="formula">A={a,b,c}</span>, suppose a and b share a category and c has a different one. The complete relation is <span class="formula">E={(a,a),(a,b),(b,a),(b,b),(c,c)}</span>. It includes both directions for a and b, and all self-pairs. It is not antisymmetric because <span class="formula">a≠b</span> while both <span class="formula">aEb</span> and <span class="formula">bEa</span>.</p></div>
+        <p>Do not confuse “same category” with “equally skilled” or “identical.” The relation says only that the <em>specified label</em> matches. If the category data changes, the groups may change too.</p>
+      </section>
+
+      <!-- Partitions -->
+      <section class="chapter" id="partitions">
+        <h2>06 · Equivalence Classes Form a Partition</h2>
+        <p>The <strong>equivalence class</strong> of a learner contains everyone related to that learner. In the previous example <span class="formula">[a]={a,b}</span>, <span class="formula">[b]={a,b}</span>, and <span class="formula">[c]={c}</span>. Classes that share a member are the same class; distinct classes do not overlap.</p>
+        <div class="mathline"><span class="formula">A={a,b,c}={a,b}∪{c},</span> with disjoint blocks <span class="formula">{a,b}</span> and <span class="formula">{c}</span>.</div>
+        <p>A <strong>partition</strong> is a collection of nonempty blocks that do not overlap and together cover the whole set. Equivalence classes produce such blocks. Conversely, if a partition is given, “belong to the same block” defines an equivalence relation.</p>
+        <div class="callout"><strong>Quick check:</strong> Can <span class="formula">{a,b}</span> and <span class="formula">{b,c}</span> be two different blocks of a partition of <span class="formula">A</span>? No: b appears in both.</div>
+      </section>
+
+      <!-- Partial Orders -->
+      <section class="chapter" id="orders">
+        <h2>07 · Prerequisites Make a Partial Order</h2>
+        <p>For modules, define <span class="formula">x≼y</span> to mean “x is y, or x must come before y through one or more prerequisite steps.” This is reflexive because <span class="formula">x≼x</span>; transitive because a chain from x to y and y to z gives a chain from x to z; and antisymmetric if prerequisites have no cycle among distinct modules. Such a relation is a <strong>partial order</strong>.</p>
+        <p>“Partial” allows two modules to be <strong>incomparable</strong>. If a learner may take Logic and Sets in either order after Foundations, neither <span class="formula">Logic≼Sets</span> nor <span class="formula">Sets≼Logic</span>. This is not a defect: the rule does not specify an order between them.</p>
+        <div class="callout caution"><strong>Misconception warning:</strong> A partial order need not compare every distinct pair. Also, “must come before” by itself is not reflexive; we explicitly include <span class="formula">x=x</span> in <span class="formula">≼</span>.</div>
+      </section>
+
+      <!-- Hasse Diagrams -->
+      <section class="chapter" id="hasse">
+        <h2>08 · Draw Only the Immediate Steps</h2>
+        <p>A <strong>Hasse diagram</strong> displays a finite partial order compactly. Put earlier elements lower and later elements higher. Connect only a direct dependency with no intermediate element; omit self-links, arrowheads, and links already implied by a path.</p>
+        <p>Let <span class="formula">M={F,L,S,R}</span> stand for Foundations, Logic, Sets and Relations. The immediate prerequisite links are <span class="formula">F→L</span>, <span class="formula">F→S</span>, <span class="formula">L→R</span>, and <span class="formula">S→R</span>.</p>
+        <figure class="hasse-figure">
+          <svg viewBox="0 0 600 300" role="img" aria-labelledby="hasse-title">
+            <title id="hasse-title">Hasse diagram: Foundations at bottom; Logic and Sets in middle; Relations at top</title>
+            <g stroke="#087f84" stroke-width="4"><line x1="300" y1="238" x2="205" y2="150"/><line x1="300" y1="238" x2="395" y2="150"/><line x1="205" y1="150" x2="300" y2="58"/><line x1="395" y1="150" x2="300" y2="58"/></g>
+            <g fill="#e8f6f4" stroke="#087f84" stroke-width="3"><circle cx="300" cy="238" r="21"/><circle cx="205" cy="150" r="21"/><circle cx="395" cy="150" r="21"/><circle cx="300" cy="58" r="21"/></g>
+            <g fill="#10263f" font-family="DejaVu Sans,Arial" font-size="17" text-anchor="middle" font-weight="bold"><text x="300" y="244">F</text><text x="205" y="156">L</text><text x="395" y="156">S</text><text x="300" y="64">R</text></g>
+            <g fill="#506579" font-family="DejaVu Sans,Arial" font-size="13" text-anchor="middle"><text x="300" y="284">Foundations</text><text x="155" y="153">Logic</text><text x="445" y="153">Sets</text><text x="300" y="20">Relations</text></g>
+          </svg>
+          <figcaption>Figure 1. Read upward. F≼R follows through either middle module, so the F-to-R edge is omitted. L and S are incomparable.</figcaption>
+        </figure>
+        <p>The full relation <span class="formula">≼</span> includes the four self-pairs and the implied pair <span class="formula">(F,R)</span> as well as the four drawn links. The diagram is a compressed picture of the order, not a list of every pair.</p>
+      </section>
+
+      <!-- Relation Detective Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>09 · Relation Detective</h2>
+        <p><span class="core">Classroom activity · 15 minutes</span> Each card gives a relation on one stated set. Select every property that holds, then read the evidence. A relation can satisfy several properties at once; the final card has a useful surprise.</p>
+        <div class="interactive screen-only" id="relation-detective">
+          <h3 id="detective-title">Card 1 of 4</h3>
+          <p id="detective-domain"></p>
+          <div class="relation-pairs" id="detective-pairs" aria-live="polite"></div>
+          <fieldset class="property-fieldset">
+            <legend>Which properties hold?</legend>
+            <label><input type="checkbox" value="reflexive"> Reflexive</label>
+            <label><input type="checkbox" value="symmetric"> Symmetric</label>
+            <label><input type="checkbox" value="transitive"> Transitive</label>
+            <label><input type="checkbox" value="antisymmetric"> Antisymmetric</label>
+          </fieldset>
+          <div class="button-row"><button type="button" id="check-properties">Check reasoning</button><button type="button" class="secondary" id="next-relation">Next card</button><button type="button" class="secondary" id="reset-relations">Start over</button></div>
+          <p class="status" id="detective-feedback" aria-live="polite">Choose the properties, then check.</p>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Relation Detective · Predict → Check → Explain</h3>
+          <p>For each relation, mark R (reflexive), S (symmetric), T (transitive), and A (antisymmetric) when the property holds. State one supporting reason or a missing pair. All listed relations are on the set shown.</p>
+          <div class="table-wrap"><table><thead><tr><th>Card</th><th>Pair set</th><th>R / S / T / A</th><th>Evidence</th></tr></thead><tbody>
+            <tr><td>1 · {a,b,c}</td><td>{(a,a),(a,b),(b,a),(b,b),(c,c)}</td><td>________</td><td>________________</td></tr>
+            <tr><td>2 · {1,2,3}</td><td>{(1,1),(1,2),(1,3),(2,2),(2,3),(3,3)}</td><td>________</td><td>________________</td></tr>
+            <tr><td>3 · {a,b,c}</td><td>{(a,a),(b,b),(c,c),(a,b),(b,c)}</td><td>________</td><td>________________</td></tr>
+            <tr><td>4 · {a,b,c}</td><td>{(a,a),(b,b),(c,c)}</td><td>________</td><td>________________</td></tr>
+          </tbody></table></div>
+          <p>Which cards are equivalence relations? Which are partial orders? Can one be both? ______________________________</p>
+        </div>
+      </section>
+
+      <!-- Major Case Study -->
+      <section class="chapter" id="case">
+        <h2>10 · Major Case Study: Organizing an Intelligent Learning System</h2>
+        <p><span class="core">35-minute case · Scenario → Understand → Represent → Reason → Test → Interpret</span></p>
+        <h3>Scenario and proposed decision</h3>
+        <p>A small system records a current support category for five learners and a prerequisite plan for four modules. It proposes to place Amina with Chen in one support group. Amina has completed Foundations and Logic; the system also proposes to recommend Relations next. Can it justify both actions from its records?</p>
+        <h3>Understand the two domains</h3>
+        <p>Learners are <span class="formula">L={Amina,Bilal,Chen,Diya,Eman}</span>. The category records are Amina/Chen → Guided; Bilal/Diya → Practice; Eman → Independent. Modules are <span class="formula">M={F,Lg,S,R}</span> for Foundations, Logic, Sets and Relations. The four immediate links are <span class="formula">F→Lg</span>, <span class="formula">F→S</span>, <span class="formula">Lg→R</span>, and <span class="formula">S→R</span>. Notice that the symbol <span class="formula">L</span> names the learner set, while <span class="formula">Lg</span> abbreviates Logic.</p>
+        <h3>Represent</h3>
+        <p>Define <span class="formula">x∼y</span> for learners with the same recorded category. Its three classes are <span class="formula">{Amina,Chen}</span>, <span class="formula">{Bilal,Diya}</span>, and <span class="formula">{Eman}</span>. The pair set contains every pair within each block, including the five self-pairs. For example, <span class="formula">(Amina,Chen)</span> and <span class="formula">(Chen,Amina)</span> are both present, while <span class="formula">(Amina,Bilal)</span> is absent.</p>
+        <p>On modules, let <span class="formula">x≼y</span> mean x=y or x is before y by a prerequisite chain. The four drawn links and the implied <span class="formula">F≼R</span> belong to this relation, as do all four self-pairs. Logic and Sets remain incomparable.</p>
+        <figure class="case-figure">
+          <svg viewBox="0 0 700 340" role="img" aria-labelledby="case-title">
+            <title id="case-title">Left: three support groups. Right: module prerequisite Hasse diagram. Bottom: Amina may take Sets but not yet Relations.</title>
+            <rect x="12" y="20" width="322" height="260" rx="16" fill="#f4faf9" stroke="#a7ced0"/>
+            <rect x="366" y="20" width="322" height="260" rx="16" fill="#f5f3fa" stroke="#cfc5e1"/>
+            <g fill="#10263f" font-family="DejaVu Sans,Arial" text-anchor="middle">
+              <text x="173" y="52" font-size="19" font-weight="bold">Same category → groups</text>
+              <text x="527" y="52" font-size="19" font-weight="bold">Prerequisite → order</text>
+            </g>
+            <rect x="46" y="80" width="252" height="49" rx="12" fill="#d9f0ed"/><rect x="46" y="145" width="252" height="49" rx="12" fill="#e6e2f2"/><rect x="46" y="210" width="252" height="49" rx="12" fill="#edf2f5"/>
+            <g fill="#203349" font-family="DejaVu Sans,Arial" font-size="15" text-anchor="middle"><text x="172" y="109">Guided: Amina, Chen</text><text x="172" y="174">Practice: Bilal, Diya</text><text x="172" y="239">Independent: Eman</text></g>
+            <g stroke="#087f84" stroke-width="3"><line x1="527" y1="237" x2="455" y2="167"/><line x1="527" y1="237" x2="599" y2="167"/><line x1="455" y1="167" x2="527" y2="92"/><line x1="599" y1="167" x2="527" y2="92"/></g>
+            <g fill="#e8f6f4" stroke="#087f84" stroke-width="2"><circle cx="527" cy="237" r="19"/><circle cx="455" cy="167" r="19"/><circle cx="599" cy="167" r="19"/><circle cx="527" cy="92" r="19"/></g>
+            <g fill="#10263f" font-family="DejaVu Sans,Arial" text-anchor="middle" font-size="15" font-weight="bold"><text x="527" y="243">F</text><text x="455" y="173">Lg</text><text x="599" y="173">S</text><text x="527" y="98">R</text></g>
+            <text x="350" y="316" text-anchor="middle" fill="#10263f" font-family="DejaVu Sans,Arial" font-size="16">Amina completed F and Lg → S is available; R still needs S.</text>
+          </svg>
+          <figcaption>Figure 2. Grouping and ordering answer different questions about the same learning system.</figcaption>
+        </figure>
+        <h3>Reason and test</h3>
+        <p><strong>Grouping:</strong> Amina and Chen share the category Guided. The relation is reflexive, symmetric and transitive, so the category blocks are a partition. The proposed group is justified.</p>
+        <p><strong>Ordering:</strong> By the system’s stated policy, a learner may start a module after completing <em>all</em> its required predecessors. Amina has F and Lg. She can start S because F is complete; she cannot start R yet because S is still required. The proposed recommendation of R does not follow. The Hasse diagram shows the missing branch.</p>
+        <h3>Interpret the limits</h3>
+        <p>The category records are current system labels, not proof of equal ability. The prerequisite order is a declared plan, not a claim that a machine discovered the best curriculum. If records or rules change, the decision must be reconsidered.</p>
+        <div class="callout"><strong>Case record to complete:</strong> Identify the relation, cite the relevant pair or path, state the justified conclusion, and name one information limit for each of the system’s two actions.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>11 · Optional Colab: Inspect Listed Pairs</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Predict the two printed truth values. A tuple <span class="formula">("F","Lg")</span> is an ordered pair; braces hold the set of four <em>immediate</em> links. The test <span class="formula">in</span> asks whether a pair is explicitly in that set.</p>
+        <pre><code>immediate = {("F", "Lg"), ("F", "S"),
+             ("Lg", "R"), ("S", "R")}
+print(("F", "Lg") in immediate)
+print(("F", "R") in immediate)</code></pre>
+        <p>The outputs are <span class="formula">True</span> and <span class="formula">False</span>. Nevertheless <span class="formula">F≼R</span> in the <em>full</em> prerequisite order because a path through Lg or S reaches R. Membership in the four-link set and membership in the full order are different questions. Draw the Hasse diagram and reason about paths by hand.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>12 · Practice</h2>
+        <p>For property questions, name the underlying set and show a witness when a property fails. Selected solutions follow at the end.</p>
+        <ol>
+          <li>On <span class="formula">A={1,2,3}</span>, let <span class="formula">R={(1,2),(2,3)}</span>. Test reflexivity, symmetry, transitivity and antisymmetry. Which single pair makes this relation transitive without changing its existing pairs?</li>
+          <li>On <span class="formula">A={11,21,12}</span>, define <span class="formula">x∼y</span> when x and y have the same last digit. List the equivalence classes and all ordered pairs in the relation.</li>
+          <li>For the module order in Figure 1, list all pairs in the full <span class="formula">≼</span> relation. Explain why <span class="formula">(F,R)</span> is present although it has no drawn edge.</li>
+          <li>On <span class="formula">{a,b,c}</span>, consider equality: <span class="formula">D={(a,a),(b,b),(c,c)}</span>. Is it an equivalence relation, a partial order, both, or neither? Explain.</li>
+          <li>In the major case, Amina completed F and Lg. Which module among S and R may be started under the stated policy? What single missing completion prevents the other?</li>
+          <li>Let <span class="formula">Q={(a,a),(b,b),(c,c),(a,b),(b,a)}</span> on <span class="formula">{a,b,c}</span>. Is it symmetric? Is it antisymmetric? Give the decisive pair evidence.</li>
+          <li>Let <span class="formula">T={(a,a),(b,b),(a,b)}</span> on <span class="formula">{a,b}</span>. Test the four properties. Is it a partial order?</li>
+        </ol>
+        <div class="callout"><strong>Exit check:</strong> In one sentence, explain why “same category” groups learners but “prerequisite” orders modules.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>13 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Better test</th></tr></thead><tbody>
+          <tr><td>Assume a relation must be a function.</td><td>A relation can have several or no links from one object.</td></tr>
+          <tr><td>Check a few self-pairs and call it reflexive.</td><td>Check the self-pair for every element of the stated set.</td></tr>
+          <tr><td>Call antisymmetric the opposite of symmetric.</td><td>Test whether two distinct elements are linked both ways.</td></tr>
+          <tr><td>Draw every pair in a Hasse diagram.</td><td>Omit self-links and links implied by a path.</td></tr>
+          <tr><td>Treat incomparable modules as equal.</td><td>They can be distinct while neither precedes the other.</td></tr>
+          <tr><td>Infer skill from a support-category label.</td><td>Use the recorded label only for the stated grouping rule.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>14 · Summary</h2>
+        <ul>
+          <li>A relation is a selected set of ordered pairs. For a relation on one set, four useful tests are reflexive, symmetric, transitive and antisymmetric.</li>
+          <li>Reflexive + symmetric + transitive gives an equivalence relation and a partition into nonoverlapping classes.</li>
+          <li>Reflexive + antisymmetric + transitive gives a partial order; some elements may remain incomparable.</li>
+          <li>A Hasse diagram draws immediate order links and leaves out self-links and shortcuts.</li>
+          <li>Grouping and prerequisite ordering answer different system questions; conclusions depend on the supplied records and rules.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>15 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 290" role="img" aria-labelledby="map-title">
+            <title id="map-title">Relation as ordered pairs branches into equivalence grouping and partial ordering</title>
+            <defs><marker id="arrow6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#087f84"/></marker></defs>
+            <rect x="240" y="18" width="220" height="63" rx="14" fill="#e8f6f4" stroke="#087f84"/><text x="350" y="47" text-anchor="middle" class="diagram-title">RELATION</text><text x="350" y="67" text-anchor="middle" class="diagram-small">selected ordered pairs</text>
+            <path d="M350 81 V110 H170 V134 M350 110 H530 V134" fill="none" stroke="#087f84" stroke-width="3" marker-end="url(#arrow6)"/>
+            <rect x="30" y="142" width="280" height="111" rx="15" fill="#e8f6f4" stroke="#087f84"/><rect x="390" y="142" width="280" height="111" rx="15" fill="#f2eef9" stroke="#66539c"/>
+            <text x="170" y="174" text-anchor="middle" class="diagram-title">EQUIVALENCE</text><text x="170" y="199" text-anchor="middle" class="diagram-small">reflexive · symmetric · transitive</text><text x="170" y="225" text-anchor="middle" class="diagram-small">classes → partition</text>
+            <text x="530" y="174" text-anchor="middle" class="diagram-title">PARTIAL ORDER</text><text x="530" y="199" text-anchor="middle" class="diagram-small">reflexive · antisymmetric · transitive</text><text x="530" y="225" text-anchor="middle" class="diagram-small">immediate links → Hasse diagram</text>
+          </svg>
+          <figcaption>The same starting idea, ordered pairs, supports grouping and ordering when different property combinations hold.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Key Terms -->
+      <section class="chapter" id="terms">
+        <h2>16 · Key Terms</h2>
+        <dl>
+          <dt>Relation</dt><dd>A selected set of ordered pairs from a Cartesian product.</dd>
+          <dt>Reflexive</dt><dd>Every element relates to itself.</dd>
+          <dt>Symmetric</dt><dd>Every pair has its reverse.</dd>
+          <dt>Transitive</dt><dd>Every two-step chain has its shortcut.</dd>
+          <dt>Antisymmetric</dt><dd>Distinct elements cannot be related in both directions.</dd>
+          <dt>Equivalence relation; partition</dt><dd>A reflexive, symmetric, transitive relation; its nonoverlapping classes covering the set.</dd>
+          <dt>Partial order; Hasse diagram</dt><dd>A reflexive, antisymmetric, transitive relation; a diagram of its immediate links.</dd>
+        </dl>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>Week 7 introduces divisibility, greatest common divisors and remainders, then reviews the mathematical ideas from Weeks 1–7 before the midterm. The habit of stating the set and checking a rule precisely carries forward.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Relation Detective cards</h3>
+        <p><strong>Card 1:</strong> Reflexive, symmetric and transitive; not antisymmetric because a and b point both ways. It is an equivalence relation. <strong>Card 2:</strong> Reflexive, transitive and antisymmetric; not symmetric because (1,2) has no reverse. It is a partial order. <strong>Card 3:</strong> Reflexive and antisymmetric; not symmetric, and not transitive because (a,b),(b,c) occur without (a,c). Neither type. <strong>Card 4:</strong> All four properties. Equality is both an equivalence relation and a partial order.</p>
+        <h3>1 · Four tests</h3><p>No self-pairs, so not reflexive. Missing reverse (2,1), so not symmetric. The chain (1,2),(2,3) lacks (1,3), so not transitive. No distinct pair appears both ways, so antisymmetric. Add (1,3) to make it transitive.</p>
+        <h3>2 · Same last digit</h3><p>Classes <span class="formula">{11,21}</span> and <span class="formula">{12}</span>. Pairs <span class="formula">{(11,11),(11,21),(21,11),(21,21),(12,12)}</span>.</p>
+        <h3>3 · Full module order</h3><p>On <span class="formula">{F,L,S,R}</span>, the relation contains <span class="formula">(F,F),(L,L),(S,S),(R,R),(F,L),(F,S),(L,R),(S,R),(F,R)</span>. The path F→L→R (also F→S→R) implies (F,R).</p>
+        <h3>4 · Equality</h3><p>Both. Self-pairs give reflexivity; every pair reverses to itself, so symmetry; chaining equalities preserves equality, so transitivity; and no distinct elements point both ways, so antisymmetry.</p>
+        <h3>5 · Case decision</h3><p>Amina may start S since F is complete. She may not start R under the stated policy until S is complete; L is already complete.</p>
+        <h3>6 · Symmetry versus antisymmetry</h3><p>Symmetric: both (a,b) and (b,a) occur. Not antisymmetric: a≠b but both directions occur.</p>
+        <h3>7 · A small order</h3><p>Reflexive (both self-pairs), not symmetric (missing (b,a)), transitive (the only nontrivial link is a→b and self-links preserve its shortcut), antisymmetric (no distinct pair both ways). Thus it is a partial order.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 06 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Relation Detective content; each explanation is a complete property check.
+    const relationCards = [
+      {
+        domain: "On {a, b, c}",
+        pairs: "{(a,a), (a,b), (b,a), (b,b), (c,c)}",
+        properties: ["reflexive", "symmetric", "transitive"],
+        explanation: "Every self-pair appears. The a/b pairs reverse, and all two-step chains have shortcuts within {a,b}; c relates only to itself. It is not antisymmetric: a and b point both ways. This is an equivalence relation."
+      },
+      {
+        domain: "On {1, 2, 3}",
+        pairs: "{(1,1), (1,2), (1,3), (2,2), (2,3), (3,3)}",
+        properties: ["reflexive", "transitive", "antisymmetric"],
+        explanation: "All self-pairs occur; 1→2→3 has the shortcut 1→3. No distinct pair goes both ways. It is not symmetric because (2,1) is missing. This is a partial order."
+      },
+      {
+        domain: "On {a, b, c}",
+        pairs: "{(a,a), (b,b), (c,c), (a,b), (b,c)}",
+        properties: ["reflexive", "antisymmetric"],
+        explanation: "All self-pairs occur, and no distinct pair goes both ways. It is not symmetric because (b,a) is missing. It is not transitive because a→b and b→c occur but a→c does not. It is neither type."
+      },
+      {
+        domain: "On {a, b, c}",
+        pairs: "{(a,a), (b,b), (c,c)}",
+        properties: ["reflexive", "symmetric", "transitive", "antisymmetric"],
+        explanation: "This is equality. Every element relates to itself, reversing a self-pair changes nothing, and any chain of equalities has its shortcut. No distinct pair goes both ways. It is both an equivalence relation and a partial order."
+      }
+    ];
+
+    let relationIndex = 0;
+
+    function showRelationCard() {
+      const current = relationCards[relationIndex];
+      document.getElementById("detective-title").textContent = "Card " + (relationIndex + 1) + " of " + relationCards.length;
+      document.getElementById("detective-domain").textContent = current.domain;
+      document.getElementById("detective-pairs").textContent = current.pairs;
+      document.querySelectorAll(".property-fieldset input").forEach(function (box) { box.checked = false; });
+      document.getElementById("detective-feedback").textContent = "Choose the properties, then check.";
+      document.getElementById("next-relation").textContent = relationIndex === relationCards.length - 1 ? "Back to first card" : "Next card";
+    }
+
+    function checkRelationProperties() {
+      const current = relationCards[relationIndex];
+      const selected = Array.from(document.querySelectorAll(".property-fieldset input:checked"), function (box) { return box.value; });
+      const correct = selected.length === current.properties.length &&
+        selected.every(function (name) { return current.properties.includes(name); });
+      document.getElementById("detective-feedback").textContent =
+        (correct ? "Correct. " : "Review the evidence. ") + current.explanation;
+    }
+
+    function setupRelationDetective() {
+      document.getElementById("check-properties").addEventListener("click", checkRelationProperties);
+      document.getElementById("next-relation").addEventListener("click", function () {
+        relationIndex = (relationIndex + 1) % relationCards.length;
+        showRelationCard();
+      });
+      document.getElementById("reset-relations").addEventListener("click", function () {
+        relationIndex = 0;
+        showRelationCard();
+      });
+      showRelationCard();
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      setupRelationDetective();
+    }
+
+    document.addEventListener("DOMContentLoaded", initModule);
+  </script>
+</body>
+</html>

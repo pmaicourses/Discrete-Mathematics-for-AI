@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 15 of Discrete Mathematics for BSAI: rooted trees and traversals.">
+  <title>Week 15 · Rooted Trees and Traversals</title>
+  <style>
+
+
+
+
+
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "V  E"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    
+    
+    
+    /* Week 15 decision tree and traversal interaction. */
+    .tree-figure { width: 100%; max-width: 740px; }
+    .tree-node { transition: fill .15s ease, stroke .15s ease; }
+    .tree-node.visited { fill: #087f84; stroke: #ffffff; }
+    .tree-node.current { fill: #66539c; stroke: #ffffff; }
+    .tree-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .tree-controls select { font: inherit; padding: .45rem; border: 1px solid #9eb9c5; border-radius: .45rem; }
+    .tree-controls button { font: inherit; cursor: pointer; border: 1px solid var(--teal); color: white; background: var(--teal); padding: .47rem .8rem; border-radius: .5rem; }
+    .tree-controls button.secondary { color: var(--teal); background: white; }
+    .tree-progress { background: #f2eef9; border-left: 4px solid var(--violet); padding: .7rem 1rem; margin: .7rem 0; }
+    .node-key { display: inline-block; min-width: 1.7rem; text-align: center; background: #e8f6f4; border-radius: .3rem; font-weight: 700; color: var(--teal); }
+    @media print { .tree-controls { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 15</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Rooted Trees and Traversals</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 15 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening decision</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#structure">03 Rooted structure</a>
+      <a href="#binary">04 Binary left and right</a>
+      <a href="#path">05 Follow one path</a>
+      <a href="#traversal">06 Explore all nodes</a>
+      <a href="#preorder">07 Preorder</a>
+      <a href="#inorder">08 Inorder</a>
+      <a href="#postorder">09 Postorder</a>
+      <a href="#level">10 Level order</a>
+      <a href="#activity">11 Traversal Explorer</a>
+      <a href="#case">12 Decision-tree case</a>
+      <a href="#python">13 Optional Colab</a>
+      <a href="#practice">14 Practice</a>
+      <a href="#mistakes">15 Common mistakes</a>
+      <a href="#summary">16 Summary</a>
+      <a href="#map">17 Concept map</a>
+      <a href="#next">18 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Follow a Decision or Explore Them All?</h2>
+        <p class="lead">A student-support guide asks whether a learner needs help now. If yes, it asks one follow-up question and suggests support. If no, it asks a different question and offers a learning resource. A learner follows <strong>one branch at a time</strong>. But how could an editor systematically visit <strong>every question and outcome</strong> in the guide?</p>
+        <p><strong>Predict:</strong> Following a learner's answers may reach only one final action. Checking the whole guide requires visiting all branches. A rooted tree represents the branches; a <strong>traversal</strong> specifies the order in which we visit every node.</p>
+        <div class="pipeline three" role="img" aria-label="A starting question branches by answers to a decision path; traversal visits the entire tree">
+          <div><strong>START</strong><br>Root question</div>
+          <div><strong>ANSWER</strong><br>Choose one branch</div>
+          <div><strong>GOAL</strong><br>One action or all nodes?</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>Are we following one route to a decision, or visiting the entire tree in a specified order?</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 15, you should be able to identify a root, parent, child, leaf and depth; draw a small rooted binary tree from stated decisions; trace preorder, inorder, postorder and level order; distinguish one decision path from a complete traversal; and explain what different visit orders accomplish.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>45 min</td><td>Build a paper tree; root, children, leaves and depth</td></tr>
+          <tr><td>75 min</td><td>Hand traces and student-as-node traversal practice</td></tr>
+          <tr><td>45 min</td><td>Smaller Case Study 5: one decision path versus whole-tree visits</td></tr>
+          <tr><td>15 min</td><td>Traversal Explorer and exit check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–12 and Practice 1–6. <span class="core extension">Optional self-study</span> Colab and Practice 7. The visual step-through is a check after a paper trace.</p>
+      </section>
+
+      <!-- Rooted Tree Structure -->
+      <section class="chapter" id="structure">
+        <h2>03 · A Root Gives Direction to the Branches</h2>
+        <p>A <strong>tree</strong> is a connected graph with no cycle. Choose one vertex as the <strong>root</strong>; it is the starting point for describing downward branches. In the diagram below A is the root. B and C are its <strong>children</strong>, while A is their <strong>parent</strong>. D and E are children of B; F and G are children of C.</p>
+        <figure class="tree-figure decision-figure">
+          <svg viewBox="0 0 700 385" role="img" aria-labelledby="tree-title">
+            <title id="tree-title">Root A branches left to B and right to C; B branches to D and E; C branches to F and G</title>
+            <g stroke="#087f84" stroke-width="4" fill="none"><line x1="350" y1="70" x2="175" y2="170"/><line x1="350" y1="70" x2="525" y2="170"/><line x1="175" y1="170" x2="85" y2="290"/><line x1="175" y1="170" x2="265" y2="290"/><line x1="525" y1="170" x2="435" y2="290"/><line x1="525" y1="170" x2="615" y2="290"/></g>
+            <g fill="#10263f" stroke="white" stroke-width="4"><circle cx="350" cy="70" r="28"/><circle cx="175" cy="170" r="28"/><circle cx="525" cy="170" r="28"/><circle cx="85" cy="290" r="28"/><circle cx="265" cy="290" r="28"/><circle cx="435" cy="290" r="28"/><circle cx="615" cy="290" r="28"/></g>
+            <g fill="white" font-family="DejaVu Sans,Arial" font-size="20" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="350" y="70">A</text><text x="175" y="170">B</text><text x="525" y="170">C</text><text x="85" y="290">D</text><text x="265" y="290">E</text><text x="435" y="290">F</text><text x="615" y="290">G</text></g>
+            <g fill="#66539c" font-family="DejaVu Sans,Arial" font-size="13" font-weight="bold"><text x="20" y="74">depth 0</text><text x="20" y="174">depth 1</text><text x="20" y="351">depth 2</text></g>
+          </svg>
+          <figcaption>Figure 1. The root has depth 0. B and C have depth 1; leaves D, E, F and G have depth 2.</figcaption>
+        </figure>
+        <p>A <strong>leaf</strong> has no children: D, E, F and G are leaves. <strong>Depth</strong> is the number of edges from the root to a node. For example, A→B→E uses two edges, so E has depth 2. The <strong>subtree at B</strong> consists of B and its descendants D and E.</p>
+        <div class="callout caution"><strong>Quick check:</strong> The root is at depth 0, not depth 1. There is no edge from A to itself.</div>
+      </section>
+
+      <!-- Binary Tree -->
+      <section class="chapter" id="binary">
+        <h2>04 · Left and Right Matter in a Binary Tree</h2>
+        <p>A <strong>binary tree</strong> has at most two children at each node, identified as <strong>left</strong> and <strong>right</strong>. In Figure 1, B is the left child of A and C the right child. D is left of B, E right of B; F is left of C, G right of C.</p>
+        <p>The left/right positions are part of this tree's information. If we swap B and C together with their subtrees, the shapes may look similar, but the left-before-right traversal results change. A childless leaf has neither a left nor a right child.</p>
+        <div class="table-wrap"><table><thead><tr><th>Node</th><th>Left child</th><th>Right child</th><th>Depth</th></tr></thead><tbody>
+          <tr><td>A</td><td>B</td><td>C</td><td>0</td></tr><tr><td>B</td><td>D</td><td>E</td><td>1</td></tr><tr><td>C</td><td>F</td><td>G</td><td>1</td></tr><tr><td>D, E, F, G</td><td>None</td><td>None</td><td>2</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- One Decision Path -->
+      <section class="chapter" id="path">
+        <h2>05 · Following Answers Visits One Path</h2>
+        <p>Suppose A asks “Needs support now?” A <em>yes</em> answer moves left to B, which asks “Missed several checkpoints?” A <em>no</em> answer at B moves right to E, the study-session suggestion. The decision path is <span class="formula">A → B → E</span>. We did not visit C, D, F or G.</p>
+        <p>A decision tree models a specified series of questions and outcomes. It does not automatically learn from data, establish that a recommendation works, or know unstated facts. Its branch labels and rules must be supplied and checked by people.</p>
+        <div class="callout"><strong>Quick interpretation:</strong> Following one path gives one recommendation under the supplied answers. Visiting all seven nodes is a separate task, such as reviewing every branch of the guide.</div>
+      </section>
+
+      <!-- Traversal Intuition -->
+      <section class="chapter" id="traversal">
+        <h2>06 · A Traversal Visits Every Node</h2>
+        <p>A <strong>traversal</strong> is an ordered visit of the entire tree. We will use four orders on the same seven-node tree. The letters in a visit list describe when each node is <em>recorded</em>; moving through the drawing to reach another node does not add an extra recorded visit.</p>
+        <div class="table-wrap"><table><thead><tr><th>Order</th><th>Small instruction</th><th>Where the root A appears</th></tr></thead><tbody>
+          <tr><td>Preorder</td><td>Record node, then left subtree, then right subtree</td><td>First</td></tr>
+          <tr><td>Inorder (binary tree)</td><td>Left subtree, then record node, then right subtree</td><td>Between left and right</td></tr>
+          <tr><td>Postorder</td><td>Left subtree, then right subtree, then record node</td><td>Last</td></tr>
+          <tr><td>Level order</td><td>Depth 0, then depth 1, then depth 2; left to right on each level</td><td>First</td></tr>
+        </tbody></table></div>
+        <p>For the first three orders, apply the same instruction within each smaller subtree. Level order proceeds across a whole depth before moving down.</p>
+      </section>
+
+      <!-- Preorder -->
+      <section class="chapter" id="preorder">
+        <h2>07 · Preorder: Node Before Its Children</h2>
+        <p>Begin at A and record it. Then finish the left subtree rooted at B: record B, D, E. Finally finish the right subtree rooted at C: record C, F, G.</p>
+        <div class="mathline"><span class="formula">Preorder: A, B, D, E, C, F, G.</span></div>
+        <div class="example"><h3>Worked trace</h3><p>At B, the same rule applies: record B before its left child D and right child E. Do not record A again when you return from the B subtree. The recorded list contains each of the seven nodes exactly once.</p></div>
+        <p>Preorder is useful when we want to see each parent before its descendants, such as presenting the outline of a branching guide from the top.</p>
+      </section>
+
+      <!-- Inorder -->
+      <section class="chapter" id="inorder">
+        <h2>08 · Inorder: Root Between Left and Right</h2>
+        <p>Inorder is defined here for a <strong>binary</strong> tree with identified left and right children. First traverse A's left subtree: D, B, E. Record A. Then traverse A's right subtree: F, C, G.</p>
+        <div class="mathline"><span class="formula">Inorder: D, B, E, A, F, C, G.</span></div>
+        <p>At B, the instruction “left, node, right” becomes D, B, E. At C it becomes F, C, G. A leaf is recorded when reached because it has no child subtrees to visit first.</p>
+        <div class="callout caution"><strong>Common misconception:</strong> Inorder is not automatically alphabetical or sorted. This tree is a decision guide, not a binary search tree with an ordering rule.</div>
+      </section>
+
+      <!-- Postorder -->
+      <section class="chapter" id="postorder">
+        <h2>09 · Postorder: Children Before Parent</h2>
+        <p>Finish B's children D and E before recording B; finish C's children F and G before recording C; then record the root A.</p>
+        <div class="mathline"><span class="formula">Postorder: D, E, B, F, G, C, A.</span></div>
+        <p>This order makes the parent appear after both of its subtrees. For example, when reviewing a guide from its outcomes back to its earlier questions, one could inspect the leaf outcomes before recording their parent question. The traversal order alone does not determine whether the guide is correct.</p>
+      </section>
+
+      <!-- Level Order -->
+      <section class="chapter" id="level">
+        <h2>10 · Level Order: Across Each Depth</h2>
+        <p>Record A at depth 0. Then B and C at depth 1, left to right. Then D, E, F and G at depth 2, left to right.</p>
+        <div class="mathline"><span class="formula">Level order: A, B, C, D, E, F, G.</span></div>
+        <p>Level order differs from preorder: after B, level order visits C before going down to D. This is useful when we want to inspect all questions at one depth before inspecting deeper outcomes.</p>
+        <div class="callout"><strong>Quick check:</strong> Which nodes are at depth 2? D, E, F and G. Their left-to-right sequence is the last four entries of level order.</div>
+      </section>
+
+      <!-- Traversal Explorer Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>11 · Traversal Explorer</h2>
+        <p><span class="core">Predict → Test → Explain</span> First write the full visit list on paper. Choose an order, predict the next recorded node, and check it. The diagram highlights nodes as they are recorded. A wrong guess leaves the step available for another try.</p>
+        <div class="interactive screen-only" id="traversal-explorer">
+          <h3>Build the visit order</h3>
+          <div class="tree-controls"><label for="traversal-mode">Traversal:</label><select id="traversal-mode"><option value="preorder">Preorder</option><option value="inorder">Inorder</option><option value="postorder">Postorder</option><option value="level">Level order</option></select><button type="button" class="secondary" id="restart-traversal">Start over</button></div>
+          <p id="traversal-rule" class="status">Record node, left subtree, right subtree.</p>
+          <svg viewBox="0 0 700 360" role="img" aria-labelledby="explorer-title" class="tree-figure">
+            <title id="explorer-title">Interactive binary tree with root A, children B C, and leaves D E F G</title>
+            <g stroke="#7ba5ab" stroke-width="4" fill="none"><line x1="350" y1="55" x2="175" y2="155"/><line x1="350" y1="55" x2="525" y2="155"/><line x1="175" y1="155" x2="85" y2="275"/><line x1="175" y1="155" x2="265" y2="275"/><line x1="525" y1="155" x2="435" y2="275"/><line x1="525" y1="155" x2="615" y2="275"/></g>
+            <g stroke="white" stroke-width="4"><circle id="node-A" class="tree-node" cx="350" cy="55" r="27" fill="#10263f"/><circle id="node-B" class="tree-node" cx="175" cy="155" r="27" fill="#10263f"/><circle id="node-C" class="tree-node" cx="525" cy="155" r="27" fill="#10263f"/><circle id="node-D" class="tree-node" cx="85" cy="275" r="27" fill="#10263f"/><circle id="node-E" class="tree-node" cx="265" cy="275" r="27" fill="#10263f"/><circle id="node-F" class="tree-node" cx="435" cy="275" r="27" fill="#10263f"/><circle id="node-G" class="tree-node" cx="615" cy="275" r="27" fill="#10263f"/></g>
+            <g fill="white" font-family="DejaVu Sans,Arial" font-size="20" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="350" y="55">A</text><text x="175" y="155">B</text><text x="525" y="155">C</text><text x="85" y="275">D</text><text x="265" y="275">E</text><text x="435" y="275">F</text><text x="615" y="275">G</text></g>
+          </svg>
+          <div class="tree-controls"><label for="guess-node">Next recorded node:</label><select id="guess-node"><option value="">Choose</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option></select><button type="button" id="check-node">Check prediction</button><button type="button" class="secondary" id="reveal-node">Reveal next</button></div>
+          <p id="traversal-feedback" class="status" aria-live="polite">Predict the first recorded node.</p>
+          <p id="traversal-progress" class="tree-progress" aria-live="polite">Recorded: — · Step 0 of 7</p>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Traversal Explorer</h3>
+          <p>Use the tree with root A, children B and C, leaves D,E under B and F,G under C. Write one node in each position before consulting solutions.</p>
+          <div class="table-wrap"><table><thead><tr><th>Order</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead><tbody>
+            <tr><td>Preorder</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td></tr>
+            <tr><td>Inorder</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td></tr>
+            <tr><td>Postorder</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td></tr>
+            <tr><td>Level order</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td><td>__</td></tr>
+          </tbody></table></div>
+          <p><strong>Explain:</strong> At what position is A recorded in each order, and why? _____________________</p>
+        </div>
+      </section>
+
+      <!-- Smaller Case Study 5 -->
+      <section class="chapter" id="case">
+        <h2>12 · Smaller Case Study 5: Exploring a Decision Tree</h2>
+        <p><strong>Scenario → Understand → Represent → Reason → Test → Interpret.</strong> A student-support guide has three yes/no questions and four possible actions. The seven nodes are the same ones in Figure 1, now with specific meanings:</p>
+        <div class="table-wrap"><table><thead><tr><th>Node</th><th>Question or action</th><th>Left / yes</th><th>Right / no</th></tr></thead><tbody>
+          <tr><td>A</td><td>Needs support now?</td><td>B</td><td>C</td></tr>
+          <tr><td>B</td><td>Missed several checkpoints?</td><td>D</td><td>E</td></tr>
+          <tr><td>C</td><td>Wants practice?</td><td>F</td><td>G</td></tr>
+          <tr><td>D</td><td>Advisor meeting</td><td>—</td><td>—</td></tr>
+          <tr><td>E</td><td>Study session</td><td>—</td><td>—</td></tr>
+          <tr><td>F</td><td>Practice set</td><td>—</td><td>—</td></tr>
+          <tr><td>G</td><td>Resource list</td><td>—</td><td>—</td></tr>
+        </tbody></table></div>
+        <h3>Follow one learner</h3>
+        <p>The learner answers <em>yes</em> at A and <em>no</em> at B. The path is <span class="formula">A → B → E</span>, leading to a study-session suggestion. No statement about C or its children is used for this learner. If the learner instead answers no at A and yes at C, the path is <span class="formula">A → C → F</span>.</p>
+        <h3>Explore the whole guide</h3>
+        <p>An editor may need to inspect every node. Preorder records a parent question before its branches: <span class="formula">A,B,D,E,C,F,G</span>. Level order examines the top question, then both second-level questions, then all four actions: <span class="formula">A,B,C,D,E,F,G</span>. Both visit all seven nodes; they differ in when C is inspected.</p>
+        <h3>Interpret the model</h3>
+        <p>The tree describes only the questions, answers and actions supplied here. It does not infer a student's needs from data or learn better rules. The action is a transparent recommendation under stated answers, not a diagnosis or proof of effectiveness.</p>
+        <div class="workbook"><h3>Case reflection</h3><p>Draw the tree from the table, mark the path A→B→E, and write a preorder and level-order list. In two sentences, explain why the path and traversals answer different questions.</p></div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>13 · Optional Colab: Check One Hand Trace</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Finish the paper preorder trace before running code. The small nested representation below stores each node as <code>(label, left child, right child)</code>. <code>None</code> means that a child is absent. Parentheses group those three pieces; the whole structure follows the drawing.</p>
+        <pre><code>tree = (
+    "A",
+    ("B", ("D", None, None), ("E", None, None)),
+    ("C", ("F", None, None), ("G", None, None))
+)</code></pre>
+        <p>The next function reuses the recursive idea from Week 10. It stops at <code>None</code>. Otherwise, it separates one node into its label, left child and right child, prints the label first, and then visits the two children in that order.</p>
+        <pre><code>def preorder(node):
+    if node is None:
+        return
+    label, left, right = node
+    print(label)
+    preorder(left)
+    preorder(right)
+
+preorder(tree)</code></pre>
+        <p>Predict A, B, D, E, C, F, G on separate lines. <code>return</code> at an absent child is the stopping case. This small check prints the preorder only; the other three orders remain hand-trace exercises first.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>14 · Practice and Exit Check</h2>
+        <p>Draw or point to the stated tree before writing each order. Selected solutions are at the end.</p>
+        <ol>
+          <li>For Figure 1, give the root, B's parent and children, the leaves, and the depths of A, C and E.</li>
+          <li>Write preorder, inorder, postorder and level order of the Figure 1 tree. Underline the root in each list.</li>
+          <li>In the case study, a learner answers no at A and yes at C. Give the path and outcome. Is that path a traversal of the whole tree?</li>
+          <li>A different binary tree has root P; left child Q and right child R; Q has only a left child S; R has left child T and right child U. Draw it and find all four traversal orders.</li>
+          <li>Explain why inorder requires identified left and right children. If B and C swap positions with their subtrees in Figure 1, which preorder comes next?</li>
+          <li>An editor wishes to inspect all depth-1 questions before any leaf actions. Which traversal suits that aim? Show its list on Figure 1.</li>
+          <li>A learner says “Inorder is always alphabetical, because it lists D before B.” Identify the missing assumption and give the actual inorder list for Figure 1.</li>
+        </ol>
+        <div class="callout"><strong>Exit check:</strong> State one difference between a decision path and a full traversal. For the Figure 1 tree, write the first three nodes of preorder and level order, and explain why the third entries differ.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>15 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Count the root at depth 1.</td><td>Depth counts edges from root; A is at depth 0.</td></tr>
+          <tr><td>Call A→B→E a complete traversal.</td><td>It follows one answer path and omits other nodes.</td></tr>
+          <tr><td>Record A again when returning from the B subtree.</td><td>A traversal list records each node exactly once.</td></tr>
+          <tr><td>Put A first in postorder.</td><td>Postorder records left and right subtrees before the parent.</td></tr>
+          <tr><td>Use inorder without defined left and right child positions.</td><td>Inorder here applies to a binary tree with left/right roles.</td></tr>
+          <tr><td>Assume an inorder list must be sorted.</td><td>Sorted inorder requires an additional search-tree ordering rule, absent here.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>16 · Summary</h2>
+        <ul>
+          <li>A rooted tree has a chosen starting vertex. Parent/child relations follow outward from it; leaves have no children, and depth counts edges from root.</li>
+          <li>A binary tree distinguishes left and right children. Preorder is node-left-right; inorder is left-node-right; postorder is left-right-node.</li>
+          <li>Level order visits all nodes at each depth from left to right before going deeper.</li>
+          <li>One learner's answer path reaches one action; a traversal records every node once.</li>
+          <li>The case-study guide applies stated questions and branches. Its structure does not learn from data.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>17 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 330" role="img" aria-labelledby="map-title">
+            <title id="map-title">A rooted binary tree supports a single decision path or four whole-tree traversal orders: preorder, inorder, postorder and level order</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M350 75 V102 H170 V126 M350 102 H530 V126"/><path d="M530 198 V223 H430 V244 M530 223 H620 V244"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="210" y="15" width="280" height="62" rx="12" fill="#e8f6f4"/><rect x="20" y="126" width="300" height="75" rx="12" fill="#e8f6f4"/><rect x="380" y="126" width="300" height="75" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="285" y="244" width="190" height="65" rx="12" fill="#e8f6f4"/><rect x="495" y="244" width="190" height="65" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="17" font-weight="bold"><text x="350" y="44">ROOTED BINARY TREE</text><text x="170" y="154">ONE DECISION PATH</text><text x="530" y="154">WHOLE-TREE TRAVERSAL</text><text x="380" y="269">DEPTH FIRST</text><text x="590" y="269">LEVEL ORDER</text></g>
+              <g fill="#203349" font-size="13"><text x="350" y="64">left and right children</text><text x="170" y="180">Follow stated answers</text><text x="530" y="180">Record every node once</text><text x="380" y="292">pre / in / post</text><text x="590" y="292">across each depth</text></g></g>
+          </svg>
+          <figcaption>Decide whether the task asks for one answer path or an order for visiting every node.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>18 · Looking Ahead</h2>
+        <p>Week 16 is integrated revision and final-examination preparation. We will compare models and reasoning methods already taught—logic, proofs, sets, sequences, counting, graph routes and tree traversals—without introducing new mathematical material.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Traversal Explorer</h3><p>Preorder: <span class="formula">A,B,D,E,C,F,G</span>. Inorder: <span class="formula">D,B,E,A,F,C,G</span>. Postorder: <span class="formula">D,E,B,F,G,C,A</span>. Level order: <span class="formula">A,B,C,D,E,F,G</span>. A appears first in preorder and level order, between the two subtrees in inorder, and last in postorder.</p>
+        <h3>1 · Structure</h3><p>Root A. B's parent is A; children are D and E. Leaves are D,E,F,G. Depths: A=0, C=1, E=2.</p>
+        <h3>2 · Four orders</h3><p>They are listed under Traversal Explorer above. Every list contains each of A–G exactly once.</p>
+        <h3>3 · One path</h3><p>No at A goes to C; yes at C goes to F, a practice set. Path <span class="formula">A→C→F</span> is not a complete traversal; it omits B,D,E,G.</p>
+        <h3>4 · Asymmetric binary tree</h3><p>With S left of Q and T,U left/right of R: preorder <span class="formula">P,Q,S,R,T,U</span>; inorder <span class="formula">S,Q,P,T,R,U</span>; postorder <span class="formula">S,Q,T,U,R,P</span>; level order <span class="formula">P,Q,R,S,T,U</span>.</p>
+        <h3>5 · Swap subtrees</h3><p>Inorder needs a defined left subtree and right subtree to specify the visits around a parent. After swapping B and C subtrees, preorder is <span class="formula">A,C,F,G,B,D,E</span>.</p>
+        <h3>6–7 · Visit depth and ordering</h3><p>Level order fits the editor's goal: <span class="formula">A,B,C,D,E,F,G</span>. Inorder is <span class="formula">D,B,E,A,F,C,G</span>. It is not alphabetical; no search-tree ordering rule was supplied.</p>
+        <h3>Exit check</h3><p>A path follows the answers to one action; a traversal records every node. Preorder begins A,B,D; level order begins A,B,C. Preorder descends into B's subtree, while level order finishes depth 1 first.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 15 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Traversal orders correspond to the labeled tree in the chapter.
+    const traversalData = {
+      preorder: { nodes: ["A", "B", "D", "E", "C", "F", "G"], rule: "Record node, then left subtree, then right subtree." },
+      inorder: { nodes: ["D", "B", "E", "A", "F", "C", "G"], rule: "For this binary tree: left subtree, record node, right subtree." },
+      postorder: { nodes: ["D", "E", "B", "F", "G", "C", "A"], rule: "Visit left and right subtrees before recording their parent." },
+      level: { nodes: ["A", "B", "C", "D", "E", "F", "G"], rule: "Record nodes across each depth, left to right, before going deeper." }
+    };
+    let visitIndex = 0;
+
+    function currentTraversal() {
+      return traversalData[document.getElementById("traversal-mode").value];
+    }
+
+    function updateTraversalDisplay() {
+      const data = currentTraversal();
+      const visited = data.nodes.slice(0, visitIndex);
+      document.querySelectorAll(".tree-node").forEach(function (node) {
+        node.classList.remove("visited", "current");
+      });
+      visited.forEach(function (letter) { document.getElementById("node-" + letter).classList.add("visited"); });
+      if (visitIndex > 0) document.getElementById("node-" + visited[visited.length - 1]).classList.add("current");
+      document.getElementById("traversal-progress").textContent = "Recorded: " + (visited.length ? visited.join(" → ") : "—") + " · Step " + visitIndex + " of 7";
+      document.getElementById("traversal-rule").textContent = data.rule;
+      document.getElementById("check-node").disabled = visitIndex === data.nodes.length;
+      document.getElementById("reveal-node").disabled = visitIndex === data.nodes.length;
+    }
+
+    function recordNext(revealed) {
+      const data = currentTraversal();
+      const next = data.nodes[visitIndex];
+      visitIndex += 1;
+      const feedback = document.getElementById("traversal-feedback");
+      feedback.textContent = (revealed ? "Revealed " : "Correct: ") + next + ". " + data.rule + (visitIndex === data.nodes.length ? " All seven nodes are recorded." : " Predict the next node.");
+      feedback.className = "status good";
+      document.getElementById("guess-node").value = "";
+      updateTraversalDisplay();
+    }
+
+    function checkPrediction() {
+      const guess = document.getElementById("guess-node").value;
+      const feedback = document.getElementById("traversal-feedback");
+      if (visitIndex === currentTraversal().nodes.length) return;
+      if (!guess) {
+        feedback.textContent = "Choose a node to predict the next recorded visit.";
+        feedback.className = "status bad";
+      } else if (guess === currentTraversal().nodes[visitIndex]) {
+        recordNext(false);
+      } else {
+        feedback.textContent = guess + " is not the next recorded node. " + currentTraversal().rule + " Try again or reveal it.";
+        feedback.className = "status bad";
+      }
+    }
+
+    function resetTraversal() {
+      visitIndex = 0;
+      document.getElementById("guess-node").value = "";
+      document.getElementById("traversal-feedback").textContent = "Predict the first recorded node.";
+      document.getElementById("traversal-feedback").className = "status";
+      updateTraversalDisplay();
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("traversal-mode").addEventListener("change", resetTraversal);
+      document.getElementById("restart-traversal").addEventListener("click", resetTraversal);
+      document.getElementById("check-node").addEventListener("click", checkPrediction);
+      document.getElementById("reveal-node").addEventListener("click", function () {
+        if (visitIndex < currentTraversal().nodes.length) recordNext(true);
+      });
+      resetTraversal();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 10 of Discrete Mathematics for BSAI: recurrence relations and recursive functions.">
+  <title>Week 10 · Recurrence Relations and Recursive Functions</title>
+  <style>
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "aₙ  ∑"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    /* Week 10: value-passing activity and discrete term display. */
+    .term-strip { display: flex; gap: .45rem; flex-wrap: wrap; margin: 1rem 0; }
+    .term-box { min-width: 4.8rem; text-align: center; border: 1px solid #a7ced0; background: #e8f6f4; border-radius: .65rem; padding: .55rem .7rem; }
+    .term-box strong { display: block; color: var(--navy); font-size: 1.25rem; }
+    .term-box.current { background: #66539c; border-color: #66539c; color: white; }
+    .term-box.current strong { color: white; }
+    .model-select, .prediction-input { font: inherit; border: 1px solid #88acb7; border-radius: .45rem; padding: .45rem; max-width: 100%; }
+    .prediction-input { width: 8rem; }
+    .activity-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin: 1rem 0; }
+    .activity-controls button { border: 0; color: white; background: var(--teal); border-radius: .5rem; padding: .5rem .85rem; }
+    .activity-controls button:disabled { opacity: .45; cursor: default; }
+    .activity-controls button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .trace-box { border-left: 4px solid var(--violet); background: #f2eef9; padding: .65rem 1rem; margin-top: .8rem; }
+    .figure-wide { width: 100%; max-width: 700px; }
+    .formula-steps { border-left: 3px solid var(--teal); margin: .9rem 0; padding: .2rem 0 .2rem 1.2rem; }
+    .formula-steps p { margin: .3rem 0; }
+    @media print { .activity-controls, .model-select { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 10</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Recurrence Relations and Recursive Functions</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 10 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#initial">03 Initial condition</a>
+      <a href="#rule">04 One-step recurrence</a>
+      <a href="#substitution">05 Repeated substitution</a>
+      <a href="#explicit">06 Explicit comparison</a>
+      <a href="#models">07 Two growth models</a>
+      <a href="#activity">08 Pass the Value</a>
+      <a href="#system">09 System interpretation</a>
+      <a href="#function">10 Recursive function</a>
+      <a href="#python">11 Python/Colab</a>
+      <a href="#practice">12 Practice</a>
+      <a href="#mistakes">13 Common mistakes</a>
+      <a href="#summary">14 Summary</a>
+      <a href="#map">15 Concept map</a>
+      <a href="#next">16 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Tomorrow's Backlog</h2>
+        <p class="lead">A support desk starts with <strong>12 requests waiting</strong>. At each daily update, five new requests arrive and three are handled. What number will be waiting after the next update? After three updates?</p>
+        <p><strong>Predict informally:</strong> The first update changes 12 to 14, because <span class="formula">12+5−3=14</span>. If the same numbers apply again, the backlog becomes <span class="formula">16</span>, then <span class="formula">18</span>. Our main question is: <strong>How can a rule for the next value describe a whole sequence?</strong></p>
+        <div class="pipeline three" role="img" aria-label="Current backlog plus arrivals minus handled requests gives the next backlog">
+          <div><strong>CURRENT</strong><br>Requests waiting</div>
+          <div><strong>CHANGE</strong><br>Five arrive; three handled</div>
+          <div><strong>NEXT</strong><br>Updated backlog</div>
+        </div>
+        <p>We will express the same reasoning mathematically, check several steps, and then consider what the system is entitled to predict.</p>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 10, you should be able to read an initial condition and a one-step recurrence; calculate terms by repeated substitution; compare a simple recurrence with an explicit rule; trace a small recursive definition; distinguish recursion from iteration; and state the assumptions behind a growth model.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>55 min</td><td>Backlog scenario, initial value, recurrence model</td></tr>
+          <tr><td>50 min</td><td>Repeated substitution, term table, explicit comparison</td></tr>
+          <tr><td>45 min</td><td>Recursive function and a small hand trace</td></tr>
+          <tr><td>30 min</td><td>Pass the Value, visualization, exit check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–10 and Practice 1–5. <span class="core extension">Optional self-study</span> The Colab checks and Practice 6–7. Work out the mathematics before running code.</p>
+      </section>
+
+      <!-- Initial Conditions -->
+      <section class="chapter" id="initial">
+        <h2>03 · The Initial Condition Anchors the Rule</h2>
+        <p>A recurrence describes one value using a previous value. To obtain actual numbers, we also need a starting value, called an <strong>initial condition</strong>. We label the starting backlog <span class="formula">B₀=12</span>. Here <span class="formula">B₀</span> means the backlog <em>before any daily update</em>, not the count on a mysterious Day 0.</p>
+        <div class="table-wrap"><table><thead><tr><th>Updates completed n</th><th>Meaning</th><th>Backlog Bₙ</th></tr></thead><tbody>
+          <tr><td>0</td><td>Starting snapshot</td><td>12</td></tr>
+          <tr><td>1</td><td>After one update</td><td>14</td></tr>
+          <tr><td>2</td><td>After two updates</td><td>16</td></tr>
+          <tr><td>3</td><td>After three updates</td><td>18</td></tr>
+        </tbody></table></div>
+        <div class="callout caution"><strong>Quick check:</strong> If the starting backlog were 20 with the same daily change, the next value would be 22. The update rule by itself does not determine the starting backlog.</div>
+      </section>
+
+      <!-- One-Step Recurrence -->
+      <section class="chapter" id="rule">
+        <h2>04 · One Step at a Time</h2>
+        <p>The desk gains five requests and removes three at each update. Its <strong>net change</strong> is <span class="formula">+2</span>. Therefore, for every update we choose to model, the next backlog is the current backlog plus 2:</p>
+        <div class="mathline"><span class="formula">B₀=12,</span> and <span class="formula">Bₙ₊₁=Bₙ+2</span> for <span class="formula">n≥0</span>.</div>
+        <p>The subscript <span class="formula">n+1</span> means “after one more update.” Read the second line in words: <em>take the backlog after n updates and add two to obtain the backlog after n+1 updates</em>. This is a <strong>one-step recurrence relation</strong>.</p>
+        <div class="example"><h3>What the two lines do</h3><p>The initial line gives <span class="formula">B₀=12</span>. The recurrence gives <span class="formula">B₁=B₀+2=14</span>. Applying the same recurrence again gives <span class="formula">B₂=B₁+2=16</span>. Neither line is complete on its own for calculating this particular sequence.</p></div>
+      </section>
+
+      <!-- Repeated Substitution -->
+      <section class="chapter" id="substitution">
+        <h2>05 · Repeated Substitution Builds the Terms</h2>
+        <p>To find a later value, repeatedly replace “previous backlog” with the value already found. Keep the index beside every result so the number of updates remains clear.</p>
+        <div class="formula-steps">
+          <p><span class="formula">B₀=12</span> (starting snapshot)</p>
+          <p><span class="formula">B₁=B₀+2=12+2=14</span></p>
+          <p><span class="formula">B₂=B₁+2=14+2=16</span></p>
+          <p><span class="formula">B₃=B₂+2=16+2=18</span></p>
+          <p><span class="formula">B₄=B₃+2=18+2=20</span></p>
+        </div>
+        <p>Each row uses exactly one earlier result. A term table is especially useful when the update depends on the current value and no simple direct formula is apparent.</p>
+        <figure class="term-figure figure-wide">
+          <svg viewBox="0 0 700 205" role="img" aria-labelledby="term-title">
+            <title id="term-title">Backlog values after zero to four updates: 12, 14, 16, 18, 20</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M88 99 H618"/></g>
+            <g font-family="DejaVu Sans, Arial" text-anchor="middle">
+              <g fill="#e8f6f4" stroke="#087f84" stroke-width="2"><rect x="30" y="55" width="110" height="88" rx="13"/><rect x="165" y="55" width="110" height="88" rx="13"/><rect x="300" y="55" width="110" height="88" rx="13"/><rect x="435" y="55" width="110" height="88" rx="13"/><rect x="570" y="55" width="110" height="88" rx="13"/></g>
+              <g fill="#10263f" font-size="21" font-weight="bold"><text x="85" y="103">12</text><text x="220" y="103">14</text><text x="355" y="103">16</text><text x="490" y="103">18</text><text x="625" y="103">20</text></g>
+              <g fill="#506579" font-size="14"><text x="85" y="128">B₀</text><text x="220" y="128">B₁</text><text x="355" y="128">B₂</text><text x="490" y="128">B₃</text><text x="625" y="128">B₄</text></g>
+              <g fill="#66539c" font-size="14" font-weight="bold"><text x="152" y="45">+2</text><text x="287" y="45">+2</text><text x="422" y="45">+2</text><text x="557" y="45">+2</text></g>
+            </g>
+          </svg>
+          <figcaption>Figure 1. Every arrow represents one update, so the index increases by one each time.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Explicit Rule Comparison -->
+      <section class="chapter" id="explicit">
+        <h2>06 · Next-Step Rule Versus Direct Term Rule</h2>
+        <p>From Week 9, an <strong>explicit rule</strong> calculates a term directly from its index. In the backlog model, each of the <span class="formula">n</span> updates adds 2 to the starting 12, giving <span class="formula">Bₙ=12+2n</span> for <span class="formula">n≥0</span>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Form</th><th>How to find B₄</th><th>What it emphasizes</th></tr></thead><tbody>
+          <tr><td>Recurrence: B₀=12; Bₙ₊₁=Bₙ+2</td><td>12 → 14 → 16 → 18 → 20</td><td>How one update changes the current value</td></tr>
+          <tr><td>Explicit: Bₙ=12+2n</td><td>B₄=12+2(4)=20</td><td>A value from its index directly</td></tr>
+        </tbody></table></div>
+        <p>These two descriptions agree <em>for this stated model</em>. To compare them, check both the initial value and the update: the direct rule gives <span class="formula">B₀=12</span>, and <span class="formula">Bₙ₊₁−Bₙ=[12+2(n+1)]−[12+2n]=2</span>. This short check explains why the same terms appear; a few matching entries alone would be weaker evidence for a general claim.</p>
+        <div class="callout"><strong>Quick check:</strong> The list <span class="formula">3,5,7</span> in Week 9 started at <span class="formula">a₁=3</span>. Here we start at <span class="formula">B₀=12</span>. Always read the index and starting value before substituting.</div>
+      </section>
+
+      <!-- Simple Growth Models -->
+      <section class="chapter" id="models">
+        <h2>07 · Two Other Simple Models</h2>
+        <p>The structure “initial value + update” applies beyond backlogs. A balance starts at 20 units and receives 5 units each step: <span class="formula">A₀=20</span>, <span class="formula">Aₙ₊₁=Aₙ+5</span>. Its first values are <span class="formula">20,25,30,35</span>. A simulated count starts at 2 and doubles each step: <span class="formula">W₀=2</span>, <span class="formula">Wₙ₊₁=2Wₙ</span>. Its first values are <span class="formula">2,4,8,16</span>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Model</th><th>What changes each step?</th><th>First four terms, n=0..3</th></tr></thead><tbody>
+          <tr><td>Backlog B</td><td>Add 2</td><td>12, 14, 16, 18</td></tr>
+          <tr><td>Balance A</td><td>Add 5</td><td>20, 25, 30, 35</td></tr>
+          <tr><td>Simulated count W</td><td>Multiply by 2</td><td>2, 4, 8, 16</td></tr>
+        </tbody></table></div>
+        <p>Adding a fixed amount gives a linear term pattern in these examples; multiplying by a fixed factor gives a geometric pattern. The doubling example is only a stipulated simulation. It does not assert that real requests, savings, or people double indefinitely.</p>
+      </section>
+
+      <!-- Pass the Value Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>08 · Pass the Value</h2>
+        <p><span class="core">Predict → Test → Explain</span> Select a model, read its initial value and update, and predict the next term before revealing it. Repeat to build a term table. The interactive version stops after five updates, keeping every case small enough to trace by hand.</p>
+        <div class="interactive screen-only" id="value-activity">
+          <h3>Which value comes next?</h3>
+          <label for="model-control">Model:</label>
+          <select id="model-control" class="model-select">
+            <option value="backlog">Support desk backlog</option>
+            <option value="balance">Stepwise balance</option>
+            <option value="double">Doubling simulation</option>
+          </select>
+          <p id="model-rule" class="pattern-values">B₀=12; Bₙ₊₁=Bₙ+2.</p>
+          <div id="term-strip" class="term-strip" aria-label="Known terms"></div>
+          <div class="activity-controls">
+            <label for="prediction">Predict the next value:</label>
+            <input id="prediction" class="prediction-input" type="number" inputmode="numeric">
+            <button type="button" id="check-value">Check and reveal</button>
+            <button type="button" id="reset-values" class="secondary">Start over</button>
+          </div>
+          <p id="value-feedback" class="status" aria-live="polite">Start with the initial value. Apply one update.</p>
+          <div id="value-trace" class="trace-box" aria-live="polite">Trace: no updates yet.</div>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Pass the Value</h3>
+          <p>For each model, write the next four terms. Circle the initial condition, then show at least two update steps.</p>
+          <div class="table-wrap"><table><thead><tr><th>Model and update</th><th>n=0</th><th>n=1</th><th>n=2</th><th>n=3</th><th>n=4</th></tr></thead><tbody>
+            <tr><td>B₀=12; Bₙ₊₁=Bₙ+2</td><td>12</td><td>____</td><td>____</td><td>____</td><td>____</td></tr>
+            <tr><td>A₀=20; Aₙ₊₁=Aₙ+5</td><td>20</td><td>____</td><td>____</td><td>____</td><td>____</td></tr>
+            <tr><td>W₀=2; Wₙ₊₁=2Wₙ</td><td>2</td><td>____</td><td>____</td><td>____</td><td>____</td></tr>
+          </tbody></table></div>
+          <p><strong>Explain:</strong> What happens to the index after each update? Why is the initial value necessary?</p>
+          <p>_______________________________________________________________________</p>
+        </div>
+        <div class="callout"><strong>Discuss:</strong> A partner says <span class="formula">W₃=12</span> because “the update adds two.” Locate the mistaken operation and give the correct third-update value.</div>
+      </section>
+
+      <!-- System Interpretation -->
+      <section class="chapter" id="system">
+        <h2>09 · What a System Can and Cannot Predict</h2>
+        <p>A support dashboard can use <span class="formula">B₀=12</span> and <span class="formula">Bₙ₊₁=Bₙ+2</span> to display a <em>modelled</em> backlog of <span class="formula">B₄=20</span> after four updates. The input assumptions are explicit: every step has five arrivals and three handled requests, counts are accurate, and the same rule remains in force.</p>
+        <p>If actual arrivals or completions vary, that recurrence needs different inputs or an updated rule. For example, if only one request arrives in a later step and three are handled, the net change for that step would be <span class="formula">−2</span>, not <span class="formula">+2</span>. In this chapter all backlog values are positive, so we do not need a separate rule for what happens when the queue empties.</p>
+        <div class="lens"><h3>Scenario → Mathematics → System</h3><p><strong>Scenario:</strong> requests wait and change daily. <strong>Mathematics:</strong> an initial backlog and one update rule generate a sequence. <strong>System:</strong> the dashboard reports values conditional on those assumptions, not guaranteed observations of future days.</p></div>
+      </section>
+
+      <!-- Recursive Functions -->
+      <section class="chapter" id="function">
+        <h2>10 · A Recursive Function Says the Same Thing</h2>
+        <p>A <strong>recursive definition</strong> states a starting case and describes later outputs using an earlier output of the <em>same function</em>. Let <span class="formula">f(n)</span> be the modelled backlog after <span class="formula">n</span> updates:</p>
+        <div class="mathline"><span class="formula">f(0)=12;</span> for <span class="formula">n≥1</span>, <span class="formula">f(n)=f(n−1)+2.</span></div>
+        <p>To calculate <span class="formula">f(3)</span>, we need <span class="formula">f(2)</span>; that needs <span class="formula">f(1)</span>; that needs <span class="formula">f(0)</span>. Then work back from the known starting case:</p>
+        <div class="formula-steps">
+          <p><span class="formula">f(3) → f(2) → f(1) → f(0)=12</span></p>
+          <p><span class="formula">f(1)=12+2=14</span>, <span class="formula">f(2)=14+2=16</span>, <span class="formula">f(3)=16+2=18</span>.</p>
+        </div>
+        <p>The initial case is also the <strong>stopping point</strong> for this calculation. Without it, we keep asking for an earlier value and never reach a number. This is the same sequence as <span class="formula">Bₙ</span>, written as a function of <span class="formula">n</span>.</p>
+        <div class="callout caution"><strong>Quick check:</strong> If <span class="formula">g(0)=3</span> and <span class="formula">g(n)=g(n−1)+4</span> for <span class="formula">n≥1</span>, then <span class="formula">g(2)=11</span>, not 7. Two updates have occurred.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>11 · Optional Colab: Iterate, Then Trace Recursion</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Complete the backlog term table and trace <span class="formula">f(3)</span> on paper. Python is a check of those answers. We use a list and loop already seen in Week 9, then a short function.</p>
+        <h3>1 · Reuse a loop to generate terms</h3>
+        <p>Start with 12. The list initially stores <span class="formula">B₀</span>. In <code>range(5)</code>, Python supplies the integers 0,1,2,3,4: one pass for each of five updates. <code>append</code> puts the newly calculated value at the end of the list; <code>values[-1]</code> reads its last stored value.</p>
+        <pre><code>values = [12]
+for step in range(5):
+    next_value = values[-1] + 2
+    values.append(next_value)
+print(values)</code></pre>
+        <p>Predict <code>[12, 14, 16, 18, 20, 22]</code>. The list has six terms: the initial term and five updates. This loop is <strong>iteration</strong>: it repeats an update using the most recent value.</p>
+        <h3>2 · State a recursive function</h3>
+        <p>The name <code>backlog</code> stands for the function <span class="formula">f</span>. <code>def</code> defines it; <code>if n == 0</code> tests the stopping case; <code>return</code> gives the result back. Otherwise the function asks for the preceding result and adds 2.</p>
+        <pre><code>def backlog(n):
+    if n == 0:
+        return 12
+    return backlog(n - 1) + 2
+
+print(backlog(3))</code></pre>
+        <p>Predict 18. Trace the request as <code>backlog(3) → backlog(2) → backlog(1) → backlog(0)</code>, then return 12, 14, 16, 18. Use only small nonnegative whole-number inputs here; the definition has no stopping case for negative input.</p>
+        <h3>3 · Explain the comparison</h3>
+        <p>Both snippets use the same starting value and +2 update, so their small outputs agree. The loop moves forward from a stored value; the function asks for smaller input until it reaches its stopping case. Write one sentence explaining which mathematical line is represented by <code>return 12</code> and which by <code>return backlog(n - 1) + 2</code>.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>12 · Practice</h2>
+        <p>Show the starting value and at least two intermediate terms. Selected solutions follow at the end.</p>
+        <ol>
+          <li><span class="formula">u₀=7</span>, <span class="formula">uₙ₊₁=uₙ+3</span> for <span class="formula">n≥0</span>. Find <span class="formula">u₁,u₂,u₃,u₄</span> and a simple explicit rule.</li>
+          <li><span class="formula">v₀=3</span>, <span class="formula">vₙ₊₁=2vₙ</span>. Calculate <span class="formula">v₁,v₂,v₃</span>. Explain why <span class="formula">v₃</span> is not <span class="formula">3+3(2)</span>.</li>
+          <li>A balance starts at 20 units and increases by 5 units each step. Write its initial condition and one-step recurrence using <span class="formula">Aₙ</span>. Find <span class="formula">A₄</span>.</li>
+          <li>Two sequences share the rule <span class="formula">xₙ₊₁=xₙ+4</span>. One starts at <span class="formula">x₀=1</span>, the other at <span class="formula">x₀=9</span>. Find each <span class="formula">x₂</span>. What does this show?</li>
+          <li>For <span class="formula">f(0)=5</span> and <span class="formula">f(n)=f(n−1)+2</span> for <span class="formula">n≥1</span>, trace <span class="formula">f(3)</span> in both directions: calls toward the stopping case, then numerical results back.</li>
+          <li>A learner claims <span class="formula">Bₙ=12+2n</span> matches <span class="formula">B₀=12, Bₙ₊₁=Bₙ+2</span> because it produces the same value for <span class="formula">n=3</span>. Give a stronger two-part check.</li>
+          <li>A help desk really handles four requests rather than three on the second update only. It starts at 12; five arrive each update, and three are handled on all other updates. Find the actual backlog after three updates and compare it with the constant-change model's prediction. State the assumption that failed.</li>
+        </ol>
+        <div class="callout"><strong>Exit check:</strong> Write an initial condition and a recurrence for “start at 4 and subtract 1 at each update.” Compute the value after two updates and say how an iterative calculation differs from a recursive call.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>13 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Use an update rule without a starting value.</td><td>Specify B₀ (or another starting index); different starts give different sequences.</td></tr>
+          <tr><td>Call B₃ “the backlog on Day 3” without defining the index.</td><td>Here B₃ means after three completed updates.</td></tr>
+          <tr><td>Multiply when the recurrence adds, or add when it multiplies.</td><td>Read the operation before calculating every next term.</td></tr>
+          <tr><td>Count the initial term as the first update.</td><td>n=0 is the starting snapshot; n=1 is after one update.</td></tr>
+          <tr><td>Write a recursive definition without a stopping case.</td><td>State f(0), then calculate f(n) from f(n−1).</td></tr>
+          <tr><td>Treat a modelled future value as an observed fact.</td><td>Name the assumption that the same update applies at each step.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>14 · Summary</h2>
+        <ul>
+          <li>An initial condition gives the first value; a recurrence tells how to obtain the next value from an earlier one.</li>
+          <li>Repeated substitution builds a term table one update at a time.</li>
+          <li>A simple explicit rule can calculate directly from the index; check its initial value and update when comparing it with a recurrence.</li>
+          <li>A recursive function includes a starting case and an earlier call. Iteration repeatedly updates a current value.</li>
+          <li>A prediction from a growth model depends on its stated assumptions.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>15 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 300" role="img" aria-labelledby="map-title">
+            <title id="map-title">Initial condition and one-step rule produce terms; repeated updates can be calculated by iteration or a recursive function and compared with an explicit rule</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M180 75 V100 H350 V122 M520 75 V100 H350"/><path d="M350 181 V204 H175 V225 M350 204 H525 V225"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="30" y="15" width="300" height="65" rx="12" fill="#e8f6f4"/><rect x="370" y="15" width="300" height="65" rx="12" fill="#e8f6f4"/><rect x="215" y="120" width="270" height="65" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="30" y="225" width="290" height="60" rx="12" fill="#e8f6f4"/><rect x="380" y="225" width="290" height="60" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="17" font-weight="bold"><text x="180" y="42">INITIAL CONDITION</text><text x="520" y="42">ONE-STEP RULE</text><text x="350" y="148">TERM SEQUENCE</text><text x="175" y="251">ITERATION</text><text x="525" y="251">RECURSIVE FUNCTION</text></g>
+              <g fill="#203349" font-size="13"><text x="180" y="63">B₀=12</text><text x="520" y="63">Bₙ₊₁=Bₙ+2</text><text x="350" y="169">12, 14, 16, 18, …</text><text x="175" y="271">move forward from B₀</text><text x="525" y="271">ask for the previous result</text></g></g>
+          </svg>
+          <figcaption>The recurrence supplies the mathematical rule; two small computations can trace the same values.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>16 · Looking Ahead</h2>
+        <p>Week 11 asks how many choices or arrangements are possible. We will decide when to add cases, when to multiply stages, and why the order of selected objects can matter. The careful treatment of steps and assumptions from this week remains useful.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Pass the Value</h3><p>Backlog: <span class="formula">12,14,16,18,20</span>; balance: <span class="formula">20,25,30,35,40</span>; doubling: <span class="formula">2,4,8,16,32</span>, all indexed <span class="formula">n=0,…,4</span>. The index increases by one per update. Without the initial value, the update alone does not select a unique sequence. In the discussion, <span class="formula">W₃=16</span> because three doublings take 2 to 4 to 8 to 16.</p>
+        <h3>1 · Additive recurrence</h3><p><span class="formula">u₁=10,u₂=13,u₃=16,u₄=19</span>; after <span class="formula">n</span> updates, <span class="formula">uₙ=7+3n</span>.</p>
+        <h3>2 · Doubling recurrence</h3><p><span class="formula">v₁=6,v₂=12,v₃=24</span>. Each update multiplies the preceding term by 2; adding 2 three times uses a different rule.</p>
+        <h3>3 · Balance</h3><p><span class="formula">A₀=20, Aₙ₊₁=Aₙ+5</span> for <span class="formula">n≥0</span>; values <span class="formula">20,25,30,35,40</span>, so <span class="formula">A₄=40</span>.</p>
+        <h3>4 · Why the start matters</h3><p>Starting at 1 gives <span class="formula">1,5,9</span>, so <span class="formula">x₂=9</span>. Starting at 9 gives <span class="formula">9,13,17</span>, so <span class="formula">x₂=17</span>. Same update, different initial conditions.</p>
+        <h3>5 · Recursive trace</h3><p>Calls: <span class="formula">f(3)→f(2)→f(1)→f(0)</span>. Results: <span class="formula">f(0)=5, f(1)=7, f(2)=9, f(3)=11</span>.</p>
+        <h3>6 · Compare descriptions</h3><p>Check <span class="formula">B₀=12+2(0)=12</span>. Then <span class="formula">(12+2(n+1))−(12+2n)=2</span> for each <span class="formula">n≥0</span>, matching the update.</p>
+        <h3>7 · Changed second update</h3><p>Actual backlog: <span class="formula">12→14</span> after the first update, <span class="formula">14+5−4=15</span> after the second, and <span class="formula">15+5−3=17</span> after the third. Constant-change model predicts <span class="formula">B₃=18</span>. The assumption of three handled requests at every step failed.</p>
+        <h3>Exit check</h3><p><span class="formula">c₀=4, cₙ₊₁=cₙ−1</span> for <span class="formula">n≥0</span>; <span class="formula">c₂=2</span>. Iteration updates a current value forward; a recursive call requests a previous result until a starting case is reached.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 10 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Models are small and editable. The same data drives the interactive trace.
+    const recurrenceModels = {
+      backlog: { symbol: "B", initial: 12, operation: "add", amount: 2, rule: "B₀=12; Bₙ₊₁=Bₙ+2." },
+      balance: { symbol: "A", initial: 20, operation: "add", amount: 5, rule: "A₀=20; Aₙ₊₁=Aₙ+5." },
+      double: { symbol: "W", initial: 2, operation: "multiply", amount: 2, rule: "W₀=2; Wₙ₊₁=2Wₙ." }
+    };
+    let chosenModel = recurrenceModels.backlog;
+    let knownTerms = [12];
+
+    function nextTerm(value) {
+      return chosenModel.operation === "add" ? value + chosenModel.amount : value * chosenModel.amount;
+    }
+
+    function renderKnownTerms() {
+      const strip = document.getElementById("term-strip");
+      strip.replaceChildren();
+      knownTerms.forEach(function (term, index) {
+        const box = document.createElement("div");
+        box.className = "term-box" + (index === knownTerms.length - 1 ? " current" : "");
+        const label = document.createElement("span");
+        label.textContent = chosenModel.symbol + String(index).replace(/[0-9]/g, function (digit) {
+          return "₀₁₂₃₄₅₆₇₈₉"[Number(digit)];
+        });
+        const value = document.createElement("strong");
+        value.textContent = term;
+        box.append(label, value);
+        strip.append(box);
+      });
+      document.getElementById("check-value").disabled = knownTerms.length >= 6;
+    }
+
+    function resetValueActivity() {
+      chosenModel = recurrenceModels[document.getElementById("model-control").value];
+      knownTerms = [chosenModel.initial];
+      document.getElementById("model-rule").textContent = chosenModel.rule;
+      document.getElementById("prediction").value = "";
+      document.getElementById("value-feedback").textContent = "Start with the initial value. Apply one update.";
+      document.getElementById("value-feedback").className = "status";
+      document.getElementById("value-trace").textContent = "Trace: no updates yet.";
+      renderKnownTerms();
+    }
+
+    function checkNextValue() {
+      const input = document.getElementById("prediction");
+      const feedback = document.getElementById("value-feedback");
+      if (input.value.trim() === "" || !Number.isFinite(Number(input.value))) {
+        feedback.textContent = "Enter a number before checking.";
+        feedback.className = "status bad";
+        input.focus();
+        return;
+      }
+      if (knownTerms.length >= 6) return;
+      const current = knownTerms[knownTerms.length - 1];
+      const expected = nextTerm(current);
+      const previousIndex = knownTerms.length - 1;
+      const operation = chosenModel.operation === "add" ? "+ " : "× ";
+      const explanation = "Step " + (previousIndex + 1) + ": " + current + " " + operation + chosenModel.amount + " = " + expected + ".";
+      const correct = Number(input.value) === expected;
+      knownTerms.push(expected);
+      feedback.textContent = (correct ? "Correct. " : "Check the operation. ") + explanation;
+      feedback.className = "status " + (correct ? "good" : "bad");
+      document.getElementById("value-trace").textContent = "Trace: " + knownTerms.join(" → ") + ". " + (knownTerms.length === 6 ? "Five updates complete." : "Predict one more update.");
+      input.value = "";
+      renderKnownTerms();
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("model-control").addEventListener("change", resetValueActivity);
+      document.getElementById("reset-values").addEventListener("click", resetValueActivity);
+      document.getElementById("check-value").addEventListener("click", checkNextValue);
+      document.getElementById("prediction").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") checkNextValue();
+      });
+      resetValueActivity();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>

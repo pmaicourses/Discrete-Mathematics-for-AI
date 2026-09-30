@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 5 of Discrete Mathematics for BSAI: sets, functions and mappings.">
+  <title>Week 5 · Sets, Functions and Mappings</title>
+  <style>
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "∈  ×  f"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    /* Week 4 interactive mosaic */
+    .mosaic-grid { display: grid; gap: 3px; width: max-content; margin: 1rem auto; padding: .5rem; background: #e8f6f4; border-radius: .6rem; }
+    .mosaic-tile { width: 24px; height: 24px; border-radius: 3px; background: #087f84; }
+    .mosaic-tile.new { background: #66539c; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 1.4rem; }
+    .button-row button { border: 0; border-radius: .5rem; background: var(--teal); color: white; padding: .48rem .82rem; }
+    .button-row button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .button-row button:disabled { opacity: .5; cursor: default; }
+    .concept-figure .diagram-title { font: bold 17px system-ui, sans-serif; fill: #10263f; }
+    .concept-figure .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    dl { display: grid; grid-template-columns: minmax(125px, 170px) 1fr; gap: .5rem 1rem; }
+    dt { font-weight: 700; color: var(--navy); }
+    dd { margin: 0; }
+    @media (max-width: 600px) { dl { grid-template-columns: 1fr; } }
+    @media print { .solutions { break-before: page; } }
+  
+    /* Week 5 mapping activity and notation */
+    .mapping-card { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; text-align: center; font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    .arrow-pair { display: inline-block; min-width: 5.8rem; padding: .45rem .7rem; background: white; border: 1px solid #a7ced0; border-radius: .5rem; }
+    .page-footer { color: var(--muted); text-align: center; font-size: .83rem; padding: 1rem; }
+    @media print { .page-footer { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 05</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Sets, Functions and Mappings</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 5 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives</a>
+      <a href="#sets">03 Sets and subsets</a>
+      <a href="#operations">04 Set operations</a>
+      <a href="#products">05 Cartesian products</a>
+      <a href="#functions">06 Functions</a>
+      <a href="#mapping">07 One-to-one and onto</a>
+      <a href="#composition">08 Composition</a>
+      <a href="#inverse">09 Inverse</a>
+      <a href="#activity">10 Function Inspector</a>
+      <a href="#systems">11 System connection</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#practice">13 Practice</a>
+      <a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a>
+      <a href="#map">16 Concept map</a>
+      <a href="#terms">17 Key terms</a>
+      <a href="#next">18 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Select, Label, Reverse</h2>
+        <p class="lead">A student-support desk has two lists. <strong>Support</strong> contains students who requested a consultation; <strong>Available</strong> contains students who can attend on Friday. Which students belong on a Friday invitation list? After inviting them, a system assigns each student one time-slot label. Can the label alone tell us which student received it?</p>
+        <p><strong>Predict:</strong> A Friday invitation needs a student in <em>both</em> lists. Reversing a label depends on whether any two students share it. These are two different mathematical questions: selecting from collections and mapping inputs to outputs.</p>
+        <div class="pipeline three" role="img" aria-label="Collections identify eligible students, a mapping assigns labels, then we check whether a label identifies an input">
+          <div><strong>SELECT</strong><br>Who is in both lists?</div>
+          <div><strong>MAP</strong><br>Which label is assigned?</div>
+          <div><strong>REVERSE?</strong><br>Is the input recoverable?</div>
+        </div>
+        <div class="lens"><h3>The questions for this week</h3><p>What do the sets contain? Which ordered pairs are possible? Does every input have exactly one output? When can we combine mappings or reverse one?</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 5, you should be able to read membership and subset notation; interpret a small Venn diagram; find union, intersection and difference; form a small Cartesian product; test whether an assignment is a function; identify domain, codomain and range; recognize one-to-one and onto mappings; compute a simple composition; and decide whether an inverse exists for stated domain and codomain.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>60 min</td><td>Sets, Venn sorting and ordered pairs</td></tr>
+          <tr><td>55 min</td><td>Functions, arrow diagrams and mapping cards</td></tr>
+          <tr><td>40 min</td><td>Composition, inverse and a guided relay</td></tr>
+          <tr><td>25 min</td><td>Practice, explanations and exit check</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–11 and Problems 1–5. <span class="core extension">Optional self-study</span> Colab and the extended problems. The interactive cards and checks give feedback without marks.</p>
+      </section>
+
+      <!-- Set Theory -->
+      <section class="chapter" id="sets">
+        <h2>03 · Collections Before Symbols</h2>
+        <p>A <strong>set</strong> is a collection in which we can tell whether an object belongs. Repeating an object does not add a new member, and order does not change the set. Write <span class="formula">U={Amina, Bilal, Chen, Diya, Eman}</span> for the students in this small example. This <strong>universal set</strong> states the scope of our discussion.</p>
+        <p>Let <span class="formula">S={Amina, Chen, Diya}</span> be the support-request list and <span class="formula">F={Chen, Diya, Eman}</span> the Friday-availability list. Thus <span class="formula">Chen∈S</span> means Chen is a member, while <span class="formula">Bilal∉S</span> means Bilal is not. The empty set <span class="formula">∅</span> has no members.</p>
+        <div class="example"><h3>Subset is a claim about two sets</h3><p>Let <span class="formula">T={Chen, Diya}</span>. Every member of <span class="formula">T</span> is in <span class="formula">S</span>, so <span class="formula">T⊆S</span>. But <span class="formula">S⊄T</span>, since Amina belongs to <span class="formula">S</span> and not <span class="formula">T</span>. The symbols <span class="formula">∈</span> and <span class="formula">⊆</span> ask different questions: “is this object a member?” versus “is every member of this set inside the other?”</p></div>
+        <figure class="venn-figure">
+          <svg viewBox="0 0 680 310" role="img" aria-labelledby="venn-title">
+            <title id="venn-title">Venn diagram: Amina is in S only, Chen and Diya are in both S and F, Eman is in F only, and Bilal is outside both</title>
+            <rect x="20" y="18" width="640" height="255" rx="16" fill="#f6fafb" stroke="#b9cdd5" stroke-width="2"/>
+            <circle cx="278" cy="145" r="105" fill="#38a5a3" fill-opacity=".28" stroke="#087f84" stroke-width="3"/>
+            <circle cx="402" cy="145" r="105" fill="#9784c1" fill-opacity=".26" stroke="#66539c" stroke-width="3"/>
+            <g fill="#10263f" font-family="DejaVu Sans,Arial" text-anchor="middle">
+              <text x="201" y="75" font-size="20" font-weight="bold">S</text>
+              <text x="479" y="75" font-size="20" font-weight="bold">F</text>
+              <text x="228" y="153" font-size="16">Amina</text>
+              <text x="340" y="137" font-size="16">Chen</text>
+              <text x="340" y="162" font-size="16">Diya</text>
+              <text x="452" y="153" font-size="16">Eman</text>
+              <text x="571" y="239" font-size="16">Bilal</text>
+              <text x="42" y="46" font-size="18" font-weight="bold">U</text>
+            </g>
+          </svg>
+          <figcaption>Figure 1. Read the overlapping region first: Chen and Diya appear in both lists.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Set Operations -->
+      <section class="chapter" id="operations">
+        <h2>04 · Combining and Filtering Sets</h2>
+        <p>The <strong>intersection</strong> contains items in both sets. The <strong>union</strong> contains items in either set or both. The <strong>difference</strong> keeps items in the first set but removes those in the second.</p>
+        <div class="table-wrap"><table><thead><tr><th>Question</th><th>Notation</th><th>Result in the diagram</th></tr></thead><tbody>
+          <tr><td>In both lists?</td><td>S∩F</td><td>{Chen, Diya}</td></tr>
+          <tr><td>In at least one list?</td><td>S∪F</td><td>{Amina, Chen, Diya, Eman}</td></tr>
+          <tr><td>In S but not F?</td><td>S∖F</td><td>{Amina}</td></tr>
+          <tr><td>In U but not S?</td><td>U∖S</td><td>{Bilal, Eman}</td></tr>
+        </tbody></table></div>
+        <p>The Friday invitation list is <span class="formula">S∩F={Chen, Diya}</span>. Always name the starting set for a difference: <span class="formula">S∖F</span> and <span class="formula">F∖S</span> are usually different.</p>
+        <div class="callout caution"><strong>Quick check:</strong> Is Eman in <span class="formula">S∪F</span>? Yes. Is Eman in <span class="formula">S∩F</span>? No. “Or” in union includes people in both lists.</div>
+      </section>
+
+      <!-- Cartesian Products -->
+      <section class="chapter" id="products">
+        <h2>05 · Pair Each Choice with Another</h2>
+        <p>Suppose the invited students are <span class="formula">I={Chen, Diya}</span> and possible slot labels are <span class="formula">L={M, A}</span> for morning and afternoon. An <strong>ordered pair</strong> <span class="formula">(student, slot)</span> records one possible assignment. Its first and second positions have different meanings.</p>
+        <div class="mathline"><span class="formula">I×L={(Chen,M), (Chen,A), (Diya,M), (Diya,A)}.</span></div>
+        <p>The <strong>Cartesian product</strong> contains every possible ordered pair, not only assignments already made. Here there are <span class="formula">2×2=4</span> possibilities. By comparison, <span class="formula">L×I</span> contains pairs such as <span class="formula">(M,Chen)</span>; changing order changes the kind of pair.</p>
+        <div class="example"><h3>From possibilities to an actual assignment</h3><p>If Chen receives M and Diya receives A, the selected pairs are <span class="formula">{(Chen,M),(Diya,A)}</span>, a subset of <span class="formula">I×L</span>. We have not selected the other two possibilities.</p></div>
+      </section>
+
+      <!-- Functions -->
+      <section class="chapter" id="functions">
+        <h2>06 · A Function Gives Each Input One Output</h2>
+        <p>An assignment becomes a <strong>function</strong> when every allowed input has <em>exactly one</em> assigned output. Two different inputs may share an output. An input with no output, or with two outputs, breaks the function rule.</p>
+        <p>For a mapping <span class="formula">f:A→B</span>, <span class="formula">A</span> is the <strong>domain</strong> (allowed inputs), <span class="formula">B</span> the <strong>codomain</strong> (declared possible outputs), and the <strong>range</strong> the outputs actually produced. Range is a subset of the codomain.</p>
+        <div class="example"><h3>Worked mapping</h3><p>Let <span class="formula">A={a,b,c}</span> and <span class="formula">B={1,2,3}</span>. Define <span class="formula">f(a)=1, f(b)=1, f(c)=3</span>. This is a function: each input has exactly one output. Its range is <span class="formula">{1,3}</span>, while the codomain is <span class="formula">{1,2,3}</span>. The value 2 is allowed but unused.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Assignment from A={a,b,c}</th><th>Function?</th><th>Reason</th></tr></thead><tbody>
+          <tr><td>a→1, b→1, c→3</td><td>Yes</td><td>Each input has one output; sharing is allowed.</td></tr>
+          <tr><td>a→1 and a→2, b→2, c→3</td><td>No</td><td>a has two outputs.</td></tr>
+          <tr><td>a→1, b→2</td><td>No</td><td>c has no output.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Mapping Properties -->
+      <section class="chapter" id="mapping">
+        <h2>07 · One-to-One and Onto</h2>
+        <p>A function is <strong>one-to-one</strong> when different inputs never share an output. It is <strong>onto</strong> when every element of the stated codomain is reached. These tests ask different questions.</p>
+        <div class="table-wrap"><table><thead><tr><th>Mapping from A={a,b,c} to B={1,2,3}</th><th>One-to-one?</th><th>Onto?</th></tr></thead><tbody>
+          <tr><td>a→1, b→2, c→3</td><td>Yes: no output repeats</td><td>Yes: 1, 2, 3 all appear</td></tr>
+          <tr><td>a→1, b→1, c→3</td><td>No: a and b share 1</td><td>No: 2 is missing</td></tr>
+        </tbody></table></div>
+        <p>Onto depends on the <strong>codomain</strong>. For <span class="formula">A={a,b,c}</span>, define <span class="formula">h(a)=1, h(b)=1, h(c)=2</span>. If the codomain is <span class="formula">{1,2}</span>, this function is onto but not one-to-one. If we instead declare the codomain <span class="formula">{1,2,3}</span> with the same outputs, it is not onto because 3 is unused.</p>
+        <div class="callout caution"><strong>Misconception warning:</strong> A function may send many inputs to one output. “One output per input” does not mean “one input per output.”</div>
+      </section>
+
+      <!-- Composition -->
+      <section class="chapter" id="composition">
+        <h2>08 · Two Mappings in Sequence</h2>
+        <p>A first mapping produces an output, and a second mapping accepts that output as its input. Let <span class="formula">A={1,2,3}</span>, <span class="formula">B={2,3,4}</span>, and <span class="formula">C={4,6,8}</span>. Define <span class="formula">f:A→B</span> by <span class="formula">f(x)=x+1</span>, and <span class="formula">g:B→C</span> by <span class="formula">g(y)=2y</span>.</p>
+        <div class="pipeline three" role="img" aria-label="Input 2 passes through f to become 3, then through g to become 6">
+          <div><strong>INPUT</strong><br>2</div><div><strong>f</strong><br>2 → 3</div><div><strong>g</strong><br>3 → 6</div>
+        </div>
+        <p>Thus <span class="formula">(g∘f)(2)=g(f(2))=g(3)=6</span>. Read <span class="formula">g∘f</span> as “do <span class="formula">f</span> first, then <span class="formula">g</span>.” More generally, for the stated domain, <span class="formula">(g∘f)(x)=2(x+1)</span>. The outputs of the first function must be valid inputs to the second.</p>
+        <div class="callout caution"><strong>Quick check:</strong> What is <span class="formula">(g∘f)(3)</span>? First <span class="formula">f(3)=4</span>, then <span class="formula">g(4)=8</span>. Reversing the order may not even be defined on the same inputs.</div>
+      </section>
+
+      <!-- Inverse Functions -->
+      <section class="chapter" id="inverse">
+        <h2>09 · When Can We Map Back?</h2>
+        <p>If <span class="formula">f:A→B</span> reaches every output in <span class="formula">B</span> and no two inputs share an output, each <span class="formula">b∈B</span> has exactly one original input. We can then define an <strong>inverse function</strong> <span class="formula">f⁻¹:B→A</span>.</p>
+        <div class="example"><h3>Reverse a mapping that is one-to-one and onto</h3><p>For <span class="formula">f:A={1,2,3}→B={2,3,4}</span> with <span class="formula">f(x)=x+1</span>, the inverse sends 2→1, 3→2 and 4→3. In rule form <span class="formula">f⁻¹(y)=y−1</span> for <span class="formula">y∈B</span>. Check: <span class="formula">f⁻¹(f(2))=f⁻¹(3)=2</span>.</p></div>
+        <p>If two students receive the same slot label, that label does not identify a unique student. If an output label in the codomain is never used, there is no input to send it back to. An inverse <em>on the stated whole codomain</em> needs both one-to-one and onto.</p>
+        <div class="callout caution"><strong>Notation warning:</strong> <span class="formula">f⁻¹</span> here means the inverse mapping, not the reciprocal <span class="formula">1/f</span>.</div>
+      </section>
+
+      <!-- Function Inspector Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>10 · Function Inspector</h2>
+        <p><span class="core">Classroom activity · 15 minutes</span> Inspect each set of arrows. First decide whether every input has exactly one output. If it is a function, decide whether it has an inverse on the stated codomain. Predict, test your verdict and explain the result.</p>
+        <div class="interactive screen-only" id="function-inspector">
+          <h3 id="inspector-title">Card 1 of 4</h3>
+          <p id="inspector-domain"></p>
+          <div class="mapping-card" id="inspector-arrows" aria-live="polite"></div>
+          <p>Which verdict is justified?</p>
+          <div class="choices" id="inspector-choices">
+            <button type="button" data-verdict="inverse">Function with inverse</button>
+            <button type="button" data-verdict="function">Function, no inverse</button>
+            <button type="button" data-verdict="not-function">Not a function</button>
+          </div>
+          <p class="status" id="inspector-feedback" aria-live="polite">Choose a verdict to reveal the reasoning.</p>
+          <div class="button-row"><button type="button" id="next-card">Next card</button><button type="button" class="secondary" id="reset-cards">Start over</button></div>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Function Inspector · Predict → Check → Explain</h3>
+          <p>For each card, use the domain and codomain shown. Choose: <strong>function with inverse</strong>, <strong>function without inverse</strong>, or <strong>not a function</strong>. For a function, also mark one-to-one and onto.</p>
+          <div class="table-wrap"><table><thead><tr><th>Card and arrows</th><th>Verdict</th><th>Reason</th></tr></thead><tbody>
+            <tr><td>1. A={a,b,c}, B={1,2,3}; a→1, b→2, c→3</td><td>________</td><td>________________________</td></tr>
+            <tr><td>2. A={a,b,c}, B={1,2,3}; a→1, b→1, c→3</td><td>________</td><td>________________________</td></tr>
+            <tr><td>3. A={a,b,c}, B={1,2,3}; a→1 and a→2, b→2, c→3</td><td>________</td><td>________________________</td></tr>
+            <tr><td>4. A={a,b,c}, B={1,2}; a→1, b→1, c→2</td><td>________</td><td>________________________</td></tr>
+          </tbody></table></div>
+          <p>What changed between Cards 2 and 4 besides the arrows? How does the codomain affect “onto”? __________________________________________</p>
+        </div>
+      </section>
+
+      <!-- System Connection -->
+      <section class="chapter" id="systems">
+        <h2>11 · Interpret the System Carefully</h2>
+        <p>In the opening scenario, the invitation filter uses <span class="formula">S∩F</span>. A label assignment is a function only if every invited student gets one label. If two students share a label, the assignment can still be a function, but a label cannot identify one student uniquely.</p>
+        <p>These statements describe a specified data model. A student might change availability, or a recorded list might be incomplete. The mathematics identifies what follows <em>from the lists and mapping supplied</em>; a real system must also keep its data current.</p>
+        <div class="callout"><strong>Explain aloud:</strong> Why does “each student has one label” fail to guarantee “each label names one student”? Give two students the same label to construct your example.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab: Check the Set Work</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Predict the three sets from the Venn diagram, then run this cell. Braces create Python sets; <span class="formula">&amp;</span> finds members in both, <span class="formula">|</span> finds members in either, and <span class="formula">-</span> keeps members of the first set only. A set may print its members in a different order; that does not change the mathematical set.</p>
+        <pre><code>support = {"Amina", "Chen", "Diya"}
+available = {"Chen", "Diya", "Eman"}
+print(support &amp; available)
+print(support | available)
+print(support - available)</code></pre>
+        <p>After understanding <span class="formula">f(x)=x+1</span>, this one-line function definition performs the same mapping. <span class="formula">x</span> is the input, and <span class="formula">return</span> supplies the output. For this course example, use only <span class="formula">x∈{1,2,3}</span>.</p>
+        <pre><code>def next_value(x): return x + 1
+print(next_value(2))</code></pre>
+        <p><strong>Explain:</strong> The output 3 agrees with <span class="formula">f(2)=3</span>. Running a few inputs checks examples; it does not replace specifying the domain and reasoning about the mapping.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice</h2>
+        <p>Work by hand first. Selected solutions appear at the end.</p>
+        <ol>
+          <li>Using <span class="formula">S={Amina,Chen,Diya}</span>, <span class="formula">F={Chen,Diya,Eman}</span>, and <span class="formula">U={Amina,Bilal,Chen,Diya,Eman}</span>, find <span class="formula">F∖S</span>, <span class="formula">S∩F</span>, and <span class="formula">U∖(S∪F)</span>. Is <span class="formula">S∩F⊆S</span>?</li>
+          <li>Let <span class="formula">X={p,q}</span> and <span class="formula">Y={0,1,2}</span>. List <span class="formula">X×Y</span>. How many pairs are there? Is <span class="formula">(0,p)</span> in <span class="formula">X×Y</span>?</li>
+          <li>From <span class="formula">A={a,b,c}</span> to <span class="formula">B={1,2}</span>, test each assignment: (i) <span class="formula">a→1,b→2,c→2</span>; (ii) <span class="formula">a→1,b→2</span>; (iii) <span class="formula">a→1,a→2,b→2,c→1</span>. Explain each verdict.</li>
+          <li>For <span class="formula">h:A={a,b,c}→B={1,2,3}</span> with <span class="formula">h(a)=1,h(b)=1,h(c)=2</span>, give the range. Is <span class="formula">h</span> one-to-one? Onto? Would it become onto if the codomain were <span class="formula">{1,2}</span>?</li>
+          <li>For <span class="formula">f(x)=x+1</span> on <span class="formula">A={1,2,3}</span> to <span class="formula">B={2,3,4}</span>, and <span class="formula">g(y)=2y</span> from <span class="formula">B</span> to <span class="formula">C={4,6,8}</span>, find <span class="formula">(g∘f)(1)</span> and <span class="formula">(g∘f)(3)</span>. State <span class="formula">f⁻¹(4)</span>.</li>
+          <li>Can you invert <span class="formula">m:{a,b,c}→{M,A}</span> with <span class="formula">m(a)=M,m(b)=M,m(c)=A</span> on its stated whole codomain? Explain why or why not.</li>
+          <li>A student says: “The range and codomain are always the same because both are outputs.” Give a small counterexample using a function from this chapter.</li>
+        </ol>
+        <div class="callout"><strong>Exit check:</strong> Give one sentence each for the difference between <span class="formula">∈</span> and <span class="formula">⊆</span>, and between “function” and “one-to-one function.”</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting statement</th><th>Correction</th></tr></thead><tbody>
+          <tr><td>Union means exactly one of the two sets.</td><td>Union includes the overlap as well.</td></tr>
+          <tr><td>S∖F and F∖S mean the same thing.</td><td>Difference depends on which set comes first.</td></tr>
+          <tr><td>(x,y) and (y,x) are interchangeable.</td><td>Order identifies the input and output roles.</td></tr>
+          <tr><td>Two inputs sharing an output break a function.</td><td>Sharing is allowed; it breaks one-to-one.</td></tr>
+          <tr><td>Every function has an inverse on its codomain.</td><td>An inverse on the whole codomain needs one-to-one and onto.</td></tr>
+          <tr><td>In g∘f, perform g first.</td><td>Evaluate the inner function f first.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <ul>
+          <li>Sets describe membership. Union, intersection and difference answer different filtering questions.</li>
+          <li>A Cartesian product lists all ordered input-output possibilities.</li>
+          <li>A function assigns every domain input exactly one output; its range may be smaller than its codomain.</li>
+          <li>One-to-one prevents shared outputs; onto reaches every codomain element.</li>
+          <li>Composition applies the inner function first. An inverse on the stated whole codomain exists when a function is both one-to-one and onto.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 250" role="img" aria-labelledby="map-title">
+            <title id="map-title">Sets lead to ordered pairs, which can form a function; composition and inverse build on functions</title>
+            <defs><marker id="arrow5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#087f84"/></marker></defs>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle" fill="#10263f">
+              <rect x="20" y="28" width="145" height="70" rx="12" fill="#e8f6f4" stroke="#087f84"/><text x="92" y="58" font-size="16" font-weight="bold">Sets</text><text x="92" y="80" font-size="13">members</text>
+              <rect x="194" y="28" width="145" height="70" rx="12" fill="#e8f6f4" stroke="#087f84"/><text x="266" y="58" font-size="16" font-weight="bold">Product</text><text x="266" y="80" font-size="13">ordered pairs</text>
+              <rect x="368" y="28" width="145" height="70" rx="12" fill="#e8f6f4" stroke="#087f84"/><text x="440" y="58" font-size="16" font-weight="bold">Function</text><text x="440" y="80" font-size="13">one output/input</text>
+              <rect x="542" y="28" width="145" height="70" rx="12" fill="#f2eef9" stroke="#66539c"/><text x="614" y="58" font-size="16" font-weight="bold">Properties</text><text x="614" y="80" font-size="13">one-to-one, onto</text>
+              <rect x="266" y="159" width="168" height="62" rx="12" fill="#f2eef9" stroke="#66539c"/><text x="350" y="188" font-size="16" font-weight="bold">Composition</text><text x="350" y="208" font-size="13">combine two maps</text>
+              <rect x="481" y="159" width="168" height="62" rx="12" fill="#f2eef9" stroke="#66539c"/><text x="565" y="188" font-size="16" font-weight="bold">Inverse</text><text x="565" y="208" font-size="13">recover the input</text>
+            </g>
+            <path d="M165 63 H186 M339 63 H360 M513 63 H534 M440 98 V134 H350 V151 M614 98 V151 H565" fill="none" stroke="#087f84" stroke-width="3" marker-end="url(#arrow5)"/>
+          </svg>
+          <figcaption>A function selects exactly one output for each input; further properties decide what can be combined or reversed.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Key Terms -->
+      <section class="chapter" id="terms">
+        <h2>17 · Key Terms</h2>
+        <dl>
+          <dt>Set; subset</dt><dd>A collection; a set whose every member is in another set.</dd>
+          <dt>Cartesian product</dt><dd>All ordered pairs formed from two sets.</dd>
+          <dt>Function</dt><dd>A mapping giving each domain input exactly one output.</dd>
+          <dt>Domain; codomain; range</dt><dd>Allowed inputs; declared possible outputs; outputs actually produced.</dd>
+          <dt>One-to-one; onto</dt><dd>No two inputs share an output; every codomain element is reached.</dd>
+          <dt>Composition; inverse</dt><dd>Apply functions in sequence; reverse a one-to-one and onto mapping on its stated domain and codomain.</dd>
+        </dl>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>18 · Looking Ahead</h2>
+        <p>Next week we study <strong>relations</strong>, which also use ordered pairs but need not assign exactly one output to each input. We will compare two kinds of relationship in an intelligent learning system: grouping learners and ordering modules by prerequisites.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Function Inspector cards</h3>
+        <p>Card 1 is a function with inverse: all three inputs have one output, outputs differ, and all of B is reached. Card 2 is a function without inverse: a and b share 1, and 2 is unused. Card 3 is not a function: a has two outputs. Card 4 is a function without inverse: it reaches both values in B={1,2}, so it is onto, but a and b share 1, so it is not one-to-one. Card 4 has a smaller codomain than Card 2.</p>
+        <h3>1 · Set operations</h3><p><span class="formula">F∖S={Eman}</span>, <span class="formula">S∩F={Chen,Diya}</span>, and <span class="formula">U∖(S∪F)={Bilal}</span>. Yes, <span class="formula">S∩F⊆S</span>.</p>
+        <h3>2 · Product</h3><p><span class="formula">X×Y={(p,0),(p,1),(p,2),(q,0),(q,1),(q,2)}</span>; six pairs. <span class="formula">(0,p)∉X×Y</span> because 0 is not an element of X.</p>
+        <h3>3 · Function test</h3><p>(i) Yes, each of a, b and c has exactly one output, though b and c share 2. (ii) No: c has none. (iii) No: a has two outputs.</p>
+        <h3>4 · Range and codomain</h3><p>Range <span class="formula">={1,2}</span>. Not one-to-one because a and b share 1. Not onto <span class="formula">{1,2,3}</span> because 3 is unused; onto if the codomain is <span class="formula">{1,2}</span>.</p>
+        <h3>5 · Composition and inverse</h3><p><span class="formula">(g∘f)(1)=g(2)=4</span>, <span class="formula">(g∘f)(3)=g(4)=8</span>, and <span class="formula">f⁻¹(4)=3</span>.</p>
+        <h3>6 · Reversing a label</h3><p>No inverse function on <span class="formula">{M,A}</span>: M could have come from a or b, so it has no unique original input.</p>
+        <h3>7 · Unused codomain value</h3><p>The function <span class="formula">h:{a,b,c}→{1,2,3}</span> with outputs 1,1,2 has range <span class="formula">{1,2}</span>, smaller than codomain <span class="formula">{1,2,3}</span>.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 05 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Function Inspector cases: update content here without changing event handlers.
+    const inspectorCases = [
+      {
+        domain: "A = {a, b, c}; B = {1, 2, 3}",
+        arrows: ["a → 1", "b → 2", "c → 3"],
+        verdict: "inverse",
+        explanation: "Each input has one output. All outputs differ (one-to-one), and 1, 2, 3 are all reached (onto). The inverse maps each output back to its unique input."
+      },
+      {
+        domain: "A = {a, b, c}; B = {1, 2, 3}",
+        arrows: ["a → 1", "b → 1", "c → 3"],
+        verdict: "function",
+        explanation: "Each input has one output, so it is a function. a and b share 1, so it is not one-to-one; 2 is unused, so it is not onto. No inverse exists on the stated B."
+      },
+      {
+        domain: "A = {a, b, c}; B = {1, 2, 3}",
+        arrows: ["a → 1", "a → 2", "b → 2", "c → 3"],
+        verdict: "not-function",
+        explanation: "Input a has two different outputs. That violates the function rule; one-to-one and onto tests for a function do not apply."
+      },
+      {
+        domain: "A = {a, b, c}; B = {1, 2}",
+        arrows: ["a → 1", "b → 1", "c → 2"],
+        verdict: "function",
+        explanation: "Each input has one output. Both 1 and 2 are reached, so it is onto this B; a and b share 1, so it is not one-to-one and has no inverse on B."
+      }
+    ];
+
+    let inspectorIndex = 0;
+
+    function showInspectorCase() {
+      const current = inspectorCases[inspectorIndex];
+      document.getElementById("inspector-title").textContent = "Card " + (inspectorIndex + 1) + " of " + inspectorCases.length;
+      document.getElementById("inspector-domain").textContent = current.domain;
+      const diagram = document.getElementById("inspector-arrows");
+      diagram.replaceChildren();
+      current.arrows.forEach(function (arrow) {
+        const pair = document.createElement("span");
+        pair.className = "arrow-pair";
+        pair.textContent = arrow;
+        diagram.appendChild(pair);
+      });
+      document.getElementById("inspector-feedback").textContent = "Choose a verdict to reveal the reasoning.";
+      document.querySelectorAll("#inspector-choices button").forEach(function (button) {
+        button.setAttribute("aria-pressed", "false");
+      });
+      document.getElementById("next-card").textContent = inspectorIndex === inspectorCases.length - 1 ? "Back to first card" : "Next card";
+    }
+
+    function evaluateInspectorChoice(button) {
+      const current = inspectorCases[inspectorIndex];
+      const correct = button.dataset.verdict === current.verdict;
+      document.querySelectorAll("#inspector-choices button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", choice === button ? "true" : "false");
+      });
+      document.getElementById("inspector-feedback").textContent = (correct ? "Correct. " : "Try this reasoning. ") + current.explanation;
+    }
+
+    function setupInspector() {
+      document.querySelectorAll("#inspector-choices button").forEach(function (button) {
+        button.addEventListener("click", function () { evaluateInspectorChoice(button); });
+      });
+      document.getElementById("next-card").addEventListener("click", function () {
+        inspectorIndex = (inspectorIndex + 1) % inspectorCases.length;
+        showInspectorCase();
+      });
+      document.getElementById("reset-cards").addEventListener("click", function () {
+        inspectorIndex = 0;
+        showInspectorCase();
+      });
+      showInspectorCase();
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      setupInspector();
+    }
+
+    document.addEventListener("DOMContentLoaded", initModule);
+  </script>
+</body>
+</html>

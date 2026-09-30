@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 9 of Discrete Mathematics for BSAI: discrete sequences and finite series.">
+  <title>Week 9 · Discrete Sequences and Finite Series</title>
+  <style>
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "aₙ  ∑"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    /* Week 4 interactive mosaic */
+    .mosaic-grid { display: grid; gap: 3px; width: max-content; margin: 1rem auto; padding: .5rem; background: #e8f6f4; border-radius: .6rem; }
+    .mosaic-tile { width: 24px; height: 24px; border-radius: 3px; background: #087f84; }
+    .mosaic-tile.new { background: #66539c; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 1.4rem; }
+    .button-row button { border: 0; border-radius: .5rem; background: var(--teal); color: white; padding: .48rem .82rem; }
+    .button-row button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .button-row button:disabled { opacity: .5; cursor: default; }
+    .concept-figure .diagram-title { font: bold 17px system-ui, sans-serif; fill: #10263f; }
+    .concept-figure .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    dl { display: grid; grid-template-columns: minmax(125px, 170px) 1fr; gap: .5rem 1rem; }
+    dt { font-weight: 700; color: var(--navy); }
+    dd { margin: 0; }
+    @media (max-width: 600px) { dl { grid-template-columns: 1fr; } }
+    @media print { .solutions { break-before: page; } }
+  
+    /* Week 5 mapping activity and notation */
+    .mapping-card { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; text-align: center; font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    .arrow-pair { display: inline-block; min-width: 5.8rem; padding: .45rem .7rem; background: white; border: 1px solid #a7ced0; border-radius: .5rem; }
+    .page-footer { color: var(--muted); text-align: center; font-size: .83rem; padding: 1rem; }
+    @media print { .page-footer { display: none; } }
+  
+    /* Week 6 relation-property interaction */
+    .relation-pairs { padding: 1rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .7rem; font: 700 1.02rem/1.6 "DejaVu Sans", Georgia, serif; overflow-x: auto; }
+    .property-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem .9rem; margin: 1rem 0; border: 1px solid #a7ced0; border-radius: .7rem; padding: .7rem 1rem 1rem; }
+    .property-fieldset legend { font-weight: 700; color: var(--navy); padding: 0 .35rem; }
+    .property-fieldset label { display: flex; gap: .5rem; align-items: center; cursor: pointer; }
+    .property-fieldset input { accent-color: var(--teal); width: 1.1rem; height: 1.1rem; }
+    .diagram-title { font: bold 18px system-ui, sans-serif; fill: #10263f; }
+    .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    @media (max-width: 600px) { .property-fieldset { grid-template-columns: 1fr; } }
+  
+    /* Week 7 cycle and algorithm interactions */
+    .day-slider { width: 100%; accent-color: var(--teal); margin: .5rem 0 1rem; }
+    .weekday-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .35rem; }
+    .weekday { text-align: center; padding: .6rem .2rem; background: #e8f6f4; color: var(--navy); border: 1px solid #a7ced0; border-radius: .6rem; font-size: .82rem; font-weight: 700; }
+    .weekday.active { color: white; background: var(--violet); border-color: var(--violet); }
+    .euclid-steps { min-height: 2rem; padding-left: 1.5rem; font-family: "DejaVu Sans", Georgia, serif; font-weight: 700; }
+    @media (max-width: 650px) { .weekday-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  
+    /* Week 9 reading-count and pattern interactions */
+    .reading-results { margin: 1rem 0; }
+    .reading-results .mini { text-align: center; border: 1px solid var(--line); }
+    .big-value { color: var(--navy); font: 700 2.5rem/1.3 Georgia, serif; padding-top: .3rem; }
+    .term-chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: .7rem 0 1.5rem; }
+    .term-chips span { padding: .3rem .6rem; border-radius: 1rem; background: #e8f6f4; color: var(--navy); font-size: .8rem; font-weight: 700; }
+    .pattern-values { font: 700 1.3rem/1.5 "DejaVu Sans", Georgia, serif; color: var(--navy); background: #edf2f7; border-radius: .6rem; padding: .8rem 1rem; }
+    @media print { .reading-results { display: none; } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 09</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Discrete Sequences and Finite Series</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 9 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives</a>
+      <a href="#sequence">03 Sequence and index</a>
+      <a href="#arithmetic">04 Arithmetic pattern</a>
+      <a href="#geometric">05 Geometric pattern</a>
+      <a href="#series">06 Finite series</a>
+      <a href="#sigma">07 Sigma notation</a>
+      <a href="#plot">08 Plot by hand</a>
+      <a href="#activity">09 Reading Count Lab</a>
+      <a href="#systems">10 System interpretation</a>
+      <a href="#python">11 Python/Colab</a>
+      <a href="#practice">12 Practice</a>
+      <a href="#mistakes">13 Common mistakes</a>
+      <a href="#summary">14 Summary</a>
+      <a href="#map">15 Concept map</a>
+      <a href="#terms">16 Key terms</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Today’s Count or Total So Far?</h2>
+        <p class="lead">A device reports the number of messages recorded on five days: <span class="formula">3, 5, 7, 9, 11</span>. A report asks, “What was the count on Day 4?” Another asks, “How many messages were recorded through Day 4?” These questions use the same data but have different answers.</p>
+        <p><strong>Predict:</strong> Day 4 contributes <span class="formula">9</span> messages. Through Day 4 the total is <span class="formula">3+5+7+9=24</span>. We will name an individual value, describe an assumed pattern, and write a finite total without confusing them.</p>
+        <div class="pipeline three" role="img" aria-label="Daily values form an indexed sequence; adding through a chosen day gives a cumulative total">
+          <div><strong>DAY</strong><br>Index n</div>
+          <div><strong>TERM</strong><br>Value on Day n</div>
+          <div><strong>TOTAL</strong><br>Sum through Day n</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>Are we asking for a value <em>at</em> a position, or for everything accumulated <em>through</em> that position?</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 9, you should be able to read an indexed term; describe a small arithmetic or geometric sequence with a term rule; distinguish a sequence from a finite series; calculate a finite sum; expand and write sigma notation; and explain the difference between a daily value and a cumulative total.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>60 min</td><td>Pattern cards, indices and term rules</td></tr>
+          <tr><td>55 min</td><td>Finite sums and sigma notation</td></tr>
+          <tr><td>45 min</td><td>Device-reading scenario and hand plot</td></tr>
+          <tr><td>20 min</td><td>Quick checks and feedback</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–10 and Problems 1–5. <span class="core extension">Optional self-study</span> Colab and extended practice. The discovery cards are ungraded and invite a prediction before feedback.</p>
+      </section>
+
+      <!-- Indexed Sequences -->
+      <section class="chapter" id="sequence">
+        <h2>03 · A Sequence Has Positions</h2>
+        <p>A <strong>sequence</strong> is a list of values in a stated order. We use an <strong>index</strong> to identify a position. For the device counts, write <span class="formula">a₁=3</span>, <span class="formula">a₂=5</span>, <span class="formula">a₃=7</span>, <span class="formula">a₄=9</span>, and <span class="formula">a₅=11</span>. The symbol <span class="formula">a₄</span> refers to one term, not the first four terms added.</p>
+        <div class="table-wrap"><table><thead><tr><th>Day n</th><th>Term aₙ · on that day</th><th>Cumulative total Sₙ · through that day</th></tr></thead><tbody>
+          <tr><td>1</td><td>3</td><td>3</td></tr>
+          <tr><td>2</td><td>5</td><td>3+5=8</td></tr>
+          <tr><td>3</td><td>7</td><td>3+5+7=15</td></tr>
+          <tr><td>4</td><td>9</td><td>3+5+7+9=24</td></tr>
+          <tr><td>5</td><td>11</td><td>3+5+7+9+11=35</td></tr>
+        </tbody></table></div>
+        <p>Here <span class="formula">S₄=24</span> and <span class="formula">a₄=9</span>. The sequence can be a finite list of observations even when no reliable formula for future observations is known.</p>
+        <div class="callout caution"><strong>Quick check:</strong> A report says “Day 3: 15 messages.” Is it using a daily count or a cumulative total? The table shows 15 is the total through Day 3; the Day 3 count is 7.</div>
+      </section>
+
+      <!-- Arithmetic Patterns -->
+      <section class="chapter" id="arithmetic">
+        <h2>04 · Arithmetic Pattern: Add the Same Amount</h2>
+        <p>The example <span class="formula">3,5,7,9,11</span> rises by 2 each time. If we <em>assume this pattern continues</em>, it is an <strong>arithmetic sequence</strong> with first term 3 and common difference 2. At Day <span class="formula">n≥1</span>, there have been <span class="formula">n−1</span> increases after Day 1:</p>
+        <div class="mathline"><span class="formula">aₙ=3+2(n−1)=2n+1,</span> for <span class="formula">n≥1</span>.</div>
+        <div class="example"><h3>Worked prediction under the rule</h3><p><span class="formula">a₆=2(6)+1=13</span>. We can also start at 11 and add 2. This is a prediction <em>conditional on the stated arithmetic model</em>; five actual device readings alone do not guarantee the sixth reading will be 13.</p></div>
+        <p>For a general arithmetic pattern with first term <span class="formula">a₁</span> and difference <span class="formula">d</span>, the term rule is <span class="formula">aₙ=a₁+(n−1)d</span>. Check the starting index before using it.</p>
+      </section>
+
+      <!-- Geometric Patterns -->
+      <section class="chapter" id="geometric">
+        <h2>05 · Geometric Pattern: Multiply by the Same Factor</h2>
+        <p>The list <span class="formula">2,6,18,54</span> multiplies by 3 each time. It is a <strong>geometric sequence</strong> with first term 2 and common ratio 3. From the first term to position <span class="formula">n</span>, we multiply by 3 exactly <span class="formula">n−1</span> times:</p>
+        <div class="mathline"><span class="formula">bₙ=2·3ⁿ⁻¹,</span> for <span class="formula">n≥1</span>.</div>
+        <div class="example"><h3>Work through the index</h3><p><span class="formula">b₁=2·3⁰=2</span>, <span class="formula">b₃=2·3²=18</span>, and <span class="formula">b₅=2·3⁴=162</span>. The first four terms add to <span class="formula">2+6+18+54=80</span>, which is a total, not the fourth term.</p></div>
+        <p>A constant <em>difference</em> signals arithmetic growth; a constant nonzero <em>ratio</em> signals geometric growth in these examples. A short list such as <span class="formula">2,4,8</span> can fit other invented rules too; the claimed pattern is an assumption to test or state.</p>
+      </section>
+
+      <!-- Finite Series -->
+      <section class="chapter" id="series">
+        <h2>06 · From Terms to a Finite Series</h2>
+        <p>A <strong>finite series</strong> is the sum of a specified finite number of terms. If <span class="formula">aₙ</span> is the value at position <span class="formula">n</span>, define <span class="formula">Sₙ=a₁+a₂+···+aₙ</span> for the total through position <span class="formula">n</span>.</p>
+        <div class="mathline"><span class="formula">a₅=11,</span> but <span class="formula">S₅=3+5+7+9+11=35.</span></div>
+        <p>You can total terms one at a time: <span class="formula">S₁=3</span>, <span class="formula">S₂=8</span>, <span class="formula">S₃=15</span>, <span class="formula">S₄=24</span>, <span class="formula">S₅=35</span>. The next total is the old total plus the next term, but this week our focus is reading and adding the finite list. We study recurrence rules explicitly in Week 10.</p>
+        <div class="callout"><strong>Predict → Test → Explain:</strong> Under <span class="formula">aₙ=2n+1</span>, Day 6 contributes 13. The total through Day 6 is <span class="formula">35+13=48</span>. Explain why 13 and 48 answer different questions.</div>
+      </section>
+
+      <!-- Sigma Notation -->
+      <section class="chapter" id="sigma">
+        <h2>07 · Sigma Notation Compresses a Finite Sum</h2>
+        <p>The capital Greek letter <span class="formula">Σ</span> means “add the listed terms.” In <span class="formula">∑ᵢ₌₁⁵(2i+1)</span>, the index <span class="formula">i</span> starts at 1 and ends at 5. Substitute each integer 1,2,3,4,5 into the expression <span class="formula">2i+1</span>, then add.</p>
+        <div class="mathline"><span class="formula">∑ᵢ₌₁⁵(2i+1)=3+5+7+9+11=35.</span></div>
+        <div class="example"><h3>Worked expansion with different limits</h3><p><span class="formula">∑ᵢ₌₂⁴ i²=2²+3²+4²=4+9+16=29</span>. The lower limit is 2, so the term for <span class="formula">i=1</span> is not included. There are three terms: 2,3,4.</p></div>
+        <p>The letter <span class="formula">i</span> only marks positions inside this sum. For example, <span class="formula">∑ⱼ₌₁⁵(2j+1)</span> gives the same total. The limits and the term expression determine the sum.</p>
+        <div class="callout caution"><strong>Quick check:</strong> <span class="formula">∑ᵢ₌₁³(2i+1)</span> is <span class="formula">3+5+7=15</span>, not <span class="formula">a₃=7</span>.</div>
+      </section>
+
+      <!-- Hand Plot -->
+      <section class="chapter" id="plot">
+        <h2>08 · Plot the Term, Then Read the Total</h2>
+        <p>On a hand-drawn graph put Day <span class="formula">n</span> on the horizontal axis and the daily term <span class="formula">aₙ</span> on the vertical axis. Mark the five points <span class="formula">(1,3),(2,5),(3,7),(4,9),(5,11)</span>. These are separate discrete observations; the connecting line below helps the eye follow them and does not add measured days between the integers.</p>
+        <figure class="sequence-figure">
+          <svg viewBox="0 0 680 320" role="img" aria-labelledby="plot-title">
+            <title id="plot-title">Daily terms 3, 5, 7, 9, 11 at Days 1 through 5, compared with cumulative totals 3, 8, 15, 24, 35</title>
+            <g stroke="#c9d8df" stroke-width="1"><line x1="90" y1="250" x2="615" y2="250"/><line x1="90" y1="205" x2="615" y2="205"/><line x1="90" y1="160" x2="615" y2="160"/><line x1="90" y1="115" x2="615" y2="115"/><line x1="90" y1="70" x2="615" y2="70"/></g>
+            <g stroke="#506579" stroke-width="2"><line x1="90" y1="265" x2="620" y2="265"/><line x1="90" y1="45" x2="90" y2="265"/></g>
+            <polyline points="140,247 240,235 340,223 440,211 540,199" fill="none" stroke="#087f84" stroke-width="4"/>
+            <polyline points="140,247 240,217 340,175 440,121 540,55" fill="none" stroke="#66539c" stroke-width="4"/>
+            <g fill="#087f84"><circle cx="140" cy="247" r="6"/><circle cx="240" cy="235" r="6"/><circle cx="340" cy="223" r="6"/><circle cx="440" cy="211" r="6"/><circle cx="540" cy="199" r="6"/></g>
+            <g fill="#66539c"><circle cx="140" cy="247" r="6"/><circle cx="240" cy="217" r="6"/><circle cx="340" cy="175" r="6"/><circle cx="440" cy="121" r="6"/><circle cx="540" cy="55" r="6"/></g>
+            <g font-family="DejaVu Sans,Arial" font-size="13" fill="#203349" text-anchor="middle"><text x="140" y="287">1</text><text x="240" y="287">2</text><text x="340" y="287">3</text><text x="440" y="287">4</text><text x="540" y="287">5</text><text x="355" y="312">Day n</text></g>
+            <text x="90" y="30" fill="#203349" font-family="DejaVu Sans,Arial" font-size="13">Count</text>
+            <text x="470" y="58" fill="#66539c" font-family="DejaVu Sans,Arial" font-size="15" font-weight="bold">Total Sₙ</text>
+            <text x="470" y="192" fill="#087f84" font-family="DejaVu Sans,Arial" font-size="15" font-weight="bold">Daily aₙ</text>
+          </svg>
+          <figcaption>Figure 1. Both graphs use the same days, but their vertical values represent different quantities.</figcaption>
+        </figure>
+        <p>To read the cumulative plot, use the totals <span class="formula">3,8,15,24,35</span>. The fifth cumulative point is <span class="formula">(5,35)</span>, not <span class="formula">(5,11)</span>.</p>
+      </section>
+
+      <!-- Reading Count Lab Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>09 · Reading Count Lab</h2>
+        <p><span class="core">Predict → Test → Explain</span> Use the stated model <span class="formula">aₙ=2n+1</span> for <span class="formula">n≥1</span>. Predict the daily value and total before moving the control. Then classify a few small pattern cards.</p>
+        <div class="interactive screen-only" id="reading-lab">
+          <h3>One day versus the total</h3>
+          <label for="day-control">Select Day <output id="selected-day">5</output>:</label>
+          <input id="day-control" class="day-slider" type="range" min="1" max="8" value="5">
+          <div class="grid2 reading-results">
+            <div class="mini"><strong>Term aₙ · this day</strong><div id="daily-value" class="big-value">11</div></div>
+            <div class="mini"><strong>Total Sₙ · through this day</strong><div id="cumulative-value" class="big-value">35</div></div>
+          </div>
+          <p id="reading-explanation" class="status" aria-live="polite"></p>
+          <div id="term-chips" class="term-chips" aria-label="Terms included in the selected total"></div>
+          <h3 id="pattern-title">Pattern card 1 of 4</h3>
+          <p id="pattern-values" class="pattern-values"></p>
+          <div class="choices" id="pattern-choices"><button type="button" data-kind="arithmetic">Arithmetic</button><button type="button" data-kind="geometric">Geometric</button><button type="button" data-kind="neither">Neither pattern</button></div>
+          <p id="pattern-feedback" class="status" aria-live="polite">Compare differences and ratios, then choose.</p>
+          <div class="button-row"><button type="button" id="next-pattern">Next card</button><button type="button" class="secondary" id="reset-pattern">Start over</button></div>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Reading Count Lab</h3>
+          <p><strong>Predict:</strong> Under <span class="formula">aₙ=2n+1</span>, Day 6 has <span class="formula">a₆=____</span> and the total through Day 6 is <span class="formula">S₆=____</span>. Explain why these are different: ______________________________.</p>
+          <div class="table-wrap"><table><thead><tr><th>Day n</th><th>Daily aₙ</th><th>Total Sₙ</th></tr></thead><tbody>
+            <tr><td>1</td><td>3</td><td>____</td></tr><tr><td>2</td><td>5</td><td>____</td></tr><tr><td>3</td><td>7</td><td>____</td></tr><tr><td>4</td><td>9</td><td>____</td></tr><tr><td>5</td><td>11</td><td>____</td></tr>
+          </tbody></table></div>
+          <p><strong>Pattern cards:</strong> Classify and give a difference or ratio: (A) 4,7,10,13; (B) 3,6,12,24; (C) 2,3,5,8; (D) 10,7,4,1.</p>
+          <p>A: __________________ B: __________________ C: __________________ D: __________________</p>
+        </div>
+      </section>
+
+      <!-- System Interpretation -->
+      <section class="chapter" id="systems">
+        <h2>10 · What the System May Report</h2>
+        <p>A dashboard can show two honest numbers: “11 messages on Day 5” and “35 messages through Day 5.” The first uses <span class="formula">a₅</span>; the second uses <span class="formula">S₅</span>. A plotted point must label which quantity its vertical axis represents.</p>
+        <p>Observing a neat five-day pattern does not prove future counts will follow <span class="formula">2n+1</span>. If the rule is adopted as a model, the Day 6 calculation is conditional on that assumption. A real device may miss readings, count duplicates, or change behavior; the mathematical sequence describes the values and rule that were supplied.</p>
+        <div class="callout"><strong>Quick interpretation:</strong> If Day 5 contributes 11 and Day 6 contributes 13, the two-day total is 24, while the total through Day 6 is 48. State which days are included before adding.</div>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>11 · Optional Colab: Tabulate and Check</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Complete the table and hand plot before using Python. Each small cell introduces one idea and tests a calculation you already understand.</p>
+        <h3>1 · Store the observed terms</h3>
+        <p>Square brackets make a <strong>list</strong>; the order of entries is preserved. The list below contains the five daily counts.</p>
+        <pre><code>readings = [3, 5, 7, 9, 11]
+print(readings)</code></pre>
+        <h3>2 · Read a position</h3>
+        <p>Python list positions start at 0. Thus index 0 holds Day 1, and index 4 holds Day 5. The mathematical index <span class="formula">n</span> and Python position <span class="formula">n−1</span> refer to the same entry here.</p>
+        <pre><code>print(readings[0])
+print(readings[4])</code></pre>
+        <p>The outputs are <span class="formula">3</span> and <span class="formula">11</span>. Using <span class="formula">readings[5]</span> would ask for a sixth stored item, which this five-item list does not contain.</p>
+        <h3>3 · Visit each term</h3>
+        <p>The <span class="formula">for</span> line takes one value from the list at a time. The indented line prints that value. Read the two lines together: “for each count in readings, print the count.”</p>
+        <pre><code>for count in readings:
+    print(count)</code></pre>
+        <h3>4 · Compare the finite sum</h3>
+        <p><span class="formula">sum(readings)</span> adds the five stored values, so predict 35 before running:</p>
+        <pre><code>print(sum(readings))</code></pre>
+        <p>Finally, if you want a plotted check in Colab, <span class="formula">matplotlib.pyplot</span> is a plotting library. This cell pairs each day with its daily reading and draws only those five marked observations.</p>
+        <pre><code>import matplotlib.pyplot as plt
+days = [1, 2, 3, 4, 5]
+plt.plot(days, readings, marker="o")
+plt.xlabel("Day")
+plt.ylabel("Daily messages")
+plt.show()</code></pre>
+        <p>The plot is a visual check of the five values; it does not establish a rule for unobserved days. Explain in a sentence how its vertical values differ from a cumulative-total plot.</p>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>12 · Practice</h2>
+        <p>Work with the mathematics first. Selected solutions are at the end.</p>
+        <ol>
+          <li>The arithmetic list is <span class="formula">4,7,10,13,…</span>, beginning at <span class="formula">n=1</span>. Find a term rule, the sixth term, and the total of the first six terms.</li>
+          <li>The geometric list is <span class="formula">2,6,18,54,…</span>. State its first term and ratio, find the fifth term, and add the first four terms.</li>
+          <li>Expand and calculate <span class="formula">∑ᵢ₌₂⁵(i+1)</span>. How many terms does it include?</li>
+          <li>Write <span class="formula">3+5+7+9+11</span> with sigma notation using the expression <span class="formula">2i+1</span>.</li>
+          <li>For daily readings <span class="formula">3,5,7,9,11</span>, state <span class="formula">a₄</span> and <span class="formula">S₄</span>, and explain what each counts.</li>
+          <li>A learner writes <span class="formula">S₃=7</span> for those readings. Identify the confusion and correct the value.</li>
+          <li>Plot by hand the daily values <span class="formula">2,4,1,3</span> for Days 1–4. Give the four coordinate pairs and their finite total. Do the four observations alone justify a unique future term rule?</li>
+        </ol>
+        <div class="callout"><strong>Exit check:</strong> In one sentence, distinguish <span class="formula">aₙ</span> from <span class="formula">Sₙ</span>; in another, explain what the limits on <span class="formula">Σ</span> tell you.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>13 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Use a₅ and S₅ interchangeably.</td><td>a₅ is one term; S₅ adds five terms.</td></tr>
+          <tr><td>Put Day 1 at Python index 1.</td><td>The first list item is index 0; Day n uses index n−1 in this example.</td></tr>
+          <tr><td>Always subtract neighboring terms.</td><td>For geometric patterns, test a common ratio; for arithmetic patterns, test a common difference.</td></tr>
+          <tr><td>Start a sigma sum at 1 regardless of its limit.</td><td>Read the lower and upper limits before substituting.</td></tr>
+          <tr><td>Infer a guaranteed forecast from a short pattern.</td><td>State the assumed rule and separate its prediction from observed data.</td></tr>
+          <tr><td>Label a cumulative plot as daily values.</td><td>Check the vertical axis and the quantity at each point.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>14 · Summary</h2>
+        <ul>
+          <li>A sequence lists indexed terms such as <span class="formula">a₁,a₂,…</span>. An arithmetic rule uses a constant difference; a geometric rule uses a constant ratio.</li>
+          <li>A finite series adds a stated number of terms: <span class="formula">Sₙ=a₁+···+aₙ</span>.</li>
+          <li>Sigma notation states the index, its start and end, and the expression to add.</li>
+          <li>Daily and cumulative plots answer different questions even when they come from the same observations.</li>
+          <li>Pattern rules should be stated as assumptions when only a short observed list is available.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>15 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 310" role="img" aria-labelledby="map-title">
+            <title id="map-title">Indexed sequence branches into arithmetic and geometric term rules; adding finite terms gives a series represented by sigma notation</title>
+            <defs><marker id="arrow9" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#087f84"/></marker></defs>
+            <rect x="235" y="15" width="230" height="65" rx="14" fill="#e8f6f4" stroke="#087f84"/><text x="350" y="43" text-anchor="middle" class="diagram-title">SEQUENCE</text><text x="350" y="65" text-anchor="middle" class="diagram-small">a₁, a₂, a₃, …</text>
+            <path d="M350 80 V106 H165 V125 M350 106 H535 V125" fill="none" stroke="#087f84" stroke-width="3" marker-end="url(#arrow9)"/>
+            <rect x="25" y="133" width="280" height="83" rx="13" fill="#e8f6f4" stroke="#087f84"/><rect x="395" y="133" width="280" height="83" rx="13" fill="#f2eef9" stroke="#66539c"/>
+            <text x="165" y="164" text-anchor="middle" class="diagram-title">ARITHMETIC</text><text x="165" y="190" text-anchor="middle" class="diagram-small">add a constant difference</text>
+            <text x="535" y="164" text-anchor="middle" class="diagram-title">GEOMETRIC</text><text x="535" y="190" text-anchor="middle" class="diagram-small">multiply by a constant ratio</text>
+            <path d="M165 216 V243 H350 M535 216 V243 H350 V252" fill="none" stroke="#087f84" stroke-width="3" marker-end="url(#arrow9)"/>
+            <rect x="225" y="259" width="250" height="45" rx="12" fill="#e8f6f4" stroke="#087f84"/><text x="350" y="288" text-anchor="middle" class="diagram-title">FINITE SUM Sₙ = ∑ aᵢ</text>
+          </svg>
+          <figcaption>First identify the term rule. Add only the specified terms when the question asks for a total.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Key Terms -->
+      <section class="chapter" id="terms">
+        <h2>16 · Key Terms</h2>
+        <dl>
+          <dt>Sequence; index</dt><dd>An ordered list of values; a position in that list.</dd>
+          <dt>Term aₙ</dt><dd>The value at position n.</dd>
+          <dt>Arithmetic; geometric</dt><dd>Constant difference between consecutive terms; constant ratio between consecutive terms.</dd>
+          <dt>Finite series Sₙ</dt><dd>The sum of a specified finite number of terms, often the first n.</dd>
+          <dt>Sigma notation</dt><dd>A compact instruction to add expressions over stated integer index limits.</dd>
+          <dt>Cumulative total</dt><dd>The value added through a chosen position, rather than only at that position.</dd>
+        </dl>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>In Week 10 we will describe patterns by an initial value and a rule for obtaining the <em>next</em> value from earlier values. Today’s distinction between a term and a total prepares us to read those recurrence rules carefully.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Reading Count Lab</h3><p><span class="formula">a₆=13</span> and <span class="formula">S₆=3+5+7+9+11+13=48</span>. The first is only Day 6; the second includes Days 1–6. Totals for Days 1–5 are <span class="formula">3,8,15,24,35</span>. Card A is arithmetic (difference +3); B geometric (ratio 2); C neither constant difference nor constant ratio; D arithmetic (difference −3).</p>
+        <h3>1 · Arithmetic list</h3><p>First term 4 and difference 3 give <span class="formula">aₙ=4+3(n−1)=3n+1</span>. <span class="formula">a₆=19</span>; the first six terms <span class="formula">4+7+10+13+16+19=69</span>.</p>
+        <h3>2 · Geometric list</h3><p>First term 2, ratio 3; <span class="formula">bₙ=2·3ⁿ⁻¹</span>. Thus <span class="formula">b₅=162</span> and <span class="formula">2+6+18+54=80</span>.</p>
+        <h3>3 · Expand sigma</h3><p><span class="formula">∑ᵢ₌₂⁵(i+1)=3+4+5+6=18</span>, four terms.</p>
+        <h3>4 · Write sigma</h3><p><span class="formula">∑ᵢ₌₁⁵(2i+1)</span>.</p>
+        <h3>5–6 · Term versus total</h3><p><span class="formula">a₄=9</span> counts Day 4; <span class="formula">S₄=24</span> counts Days 1–4. Writing <span class="formula">S₃=7</span> confuses the third term with the total: <span class="formula">a₃=7</span>, but <span class="formula">S₃=3+5+7=15</span>.</p>
+        <h3>7 · Hand plot</h3><p>Points <span class="formula">(1,2),(2,4),(3,1),(4,3)</span>; total <span class="formula">2+4+1+3=10</span>. Four observations alone do not identify a unique future rule.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 09 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Pattern-card content is separate from the interaction handlers.
+    const patternCards = [
+      { values: "4, 7, 10, 13", kind: "arithmetic", explanation: "The difference is +3 each time; the ratios are not constant." },
+      { values: "3, 6, 12, 24", kind: "geometric", explanation: "Each term is twice the previous one; the ratio is 2." },
+      { values: "2, 3, 5, 8", kind: "neither", explanation: "The differences 1, 2, 3 are not constant, and neither are the consecutive ratios." },
+      { values: "10, 7, 4, 1", kind: "arithmetic", explanation: "The difference is −3 each time. Arithmetic sequences can decrease." }
+    ];
+    let patternIndex = 0;
+
+    function updateReadingLab() {
+      const day = Number(document.getElementById("day-control").value);
+      const daily = 2 * day + 1;
+      let total = 0;
+      const chips = document.getElementById("term-chips");
+      chips.replaceChildren();
+      for (let index = 1; index <= day; index += 1) {
+        const value = 2 * index + 1;
+        total += value;
+        const chip = document.createElement("span");
+        chip.textContent = "Day " + index + ": " + value;
+        chips.appendChild(chip);
+      }
+      document.getElementById("selected-day").textContent = String(day);
+      document.getElementById("daily-value").textContent = String(daily);
+      document.getElementById("cumulative-value").textContent = String(total);
+      document.getElementById("reading-explanation").textContent =
+        "The total includes " + day + (day === 1 ? " term" : " terms") + "; the daily value is only the last one.";
+    }
+
+    function showPatternCard() {
+      const current = patternCards[patternIndex];
+      document.getElementById("pattern-title").textContent = "Pattern card " + (patternIndex + 1) + " of " + patternCards.length;
+      document.getElementById("pattern-values").textContent = current.values;
+      document.getElementById("pattern-feedback").textContent = "Compare differences and ratios, then choose.";
+      document.querySelectorAll("#pattern-choices button").forEach(function (button) {
+        button.setAttribute("aria-pressed", "false");
+      });
+      document.getElementById("next-pattern").textContent = patternIndex === patternCards.length - 1 ? "Back to first card" : "Next card";
+    }
+
+    function explainPatternChoice(button) {
+      const current = patternCards[patternIndex];
+      document.querySelectorAll("#pattern-choices button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", choice === button ? "true" : "false");
+      });
+      document.getElementById("pattern-feedback").textContent =
+        (button.dataset.kind === current.kind ? "Correct. " : "Check the changes. ") + current.explanation;
+    }
+
+    function setupPatternCards() {
+      document.querySelectorAll("#pattern-choices button").forEach(function (button) {
+        button.addEventListener("click", function () { explainPatternChoice(button); });
+      });
+      document.getElementById("next-pattern").addEventListener("click", function () {
+        patternIndex = (patternIndex + 1) % patternCards.length;
+        showPatternCard();
+      });
+      document.getElementById("reset-pattern").addEventListener("click", function () {
+        patternIndex = 0;
+        showPatternCard();
+      });
+      showPatternCard();
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("day-control").addEventListener("input", updateReadingLab);
+      setupPatternCards();
+      updateReadingLab();
+    }
+
+    document.addEventListener("DOMContentLoaded", initModule);
+  </script>
+</body>
+</html>

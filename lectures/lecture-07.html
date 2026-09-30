@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 7 of Discrete Mathematics for BSAI: introductory number theory and midterm synthesis.">
+  <title>Week 7 · Introductory Number Theory and Midterm Synthesis</title>
+  <style>
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "∣  ≡  %"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    /* Week 4 interactive mosaic */
+    .mosaic-grid { display: grid; gap: 3px; width: max-content; margin: 1rem auto; padding: .5rem; background: #e8f6f4; border-radius: .6rem; }
+    .mosaic-tile { width: 24px; height: 24px; border-radius: 3px; background: #087f84; }
+    .mosaic-tile.new { background: #66539c; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 1.4rem; }
+    .button-row button { border: 0; border-radius: .5rem; background: var(--teal); color: white; padding: .48rem .82rem; }
+    .button-row button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .button-row button:disabled { opacity: .5; cursor: default; }
+    .concept-figure .diagram-title { font: bold 17px system-ui, sans-serif; fill: #10263f; }
+    .concept-figure .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    dl { display: grid; grid-template-columns: minmax(125px, 170px) 1fr; gap: .5rem 1rem; }
+    dt { font-weight: 700; color: var(--navy); }
+    dd { margin: 0; }
+    @media (max-width: 600px) { dl { grid-template-columns: 1fr; } }
+    @media print { .solutions { break-before: page; } }
+  
+    /* Week 5 mapping activity and notation */
+    .mapping-card { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .75rem; padding: 1rem; text-align: center; font-size: 1.15rem; font-weight: 700; letter-spacing: .02em; }
+    .arrow-pair { display: inline-block; min-width: 5.8rem; padding: .45rem .7rem; background: white; border: 1px solid #a7ced0; border-radius: .5rem; }
+    .page-footer { color: var(--muted); text-align: center; font-size: .83rem; padding: 1rem; }
+    @media print { .page-footer { display: none; } }
+  
+    /* Week 6 relation-property interaction */
+    .relation-pairs { padding: 1rem; background: #eef4f8; border: 1px solid var(--line); border-radius: .7rem; font: 700 1.02rem/1.6 "DejaVu Sans", Georgia, serif; overflow-x: auto; }
+    .property-fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem .9rem; margin: 1rem 0; border: 1px solid #a7ced0; border-radius: .7rem; padding: .7rem 1rem 1rem; }
+    .property-fieldset legend { font-weight: 700; color: var(--navy); padding: 0 .35rem; }
+    .property-fieldset label { display: flex; gap: .5rem; align-items: center; cursor: pointer; }
+    .property-fieldset input { accent-color: var(--teal); width: 1.1rem; height: 1.1rem; }
+    .diagram-title { font: bold 18px system-ui, sans-serif; fill: #10263f; }
+    .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    @media (max-width: 600px) { .property-fieldset { grid-template-columns: 1fr; } }
+  
+    /* Week 7 cycle and algorithm interactions */
+    .day-slider { width: 100%; accent-color: var(--teal); margin: .5rem 0 1rem; }
+    .weekday-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .35rem; }
+    .weekday { text-align: center; padding: .6rem .2rem; background: #e8f6f4; color: var(--navy); border: 1px solid #a7ced0; border-radius: .6rem; font-size: .82rem; font-weight: 700; }
+    .weekday.active { color: white; background: var(--violet); border-color: var(--violet); }
+    .euclid-steps { min-height: 2rem; padding-left: 1.5rem; font-family: "DejaVu Sans", Georgia, serif; font-weight: 700; }
+    @media (max-width: 650px) { .weekday-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 07</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Introductory Number Theory and Midterm Synthesis</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 7 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives</a>
+      <a href="#divisibility">03 Divisibility</a>
+      <a href="#primes">04 Primes</a>
+      <a href="#gcd">05 GCD</a>
+      <a href="#euclid">06 Euclidean algorithm</a>
+      <a href="#remainders">07 Remainders</a>
+      <a href="#clock">08 Seven-day cycle</a>
+      <a href="#congruence">09 Congruence</a>
+      <a href="#activity">10 Number Detective</a>
+      <a href="#check-code">11 Toy check code</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#synthesis">13 Midterm synthesis</a>
+      <a href="#diagnostic">14 Diagnostic</a>
+      <a href="#mistakes">15 Common mistakes</a>
+      <a href="#summary">16 Summary</a>
+      <a href="#map">17 Concept map</a>
+      <a href="#terms">18 Key terms</a>
+      <a href="#next">19 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: Packs and Cycles</h2>
+        <p class="lead">A coordinator has 24 red cards and 18 blue cards. She wants the greatest possible number of identical packs with no cards left over. A separate weekly rota starts on Monday as Day 0. Which weekday is Day 17?</p>
+        <p><strong>Predict first:</strong> Six packs work: each contains 4 red and 3 blue cards. Day 17 is Thursday if Day 0 is Monday. How can we justify the greatest pack count, and why does a seven-day cycle lead to Thursday?</p>
+        <div class="pipeline three" role="img" aria-label="Counts lead to common divisors and a greatest number of packs; days lead to a remainder and a weekday">
+          <div><strong>PACKS</strong><br>Common divisors</div>
+          <div><strong>CYCLES</strong><br>Remainders</div>
+          <div><strong>DECISIONS</strong><br>6 packs; Thursday</div>
+        </div>
+        <div class="lens"><h3>Two mathematical questions</h3><p>Which positive whole number divides both counts? What remains after complete cycles of seven? Divisibility, greatest common divisors and modular arithmetic make these answers precise.</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 7, you should be able to test divisibility; distinguish primes from composite numbers; find a small greatest common divisor; perform the Euclidean algorithm; calculate a remainder; interpret <span class="formula">a≡b (mod m)</span>; and choose a suitable idea from Weeks 1–7 for a short mixed problem.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>35 min</td><td>Divisibility and primes</td></tr>
+          <tr><td>35 min</td><td>GCD and Euclidean algorithm in pairs</td></tr>
+          <tr><td>40 min</td><td>Remainders, clock game and explanation</td></tr>
+          <tr><td>50 min</td><td>Integrated revision across Weeks 1–7</td></tr>
+          <tr><td>20 min</td><td>Ungraded diagnostic and feedback</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–10 and 13–14. <span class="core extension">Optional self-study</span> The toy check-code illustration and Colab verification. The diagnostic reveals what to revise; it is not the Week 8 midterm.</p>
+      </section>
+
+      <!-- Divisibility -->
+      <section class="chapter" id="divisibility">
+        <h2>03 · Divisibility Means No Remainder</h2>
+        <p>When 18 cards can be arranged in equal groups of 3 with none left, we say <strong>3 divides 18</strong>, written <span class="formula">3∣18</span>. In general, for a nonzero integer <span class="formula">a</span>, <span class="formula">a∣b</span> means there is an integer <span class="formula">k</span> with <span class="formula">b=ak</span>. For example, <span class="formula">18=3×6</span>, so <span class="formula">3∣18</span>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Claim</th><th>Check</th><th>Verdict</th></tr></thead><tbody>
+          <tr><td>4∣24</td><td>24=4×6</td><td>True</td></tr>
+          <tr><td>5∣24</td><td>24=5×4+4</td><td>False; 4 left over</td></tr>
+          <tr><td>6∣18</td><td>18=6×3</td><td>True</td></tr>
+        </tbody></table></div>
+        <p>The vertical bar in <span class="formula">3∣18</span> says “divides”; it is not a fraction. A <strong>multiple</strong> of 3 has the form <span class="formula">3k</span>, while a <strong>divisor</strong> of 18 is a number that divides 18 exactly.</p>
+      </section>
+
+      <!-- Primes -->
+      <section class="chapter" id="primes">
+        <h2>04 · Primes Are the Basic Positive Factors</h2>
+        <p>A <strong>prime</strong> is a positive integer greater than 1 with exactly two positive divisors: 1 and itself. A positive integer greater than 1 with more than two positive divisors is <strong>composite</strong>. The number 1 is neither prime nor composite.</p>
+        <div class="example"><h3>Sort small numbers</h3><p><span class="formula">2</span> is prime: its positive divisors are 1 and 2. <span class="formula">13</span> is prime: only 1 and 13 divide it. <span class="formula">15</span> is composite because <span class="formula">15=3×5</span>. The number 2 is the only even prime: every larger even number is divisible by 2 and has another positive divisor.</p></div>
+        <div class="callout caution"><strong>Quick check:</strong> Is 1 prime because it has no “other” divisor? No. The definition requires <em>exactly two</em> positive divisors; 1 has only one.</div>
+      </section>
+
+      <!-- Greatest Common Divisor -->
+      <section class="chapter" id="gcd">
+        <h2>05 · The Greatest Common Divisor</h2>
+        <p>A <strong>common divisor</strong> divides both numbers. The <strong>greatest common divisor</strong>, written <span class="formula">gcd(a,b)</span>, is the largest positive common divisor. For the opening scenario, the positive divisors of 24 are <span class="formula">{1,2,3,4,6,8,12,24}</span>; those of 18 are <span class="formula">{1,2,3,6,9,18}</span>. Their common divisors are <span class="formula">{1,2,3,6}</span>, so <span class="formula">gcd(24,18)=6</span>.</p>
+        <div class="mathline"><span class="formula">24÷6=4</span> red cards and <span class="formula">18÷6=3</span> blue cards per pack.</div>
+        <p>Why does the GCD give the <em>greatest number</em> of identical packs? If there are <span class="formula">d</span> packs with no leftovers, <span class="formula">d</span> must divide both 24 and 18. The largest allowed <span class="formula">d</span> is their GCD. This interpretation counts packs, not cards per pack.</p>
+      </section>
+
+      <!-- Euclidean Algorithm -->
+      <section class="chapter" id="euclid">
+        <h2>06 · Find a GCD Without Listing Every Divisor</h2>
+        <p>For larger numbers, divide and keep the remainder. Replacing the larger number by its remainder with the smaller number does not change the common divisors. For example, a number dividing both 84 and 30 also divides <span class="formula">84−2(30)=24</span>; the reasoning works in reverse as well. Thus <span class="formula">gcd(84,30)=gcd(30,24)</span>.</p>
+        <div class="table-wrap"><table><thead><tr><th>Division step</th><th>Quotient</th><th>Remainder</th></tr></thead><tbody>
+          <tr><td>84=30×2+24</td><td>2</td><td>24</td></tr>
+          <tr><td>30=24×1+6</td><td>1</td><td>6</td></tr>
+          <tr><td>24=6×4+0</td><td>4</td><td>0</td></tr>
+        </tbody></table></div>
+        <p>Stop when the remainder becomes 0. The <strong>last nonzero remainder is 6</strong>, so <span class="formula">gcd(84,30)=6</span>. Each new remainder is smaller than the previous divisor, so this process finishes for positive starting numbers.</p>
+        <div class="callout"><strong>Pair task:</strong> Complete <span class="formula">gcd(30,18)</span> by writing each division step. Explain why the final answer divides both starting numbers.</div>
+      </section>
+
+      <!-- Remainders -->
+      <section class="chapter" id="remainders">
+        <h2>07 · What Remains After Full Cycles?</h2>
+        <p>For an integer <span class="formula">a≥0</span> and a positive integer <span class="formula">m</span>, write <span class="formula">a=qm+r</span> with <span class="formula">0≤r&lt;m</span>. Here <span class="formula">q</span> counts complete groups of size <span class="formula">m</span>, and <span class="formula">r</span> is the <strong>remainder</strong>. We write <span class="formula">a mod m=r</span>.</p>
+        <div class="example"><h3>Worked cycle</h3><p><span class="formula">17=2×7+3</span>, so <span class="formula">17 mod 7=3</span>. Two full weeks use 14 days, leaving 3 days after the starting weekday.</p></div>
+        <p>A remainder of 0 means exact divisibility: <span class="formula">7∣21</span> and <span class="formula">21 mod 7=0</span>. A remainder under 0 or at least <span class="formula">m</span> cannot be the final remainder in this nonnegative setting.</p>
+      </section>
+
+      <!-- Clock-Face Visual -->
+      <section class="chapter" id="clock">
+        <h2>08 · A Seven-Day Remainder Clock</h2>
+        <p>Start with Monday as Day 0. Every complete group of seven returns to Monday. The remainder tells us how far to move from that starting position.</p>
+        <figure class="clock-figure">
+          <svg viewBox="0 0 680 225" role="img" aria-labelledby="clock-title">
+            <title id="clock-title">Seven-day cycle: remainders zero through six correspond to Monday through Sunday, and Day 17 has remainder three, Thursday</title>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle" fill="#10263f">
+              <rect x="18" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="60" y="78" font-size="22" font-weight="bold">0</text><text x="60" y="111" font-size="13">Mon</text>
+              <rect x="111" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="153" y="78" font-size="22" font-weight="bold">1</text><text x="153" y="111" font-size="13">Tue</text>
+              <rect x="204" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="246" y="78" font-size="22" font-weight="bold">2</text><text x="246" y="111" font-size="13">Wed</text>
+              <rect x="297" y="44" width="85" height="100" rx="13" fill="#e6e0f2" stroke="#66539c" stroke-width="3"/><text x="339" y="78" font-size="22" font-weight="bold">3</text><text x="339" y="111" font-size="13">Thu</text>
+              <rect x="390" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="432" y="78" font-size="22" font-weight="bold">4</text><text x="432" y="111" font-size="13">Fri</text>
+              <rect x="483" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="525" y="78" font-size="22" font-weight="bold">5</text><text x="525" y="111" font-size="13">Sat</text>
+              <rect x="576" y="44" width="85" height="100" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="618" y="78" font-size="22" font-weight="bold">6</text><text x="618" y="111" font-size="13">Sun</text>
+              <text x="340" y="190" font-size="18">17 = 2×7 + 3 → Thursday</text>
+            </g>
+          </svg>
+          <figcaption>Figure 1. The labels repeat after seven steps; Day 17 and Day 3 occupy the same position in the cycle.</figcaption>
+        </figure>
+        <p>Check Day 24: <span class="formula">24=3×7+3</span>, so it is also Thursday. The day number differs, but the position in the seven-day cycle matches.</p>
+      </section>
+
+      <!-- Congruence -->
+      <section class="chapter" id="congruence">
+        <h2>09 · Same Remainder, Same Position</h2>
+        <p>We write <span class="formula">a≡b (mod m)</span> when <span class="formula">a</span> and <span class="formula">b</span> have the same remainder upon division by positive <span class="formula">m</span>. Equivalently, <span class="formula">m∣(a−b)</span>. For instance, <span class="formula">17≡3 (mod 7)</span> because both leave remainder 3 and <span class="formula">17−3=14</span> is divisible by 7. Also <span class="formula">24≡17 (mod 7)</span>.</p>
+        <div class="callout caution"><strong>Do not read ≡ as ordinary equality:</strong> <span class="formula">17≠3</span> as integers, yet they occupy the same position in a seven-day cycle. Always state the modulus.</div>
+        <p>For a fixed modulus, “has the same remainder” groups nonnegative integers into classes. This connects to last week’s equivalence relations: every number shares its remainder with itself; matching is symmetric; and two matches in a chain give another match.</p>
+      </section>
+
+      <!-- Number Detective Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>10 · Number Detective</h2>
+        <p><span class="core">Classroom activity · Predict → Test → Explain</span> Use the remainder clock first. Then complete the Euclidean algorithm one division at a time. The controls reveal examples; your written reason should explain the rule.</p>
+        <div class="interactive screen-only" id="number-detective">
+          <h3>Remainder clock</h3>
+          <label for="day-slider">Choose a day number from 0 to 28:</label>
+          <input id="day-slider" class="day-slider" type="range" min="0" max="28" value="17">
+          <p id="clock-status" class="status" aria-live="polite"></p>
+          <div class="weekday-grid" id="weekday-grid" aria-label="Seven weekdays from Monday to Sunday"></div>
+          <h3>Euclid stepper · gcd(84,30)</h3>
+          <p>Before revealing each row, predict the quotient and remainder.</p>
+          <ol id="euclid-steps" class="euclid-steps"></ol>
+          <div class="button-row"><button type="button" id="reveal-euclid">Reveal next step</button><button type="button" class="secondary" id="reset-euclid">Reset steps</button></div>
+          <p>Which is the GCD?</p>
+          <div class="choices" id="gcd-choices"><button type="button" data-answer="0">0</button><button type="button" data-answer="6">6</button><button type="button" data-answer="24">24</button></div>
+          <p id="gcd-feedback" class="status" aria-live="polite">Choose after predicting the last nonzero remainder.</p>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Number Detective</h3>
+          <p><strong>Clock:</strong> Day 17 from Monday as Day 0. Divide: <span class="formula">17=7×____+____</span>. Remainder: ____; weekday: ____. What weekday is Day 24? Explain without counting each day: ______________________________.</p>
+          <p><strong>Euclid:</strong> Predict and complete the rows.</p>
+          <div class="table-wrap"><table><thead><tr><th>Division</th><th>Remainder</th></tr></thead><tbody>
+            <tr><td>84=30×____+____</td><td>____</td></tr>
+            <tr><td>30=24×____+____</td><td>____</td></tr>
+            <tr><td>24=6×____+____</td><td>____</td></tr>
+          </tbody></table></div>
+          <p>Last nonzero remainder: ____; therefore <span class="formula">gcd(84,30)=____</span>. Why is 0 not the answer? ______________________________________________.</p>
+        </div>
+      </section>
+
+      <!-- Toy Check Code -->
+      <section class="chapter" id="check-code">
+        <h2>11 · A Small Check-Code Illustration</h2>
+        <p><span class="core extension">Self-study</span> A toy form stores three digits followed by a check digit. Its stated rule is: add the first three digits and take the remainder on division by 5. For <span class="formula">3,4,2</span>, the sum is <span class="formula">9</span>, and <span class="formula">9 mod 5=4</span>, so the valid toy code is <span class="formula">342-4</span>.</p>
+        <p>If a form receives <span class="formula">342-3</span>, the check fails under this rule. But a matching check digit does not guarantee a correct or authentic message: <span class="formula">347-4</span> also passes because <span class="formula">3+4+7=14</span> and <span class="formula">14 mod 5=4</span>. This small rule demonstrates remainders; it is not a secure authentication method.</p>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab Verification</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Predict the outputs from the written divisions. In Python, <span class="formula">%</span> returns the remainder for these nonnegative inputs.</p>
+        <pre><code>print(17 % 7)
+print(24 % 7)
+print(21 % 7)</code></pre>
+        <p>Expected outputs: <span class="formula">3, 3, 0</span> on separate lines. After completing the Euclidean algorithm by hand, you may use the standard <span class="formula">math</span> library to check it. The import line makes its ready-made <span class="formula">gcd</span> function available; it does not explain the calculation for you.</p>
+        <pre><code>from math import gcd
+print(gcd(84, 30))</code></pre>
+        <p>The output <span class="formula">6</span> confirms the hand result for this case. The written steps remain the mathematical work.</p>
+      </section>
+
+      <!-- Integrated Midterm Synthesis -->
+      <section class="chapter" id="synthesis">
+        <h2>13 · Midterm Synthesis: Choose the Right Tool</h2>
+        <p><span class="core">50-minute guided revision</span> Discuss each prompt, state the earlier week’s idea, and give one justified line. These are review problems, not new topics.</p>
+        <div class="table-wrap"><table><thead><tr><th>Prompt</th><th>What to decide</th></tr></thead><tbody>
+          <tr><td>A · A system states P→Q and knows P.</td><td>Does Q follow? Would knowing Q alone establish P?</td></tr>
+          <tr><td>B · “Every positive even number is divisible by 4.”</td><td>Prove or disprove with a suitable method.</td></tr>
+          <tr><td>C · Assume 1+3+···+(2k−1)=k².</td><td>What next term establishes the case k+1?</td></tr>
+          <tr><td>D · f:{1,2,3}→{1,2} sends 1→1, 2→1, 3→2.</td><td>Is it a function? One-to-one? Onto?</td></tr>
+          <tr><td>E · Group {0,1,2,3,4,5} by the same remainder mod 3.</td><td>Find the classes. Which relation property gives groups?</td></tr>
+          <tr><td>F · Calculate gcd(30,18).</td><td>Write divisions and justify the final remainder.</td></tr>
+        </tbody></table></div>
+        <p><strong>Suggested pacing:</strong> 6 minutes each for A–E, 8 minutes for F, 12 minutes for peer explanations and corrections. The connection in E links Week 6 equivalence classes with this week’s remainders.</p>
+      </section>
+
+      <!-- Ungraded Diagnostic -->
+      <section class="chapter" id="diagnostic">
+        <h2>14 · Twenty-Minute Diagnostic</h2>
+        <p><span class="core">Ungraded check and feedback</span> Spend about 12 minutes answering and 8 minutes comparing reasons. Write a calculation or counterexample, not just a final value.</p>
+        <ol>
+          <li>Is 1 prime, composite, or neither? Why?</li>
+          <li>Does <span class="formula">5∣31</span>? Give a quotient and remainder.</li>
+          <li>Find <span class="formula">gcd(21,14)</span>.</li>
+          <li>Calculate <span class="formula">23 mod 7</span>.</li>
+          <li>Is <span class="formula">23≡9 (mod 7)</span> true? Give two ways to check.</li>
+        </ol>
+        <p>Mark a topic to revisit before Week 8: divisibility and primes / GCD steps / remainder and congruence / an earlier week’s reasoning.</p>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>15 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Call 1 prime.</td><td>A prime has exactly two positive divisors; 1 has one.</td></tr>
+          <tr><td>Reverse the meaning of a∣b.</td><td>Check whether b=a×k for an integer k.</td></tr>
+          <tr><td>Choose 0 as the GCD after the algorithm stops.</td><td>Use the last nonzero remainder.</td></tr>
+          <tr><td>Let the final remainder equal the modulus.</td><td>A remainder must be from 0 to m−1.</td></tr>
+          <tr><td>Read a≡b (mod m) as a=b.</td><td>Compare their remainders or check m∣(a−b).</td></tr>
+          <tr><td>Assume a toy check code proves authenticity.</td><td>It checks only the stated remainder rule; collisions are possible.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>16 · Summary</h2>
+        <ul>
+          <li><span class="formula">a∣b</span> means <span class="formula">b=ak</span> for an integer <span class="formula">k</span>; primes have exactly two positive divisors.</li>
+          <li>The GCD is the largest positive common divisor. The Euclidean algorithm repeatedly replaces a pair by the smaller number and the remainder.</li>
+          <li>For <span class="formula">a=qm+r</span> with <span class="formula">0≤r&lt;m</span>, <span class="formula">a mod m=r</span>. Equal remainders give a congruence modulo <span class="formula">m</span>.</li>
+          <li>A cyclic schedule is a genuine use of remainders. A short computation can check an example, while the written reasoning explains it.</li>
+          <li>The midterm review connects logic, proof, sets, functions, relations and number theory without adding a new mathematical topic.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>17 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 290" role="img" aria-labelledby="map-title">
+            <title id="map-title">Divisibility connects to primes and common divisors; division gives remainders and congruence for cycles</title>
+            <defs><marker id="arrow7" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#087f84"/></marker></defs>
+            <rect x="245" y="17" width="210" height="62" rx="13" fill="#e8f6f4" stroke="#087f84"/><text x="350" y="45" text-anchor="middle" class="diagram-title">DIVISION</text><text x="350" y="66" text-anchor="middle" class="diagram-small">a=qm+r</text>
+            <path d="M350 79 V105 H166 V130 M350 105 H534 V130" fill="none" stroke="#087f84" stroke-width="3" marker-end="url(#arrow7)"/>
+            <rect x="26" y="139" width="280" height="112" rx="14" fill="#e8f6f4" stroke="#087f84"/><rect x="394" y="139" width="280" height="112" rx="14" fill="#f2eef9" stroke="#66539c"/>
+            <text x="166" y="169" text-anchor="middle" class="diagram-title">REMAINDER 0</text><text x="166" y="194" text-anchor="middle" class="diagram-small">divisibility → primes, common divisors</text><text x="166" y="222" text-anchor="middle" class="diagram-small">GCD → Euclidean algorithm</text>
+            <text x="534" y="169" text-anchor="middle" class="diagram-title">REMAINDER r</text><text x="534" y="194" text-anchor="middle" class="diagram-small">same r → congruence</text><text x="534" y="222" text-anchor="middle" class="diagram-small">cycles → repeated positions</text>
+          </svg>
+          <figcaption>One division statement supports exact divisibility and reasoning about what remains.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Key Terms -->
+      <section class="chapter" id="terms">
+        <h2>18 · Key Terms</h2>
+        <dl>
+          <dt>Divisor; multiple</dt><dd>If a∣b, a is a divisor of b and b is a multiple of a.</dd>
+          <dt>Prime; composite</dt><dd>Greater than 1 with exactly two positive divisors; greater than 1 with more than two.</dd>
+          <dt>GCD</dt><dd>Largest positive integer dividing both given integers.</dd>
+          <dt>Euclidean algorithm</dt><dd>Repeat division with remainders until 0; the previous remainder is the GCD.</dd>
+          <dt>Modulus; remainder</dt><dd>Positive group size m; the value r with 0≤r&lt;m after complete groups.</dd>
+          <dt>Congruence</dt><dd>Same remainder for a stated modulus.</dd>
+        </dl>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>19 · Looking Ahead</h2>
+        <p><strong>Week 8 is the midterm examination only.</strong> It introduces no new mathematical material. Use the diagnostic and selected solutions to identify one or two topics to revisit from Weeks 1–7.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Number Detective</h3><p><span class="formula">17=7×2+3</span>, so Thursday. <span class="formula">24=7×3+3</span> is also Thursday. Euclid: <span class="formula">84=30×2+24</span>; <span class="formula">30=24×1+6</span>; <span class="formula">24=6×4+0</span>. The last nonzero remainder, 6, is the GCD; 0 only signals that the algorithm has stopped.</p>
+        <h3>Pair task · gcd(30,18)</h3><p><span class="formula">30=18×1+12</span>, <span class="formula">18=12×1+6</span>, <span class="formula">12=6×2+0</span>; hence <span class="formula">gcd(30,18)=6</span>. Both 30 and 18 are multiples of 6.</p>
+        <h3>Midterm synthesis A–C</h3><p>A: Q follows from P and P→Q; Q alone need not establish P. B: False, since 6 is positive and even but not divisible by 4. C: Add the next odd term <span class="formula">2k+1</span>; <span class="formula">k²+2k+1=(k+1)²</span>.</p>
+        <h3>Midterm synthesis D–F</h3><p>D: It is a function and onto <span class="formula">{1,2}</span>; not one-to-one because 1 and 2 share output 1. E: Classes <span class="formula">{0,3}</span>, <span class="formula">{1,4}</span>, <span class="formula">{2,5}</span>; same remainder is an equivalence relation, so its classes partition the set. F: <span class="formula">30=18+12</span>, <span class="formula">18=12+6</span>, <span class="formula">12=2×6+0</span>, so GCD 6.</p>
+        <h3>Diagnostic 1–5</h3><p>1: Neither; 1 has only one positive divisor. 2: No, because <span class="formula">31=5×6+1</span>. 3: <span class="formula">gcd(21,14)=7</span>. 4: <span class="formula">23=7×3+2</span>, so remainder 2. 5: True: both 23 and 9 leave remainder 2 on division by 7, and <span class="formula">23−9=14</span> is divisible by 7.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 07 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Seven-day remainder clock
+    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const euclidRows = [
+      "84 = 30 × 2 + 24",
+      "30 = 24 × 1 + 6",
+      "24 = 6 × 4 + 0"
+    ];
+    let revealedRows = 0;
+
+    function buildWeekdayGrid() {
+      const grid = document.getElementById("weekday-grid");
+      weekdays.forEach(function (name, remainder) {
+        const day = document.createElement("span");
+        day.className = "weekday";
+        day.dataset.remainder = String(remainder);
+        day.textContent = remainder + " · " + name;
+        grid.appendChild(day);
+      });
+    }
+
+    function updateRemainderClock() {
+      const number = Number(document.getElementById("day-slider").value);
+      const quotient = Math.floor(number / 7);
+      const remainder = number % 7;
+      document.getElementById("clock-status").textContent =
+        "Day " + number + " = 7 × " + quotient + " + " + remainder +
+        ". Remainder " + remainder + " means " + weekdays[remainder] + ".";
+      document.querySelectorAll(".weekday").forEach(function (day) {
+        day.classList.toggle("active", Number(day.dataset.remainder) === remainder);
+      });
+    }
+
+    // Euclidean algorithm reveal and answer feedback
+    function revealEuclidStep() {
+      if (revealedRows >= euclidRows.length) return;
+      const item = document.createElement("li");
+      item.textContent = euclidRows[revealedRows];
+      document.getElementById("euclid-steps").appendChild(item);
+      revealedRows += 1;
+      document.getElementById("reveal-euclid").disabled = revealedRows === euclidRows.length;
+    }
+
+    function resetEuclidSteps() {
+      revealedRows = 0;
+      document.getElementById("euclid-steps").replaceChildren();
+      document.getElementById("reveal-euclid").disabled = false;
+      document.getElementById("gcd-feedback").textContent = "Choose after predicting the last nonzero remainder.";
+      document.querySelectorAll("#gcd-choices button").forEach(function (button) {
+        button.setAttribute("aria-pressed", "false");
+      });
+    }
+
+    function explainGcdChoice(button) {
+      document.querySelectorAll("#gcd-choices button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", choice === button ? "true" : "false");
+      });
+      document.getElementById("gcd-feedback").textContent =
+        button.dataset.answer === "6"
+          ? "Correct. The last nonzero remainder is 6, so gcd(84,30)=6."
+          : "The GCD is the last nonzero remainder: 6. Zero only tells us to stop; 24 was replaced by its remainder 6.";
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      buildWeekdayGrid();
+      document.getElementById("day-slider").addEventListener("input", updateRemainderClock);
+      document.getElementById("reveal-euclid").addEventListener("click", revealEuclidStep);
+      document.getElementById("reset-euclid").addEventListener("click", resetEuclidSteps);
+      document.querySelectorAll("#gcd-choices button").forEach(function (button) {
+        button.addEventListener("click", function () { explainGcdChoice(button); });
+      });
+      updateRemainderClock();
+    }
+
+    document.addEventListener("DOMContentLoaded", initModule);
+  </script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 4 of Discrete Mathematics for BSAI: mathematical induction.">
+  <title>Week 4 · Mathematical Induction</title>
+  <style>
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "1  k  k+1"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    /* Week 4 interactive mosaic */
+    .mosaic-grid { display: grid; gap: 3px; width: max-content; margin: 1rem auto; padding: .5rem; background: #e8f6f4; border-radius: .6rem; }
+    .mosaic-tile { width: 24px; height: 24px; border-radius: 3px; background: #087f84; }
+    .mosaic-tile.new { background: #66539c; }
+    .button-row { display: flex; flex-wrap: wrap; gap: .6rem; margin: .8rem 0 1.4rem; }
+    .button-row button { border: 0; border-radius: .5rem; background: var(--teal); color: white; padding: .48rem .82rem; }
+    .button-row button.secondary { color: var(--teal); background: white; border: 1px solid var(--teal); }
+    .button-row button:disabled { opacity: .5; cursor: default; }
+    .concept-figure .diagram-title { font: bold 17px system-ui, sans-serif; fill: #10263f; }
+    .concept-figure .diagram-small { font: 14px system-ui, sans-serif; fill: #203349; }
+    dl { display: grid; grid-template-columns: minmax(125px, 170px) 1fr; gap: .5rem 1rem; }
+    dt { font-weight: 700; color: var(--navy); }
+    dd { margin: 0; }
+    @media (max-width: 600px) { dl { grid-template-columns: 1fr; } }
+    @media print { .solutions { break-before: page; } }
+  </style>
+</head>
+<body>
+<header class="cover">
+  <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 04</div>
+  <h1>Discrete Mathematics for BSAI</h1>
+  <h2>Mathematical Induction</h2>
+  <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+</header>
+<div class="toolbar"><div class="toolbar-inner"><strong>Week 4 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button id="print-button" type="button">Print / save as PDF</button></span></div></div>
+<div class="layout">
+<nav class="toc" aria-label="Chapter contents"><h2>Contents</h2>
+<a href="#opening">01 Opening scenario</a><a href="#objectives">02 Objectives</a><a href="#pattern">03 Growing pattern</a><a href="#domino">04 Domino idea</a><a href="#structure">05 Formal structure</a><a href="#proof">06 Guided proof</a><a href="#second">07 A second sum</a><a href="#flawed">08 Flawed proof</a><a href="#activity">09 Induction Builder</a><a href="#systems">10 Real system</a><a href="#python">11 Optional Colab</a><a href="#practice">12 Practice</a><a href="#mistakes">13 Mistakes</a><a href="#summary">14 Summary</a><a href="#map">15 Concept map</a><a href="#terms">16 Terms</a><a href="#next">17 Next week</a><a href="#solutions">Solutions</a></nav>
+<main>
+<!-- Opening Scenario -->
+<section class="chapter" id="opening"><h2>01 · Opening Scenario: A Growing Digital Mosaic</h2>
+<p class="lead">A screen displays a square mosaic. Stage 1 has one lit tile. To make the next stage, the system adds a row across the bottom and a column on the right, counting the shared corner only once. The first totals are <span class="formula">1, 4, 9, 16</span>.</p>
+<p><strong>Predict:</strong> Stage 5 has <span class="formula">25</span> tiles. A square of side length 5 has <span class="formula">5²</span> positions, and the border added after Stage 4 has <span class="formula">2(4)+1=9</span> tiles. But four successful stages do not prove that the rule works at <em>every</em> stage. What argument would cover all positive integer stages?</p>
+<div class="lens"><h3>The central question</h3><p>If the first stage works, and a correct Stage <span class="formula">k</span> always makes Stage <span class="formula">k+1</span> correct, can a later stage fail? Mathematical induction turns that “start and continue” idea into a proof.</p></div>
+</section>
+<section class="chapter" id="objectives"><h2>02 · Learning Objectives and Class Guide</h2>
+<p>You will explain why checking examples is insufficient; identify the base case, hypothesis, and step; complete a short induction proof for a sum or growing pattern; and diagnose a missing or circular step.</p>
+<p><strong>Three contact hours:</strong> 45 minutes for mosaic/domino intuition; 75 for a guided proof; 45 for independent application and critique; 15 for a formative check and feedback.</p>
+<p><span class="core">Classroom essentials</span> Sections 01–09 and Problems 1–4. <span class="core extension">Self-study</span> The optional Colab check, a second sum, and extended practice. The visual builder and group critique are ungraded; a short formative quiz may be collected after feedback.</p>
+</section>
+<!-- Growing Pattern -->
+<section class="chapter" id="pattern"><h2>03 · See the Pattern Before the Formula</h2>
+<p>At Stage <span class="formula">n</span>, the mosaic is an <span class="formula">n×n</span> square, with <span class="formula">n²</span> tiles. To grow a <span class="formula">k×k</span> square to a <span class="formula">(k+1)×(k+1)</span> square, add <span class="formula">k+1</span> in a row and <span class="formula">k</span> more in a column. The corner is already in the row. The border therefore has <span class="formula">(k+1)+k=2k+1</span> tiles.</p>
+<figure class="growth-figure"><svg viewBox="0 0 650 190" role="img" aria-label="Squares of one, four, and nine tiles with each added border highlighted">
+<g stroke="#087f84" stroke-width="2"><rect x="65" y="90" width="34" height="34" fill="#dcefed"/>
+<rect x="230" y="56" width="34" height="34" fill="#dcefed"/><rect x="264" y="56" width="34" height="34" fill="#c7b8e8"/><rect x="230" y="90" width="34" height="34" fill="#c7b8e8"/><rect x="264" y="90" width="34" height="34" fill="#c7b8e8"/>
+<rect x="420" y="22" width="34" height="34" fill="#dcefed"/><rect x="454" y="22" width="34" height="34" fill="#dcefed"/><rect x="420" y="56" width="34" height="34" fill="#dcefed"/><rect x="454" y="56" width="34" height="34" fill="#dcefed"/>
+<rect x="488" y="22" width="34" height="34" fill="#c7b8e8"/><rect x="488" y="56" width="34" height="34" fill="#c7b8e8"/><rect x="420" y="90" width="34" height="34" fill="#c7b8e8"/><rect x="454" y="90" width="34" height="34" fill="#c7b8e8"/><rect x="488" y="90" width="34" height="34" fill="#c7b8e8"/></g>
+<g text-anchor="middle" font-family="DejaVu Sans,Arial" fill="#10263f" font-size="15"><text x="82" y="157">Stage 1: 1</text><text x="264" y="157">Stage 2: 4</text><text x="471" y="157">Stage 3: 9</text><text x="264" y="180">add 3</text><text x="471" y="180">add 5</text></g></svg><figcaption>Figure 1. Each highlighted L-shaped border contributes the next odd number of tiles.</figcaption></figure>
+<div class="table-wrap"><table><thead><tr><th>Stage n</th><th>Total n²</th><th>Tiles added for the next stage</th></tr></thead><tbody><tr><td>1</td><td>1</td><td>3</td></tr><tr><td>2</td><td>4</td><td>5</td></tr><tr><td>3</td><td>9</td><td>7</td></tr><tr><td>4</td><td>16</td><td>9</td></tr></tbody></table></div>
+<p>The same picture suggests <span class="formula">1+3+5+···+(2n−1)=n²</span>. The examples suggest the identity; the proof must cover every <span class="formula">n≥1</span>.</p></section>
+<!-- Domino Intuition -->
+<section class="chapter" id="domino"><h2>04 · The Domino Idea</h2><p>Imagine an endless row of numbered dominoes. Showing that Domino 1 falls is the <strong>base case</strong>. Showing that any falling Domino <span class="formula">k</span> knocks down <span class="formula">k+1</span> is the <strong>inductive step</strong>. Together they reach every positive integer position.</p>
+<div class="pipeline three" role="img" aria-label="Start at one, show a general step from k to k plus one, then reach every positive integer"><div><strong>START</strong><br>Stage 1 works</div><div><strong>STEP</strong><br>Stage k → Stage k+1</div><div><strong>REACH</strong><br>Every n ≥ 1 works</div></div>
+<p>Checking four dominoes only checks four positions. A general step cannot start the chain until a base case is established. If a claim starts at <span class="formula">n=0</span>, its proof must begin there.</p></section>
+<!-- Formal Structure -->
+<section class="chapter" id="structure"><h2>05 · The Three Parts of an Induction Proof</h2><p>Let <span class="formula">P(n)</span> be a claim for integers <span class="formula">n≥1</span>.</p>
+<ol><li><strong>Base:</strong> Prove <span class="formula">P(1)</span>.</li><li><strong>Hypothesis:</strong> Let <span class="formula">k≥1</span> be arbitrary and temporarily assume <span class="formula">P(k)</span>.</li><li><strong>Step:</strong> Use that hypothesis to prove <span class="formula">P(k+1)</span>.</li></ol>
+<div class="mathline"><span class="formula">P(1)</span> and <span class="formula">∀k≥1, [P(k) → P(k+1)]</span> establish <span class="formula">∀n≥1, P(n)</span>.</div>
+<p>Why may we assume <span class="formula">P(k)</span>? We are proving the conditional “if <span class="formula">P(k)</span>, then <span class="formula">P(k+1)</span>.” The algebra must actually connect the two. Assuming <span class="formula">P(k+1)</span> would assume what we are trying to prove.</p></section>
+<!-- Guided Proof -->
+<section class="chapter" id="proof"><h2>06 · Guided Proof: The Odd-Tile Square</h2>
+<p><strong>Claim:</strong> For every integer <span class="formula">n≥1</span>, the sum of the first <span class="formula">n</span> odd positive integers is <span class="formula">n²</span>.</p>
+<div class="mathline"><span class="formula">1+3+5+···+(2n−1)=n²</span></div>
+<div class="example"><span class="tag">Base case</span><p>For <span class="formula">n=1</span>, the left side is <span class="formula">1</span>, and the right side is <span class="formula">1²=1</span>. Thus <span class="formula">P(1)</span> is true.</p></div>
+<div class="example"><span class="tag">Inductive hypothesis</span><p>Let <span class="formula">k≥1</span> be arbitrary. Assume <span class="formula">1+3+···+(2k−1)=k²</span>. This is <span class="formula">P(k)</span>.</p></div>
+<div class="example"><span class="tag">Inductive step</span><p>The next odd number is <span class="formula">2(k+1)−1=2k+1</span>. Add it to both the stage-<span class="formula">k</span> sum and its value from the hypothesis:</p>
+<div class="mathline"><span class="formula">1+3+···+(2k−1)+(2k+1)</span><br><span class="formula">=k²+(2k+1)=(k+1)².</span></div>
+<p>This is <span class="formula">P(k+1)</span>. We have a true base and a valid step for arbitrary <span class="formula">k≥1</span>; therefore the claim holds for every positive integer <span class="formula">n</span>.</p></div>
+<p>The calculation matches the picture: a <span class="formula">k²</span>-tile square plus a <span class="formula">2k+1</span>-tile border becomes a <span class="formula">(k+1)²</span>-tile square. The picture motivates; the induction proves.</p></section>
+<!-- Second Sum -->
+<section class="chapter" id="second"><h2>07 · Another Sum: 1 + 2 + ··· + n</h2><p><span class="core extension">Guided extension</span> The claim <span class="formula">1+2+···+n=n(n+1)/2</span> has the same three-part structure.</p>
+<div class="example"><h3>Worked induction</h3><p><strong>Base:</strong> For <span class="formula">n=1</span>, <span class="formula">1=1(2)/2</span>.</p><p><strong>Hypothesis:</strong> Let <span class="formula">k≥1</span> be arbitrary. Assume <span class="formula">1+2+···+k=k(k+1)/2</span>.</p><p><strong>Step:</strong> Add the next term <span class="formula">k+1</span>:</p><div class="mathline"><span class="formula">1+2+···+k+(k+1)</span><br><span class="formula">=k(k+1)/2+(k+1)</span><br><span class="formula">=(k+1)(k+2)/2.</span></div><p>The final expression is the claim at <span class="formula">n=k+1</span>. Thus it holds for all <span class="formula">n≥1</span>.</p></div>
+<p>Factoring the common <span class="formula">k+1</span> makes the target form visible: <span class="formula">k(k+1)/2+(k+1)=(k+1)(k/2+1)</span>.</p></section>
+<!-- Critique -->
+<section class="chapter" id="flawed"><h2>08 · Diagnose a Flawed Proof</h2>
+<p>A student writes: “The formula works for <span class="formula">n=1,2,3,4</span>. Assume it works for <span class="formula">k+1</span>. Therefore it works for <span class="formula">k+1</span>.” What is missing?</p>
+<div class="callout caution"><strong>Diagnosis:</strong> Four checked cases do not establish the general step. The student assumes the target <span class="formula">P(k+1)</span> and repeats it. A valid step assumes <span class="formula">P(k)</span> for arbitrary <span class="formula">k</span>, then derives <span class="formula">P(k+1)</span>.</div>
+<p>An argument that proves the general step but never checks a starting case is also incomplete: all neighboring dominoes may be connected, but the first has not fallen.</p></section>
+<!-- Induction Builder -->
+<section class="chapter" id="activity"><h2>09 · Induction Builder</h2><p><span class="core">Classroom activity · 15 minutes</span> Predict the next border before adding it. Then identify the missing proof step.</p>
+<div class="interactive screen-only" id="induction-builder"><h3>Build the next square</h3><p id="mosaic-status" class="status" aria-live="polite">Stage 1: 1 tile. Predict the border for Stage 2.</p><div id="mosaic-grid" class="mosaic-grid" aria-label="Square mosaic at Stage 1"></div>
+<div class="button-row"><button type="button" id="grow-button">Add a layer</button><button type="button" id="reset-button" class="secondary">Reset</button></div>
+<p>At Stage <span class="formula">k</span>, how do we justify the Stage <span class="formula">k+1</span> total?</p>
+<div class="choices" id="proof-choices"><button type="button" data-answer="example">Check Stage 5 only</button><button type="button" data-answer="step">Assume k² tiles, then add 2k+1</button><button type="button" data-answer="circular">Assume (k+1)² tiles</button></div>
+<p id="proof-feedback" class="status" aria-live="polite">Choose an argument.</p></div>
+<div class="workbook print-only"><h3>Printable activity · Predict → Test → Explain</h3><p><strong>Predict:</strong> Stage 4 has 16 tiles. How many tiles does the new border need for Stage 5? ______</p><p><strong>Test:</strong> Add the border to 16. Compare with 5²: ________________________</p><p><strong>Explain:</strong> For an arbitrary Stage k, write the current total, next border, and resulting total.</p><p class="answer-line">Current: __________   Border: __________   New total: __________</p><p>Which argument proves the general step: (A) check only Stage 5; (B) assume k² tiles and add 2k+1; or (C) assume (k+1)² tiles? Explain. ______________________________________________</p></div>
+</section>
+<!-- Digital Pattern -->
+<section class="chapter" id="systems"><h2>10 · What a Growing System Can Guarantee</h2><p>Suppose a screen lays out items in a square: Stage <span class="formula">n</span> has <span class="formula">n</span> rows and <span class="formula">n</span> columns. The mathematical specification says Stage <span class="formula">n</span> contains <span class="formula">n²</span> positions, and enlarging the layout adds one new row and one new column. The new corner is counted once, giving <span class="formula">2n+1</span> new positions.</p>
+<div class="pipeline three" role="img" aria-label="Square layout, add a border, reach a verified count"><div><strong>SPECIFY</strong><br>Stage n has n² positions</div><div><strong>GROW</strong><br>Add 2n+1 positions</div><div><strong>JUSTIFY</strong><br>Stage n+1 has (n+1)²</div></div>
+<p>The induction proof guarantees the count for the stated mathematical growth rule. If a program skips or duplicates a position, the program may still be wrong; its implementation needs separate testing.</p></section>
+<!-- Python Exploration -->
+<section class="chapter" id="python"><h2>11 · Optional Colab Check</h2><p><span class="core extension">Self-study · 10 minutes</span> First predict both numbers in each row. Then run the cells and explain why the outputs agree. The symbol <span class="formula">*</span> means multiplication in Python.</p>
+<pre><code>print(1, 1, 1*1)
+print(2, 1+3, 2*2)
+print(3, 1+3+5, 3*3)
+print(4, 1+3+5+7, 4*4)</code></pre>
+<p>The table checks four cases. It helps catch an arithmetic mistake, but it cannot replace the proof of the step for arbitrary <span class="formula">k</span>. No code is required for the induction proof.</p></section>
+<!-- Practice -->
+<section class="chapter" id="practice"><h2>12 · Practice</h2><p>Try these before reading the selected solutions.</p>
+<ol><li>For a Stage 6 square, how many tiles must be added to make Stage 7? Explain why the answer is not 14.</li>
+<li>For <span class="formula">P(n): 1+3+···+(2n−1)=n²</span>, write the base statement, the inductive hypothesis, and the target at <span class="formula">k+1</span>.</li>
+<li>Complete the algebra: <span class="formula">k(k+1)/2+(k+1)=__________=(k+1)(k+2)/2</span>. State where the first term comes from.</li>
+<li>A student checks a formula at <span class="formula">n=1</span> and <span class="formula">n=2</span> and says it is proved for all positive integers. What is missing?</li>
+<li>Prove by induction that <span class="formula">2+4+···+2n=n(n+1)</span> for every <span class="formula">n≥1</span>. Show the base, hypothesis, and step.</li>
+<li>Consider the false claim <span class="formula">P(n): n&lt;5</span> for every positive integer <span class="formula">n</span>. Give a counterexample. At which value of <span class="formula">k</span> does the proposed step from <span class="formula">P(k)</span> to <span class="formula">P(k+1)</span> fail?</li></ol>
+<div class="callout"><strong>Exit check:</strong> In one sentence, explain why “it works for several stages” differs from “it works for every stage.”</div></section>
+<!-- Common Mistakes -->
+<section class="chapter" id="mistakes"><h2>13 · Common Mistakes</h2><div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+<tr><td>Check many examples and stop.</td><td>Give a true starting case and a step for arbitrary k.</td></tr>
+<tr><td>Assume the desired result at k+1.</td><td>Assume P(k), then derive P(k+1).</td></tr>
+<tr><td>Write P(k) but never use it.</td><td>Mark exactly where the hypothesis replaces the earlier sum.</td></tr>
+<tr><td>Add the wrong next term.</td><td>Substitute k+1 into the general term; the next odd term is 2k+1.</td></tr>
+<tr><td>Prove a step but omit the base.</td><td>Verify the first value in the stated domain.</td></tr>
+</tbody></table></div></section>
+<!-- Summary -->
+<section class="chapter" id="summary"><h2>14 · Summary</h2><ul><li>A pattern offers a conjecture; a finite list of examples does not prove a statement about all positive integers.</li><li>Induction needs a base case and a general step from <span class="formula">P(k)</span> to <span class="formula">P(k+1)</span>.</li><li>In the square pattern, the inductive hypothesis gives <span class="formula">k²</span> tiles and the next border gives <span class="formula">2k+1</span>; together they give <span class="formula">(k+1)²</span>.</li><li>Check the starting domain, use the hypothesis explicitly, and state the resulting conclusion.</li></ul></section>
+<!-- Concept Map -->
+<section class="chapter" id="map"><h2>15 · Visual Concept Map</h2><figure class="concept-figure"><svg viewBox="0 0 700 230" role="img" aria-labelledby="map-title"><title id="map-title">A true base case plus a general step reaches each positive integer</title><rect x="20" y="25" width="190" height="75" rx="15" fill="#e8f6f4" stroke="#087f84"/><text x="115" y="57" text-anchor="middle" class="diagram-title">Base case</text><text x="115" y="79" text-anchor="middle" class="diagram-small">P(1) is true</text><rect x="255" y="25" width="190" height="75" rx="15" fill="#e8f6f4" stroke="#087f84"/><text x="350" y="57" text-anchor="middle" class="diagram-title">General step</text><text x="350" y="79" text-anchor="middle" class="diagram-small">P(k) → P(k+1)</text><rect x="490" y="25" width="190" height="75" rx="15" fill="#edf0fb" stroke="#6453a5"/><text x="585" y="57" text-anchor="middle" class="diagram-title">Conclusion</text><text x="585" y="79" text-anchor="middle" class="diagram-small">Every n ≥ 1</text><path d="M210 62 H247 M445 62 H482" stroke="#087f84" stroke-width="3" marker-end="url(#arrow4)"/><defs><marker id="arrow4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#087f84"/></marker></defs><text x="350" y="152" text-anchor="middle" class="diagram-title">For the square pattern</text><text x="350" y="185" text-anchor="middle" class="diagram-small">k² + (2k+1) = (k+1)²</text></svg><figcaption>Both parts are necessary: a start, and a valid link from any stage to the next.</figcaption></figure></section>
+<!-- Key Terms -->
+<section class="chapter" id="terms"><h2>16 · Key Terms</h2><dl><dt>Induction</dt><dd>A proof method that establishes a starting case and a step from any case to the next.</dd><dt>Base case</dt><dd>The first case in the claimed domain.</dd><dt>Inductive hypothesis</dt><dd>The temporary assumption that the claim holds at an arbitrary stage k.</dd><dt>Inductive step</dt><dd>The justification that P(k) implies P(k+1).</dd><dt>Counterexample</dt><dd>A single case in the domain where a universal claim fails.</dd></dl></section>
+<!-- Transition -->
+<section class="chapter" id="next"><h2>17 · Looking Ahead</h2><p>Next week we organize collections and relationships with sets, Cartesian products, and functions. The care used here to define a domain, state a claim, and justify a conclusion remains useful throughout the course.</p></section>
+<!-- Selected Solutions -->
+<section class="chapter solutions" id="solutions"><h2>Selected Solutions</h2>
+<h3>1 · Next border</h3><p><span class="formula">2(6)+1=13</span> new tiles. The added row has 7 and the added column contributes 6 more, since the shared corner must not be counted twice.</p>
+<h3>2 · Statements in the odd-sum proof</h3><p>Base: <span class="formula">1=1²</span>. Hypothesis: <span class="formula">1+3+···+(2k−1)=k²</span> for arbitrary <span class="formula">k≥1</span>. Target: <span class="formula">1+3+···+(2k−1)+(2k+1)=(k+1)²</span>.</p>
+<h3>3 · Factor the next sum</h3><p><span class="formula">k(k+1)/2+(k+1)=(k+1)(k/2+1)=(k+1)(k+2)/2</span>. The first term is the sum through <span class="formula">k</span> supplied by the inductive hypothesis.</p>
+<h3>4 · Examples</h3><p>A step for an arbitrary <span class="formula">k</span> is missing. Two checked cases say nothing about all later cases.</p>
+<h3>5 · Even-number sum</h3><p>Base: <span class="formula">2=1(1+1)</span>. Assume <span class="formula">2+4+···+2k=k(k+1)</span>. The next term is <span class="formula">2(k+1)</span>, so the new sum is <span class="formula">k(k+1)+2(k+1)=(k+1)(k+2)</span>, the target for <span class="formula">k+1</span>. Thus the identity holds for all positive integers.</p>
+<h3>6 · False universal claim</h3><p><span class="formula">n=5</span> is a counterexample because <span class="formula">5&lt;5</span> is false. The step fails at <span class="formula">k=4</span>: <span class="formula">4&lt;5</span> is true, but <span class="formula">5&lt;5</span> is false.</p>
+</section>
+<footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 04 · Dr. Hira Benish</p></footer>
+</main></div>
+<script>
+"use strict";
+
+// Interactive square mosaic
+let mosaicStage = 1;
+const maxMosaicStage = 6;
+
+function drawMosaic() {
+  const grid = document.getElementById("mosaic-grid");
+  grid.style.gridTemplateColumns = "repeat(" + mosaicStage + ", 24px)";
+  grid.replaceChildren();
+  for (let row = 0; row < mosaicStage; row += 1) {
+    for (let column = 0; column < mosaicStage; column += 1) {
+      const tile = document.createElement("span");
+      tile.className = "mosaic-tile";
+      if (mosaicStage > 1 && (row === mosaicStage - 1 || column === mosaicStage - 1)) {
+        tile.classList.add("new");
+      }
+      grid.appendChild(tile);
+    }
+  }
+  grid.setAttribute("aria-label", "Stage " + mosaicStage + " square with " + (mosaicStage * mosaicStage) + " tiles; the newest border is highlighted");
+  const status = document.getElementById("mosaic-status");
+  if (mosaicStage === maxMosaicStage) {
+    status.textContent = "Stage " + mosaicStage + ": " + (mosaicStage * mosaicStage) + " tiles. The general step works beyond the displayed stages.";
+  } else {
+    status.textContent = "Stage " + mosaicStage + ": " + (mosaicStage * mosaicStage) + " tiles. Predict the next border: " + (2 * mosaicStage + 1) + " new tiles.";
+  }
+  document.getElementById("grow-button").disabled = mosaicStage === maxMosaicStage;
+}
+
+function growMosaic() {
+  if (mosaicStage < maxMosaicStage) {
+    mosaicStage += 1;
+    drawMosaic();
+  }
+}
+
+function resetMosaic() {
+  mosaicStage = 1;
+  drawMosaic();
+  document.getElementById("proof-feedback").textContent = "Choose an argument.";
+}
+
+function setupProofBuilder() {
+  const feedback = document.getElementById("proof-feedback");
+  document.querySelectorAll("#proof-choices button").forEach(function (button) {
+    button.addEventListener("click", function () {
+      document.querySelectorAll("#proof-choices button").forEach(function (choice) {
+        choice.setAttribute("aria-pressed", "false");
+      });
+      button.setAttribute("aria-pressed", "true");
+      if (button.dataset.answer === "step") {
+        feedback.textContent = "Yes. Assume the Stage k total is k². Add the next border 2k+1, obtaining (k+1)² for Stage k+1.";
+      } else if (button.dataset.answer === "example") {
+        feedback.textContent = "One checked stage is useful evidence, but the proof needs a step valid for an arbitrary k.";
+      } else {
+        feedback.textContent = "That assumes the result at Stage k+1. Start with P(k) and derive the result at k+1.";
+      }
+    });
+  });
+}
+
+function initModule() {
+  document.getElementById("grow-button").addEventListener("click", growMosaic);
+  document.getElementById("reset-button").addEventListener("click", resetMosaic);
+  setupProofBuilder();
+  document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+  drawMosaic();
+}
+
+document.addEventListener("DOMContentLoaded", initModule);
+</script>
+</body>
+</html>

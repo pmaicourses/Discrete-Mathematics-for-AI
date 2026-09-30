@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 3 of Discrete Mathematics for BSAI: logical equivalence and introductory proof reasoning.">
+  <title>Week 3 · Logical Equivalence and Introductory Proof Reasoning</title>
+  <style>
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "≡  →  ¬"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 03</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Logical Equivalence and Introductory Proof Reasoning</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar"><div class="toolbar-inner"><strong>Week 3 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div></div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a><a href="#objectives">02 Objectives and class guide</a>
+      <a href="#arguments">03 Arguments and proof</a><a href="#equivalence">04 Logical equivalence</a>
+      <a href="#truth-table">05 Test with a truth table</a><a href="#direct">06 Direct proof</a>
+      <a href="#contraposition">07 Contraposition</a><a href="#contradiction">08 Contradiction</a>
+      <a href="#counterexamples">09 Counterexamples</a><a href="#workshop">10 Equivalence Workshop</a>
+      <a href="#systems">11 System connection</a><a href="#python">12 Optional Colab check</a>
+      <a href="#practice">13 Practice</a><a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a><a href="#map">16 Concept map</a>
+      <a href="#terms">17 Key terms</a><a href="#next">18 What comes next</a><a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: A Door That Stayed Closed</h2>
+        <p class="lead">A campus access policy says: “If a card is valid, the door opens.” You observe that the door <strong>did not</strong> open. Can you conclude that the card was not valid?</p>
+        <p><strong>Predict first.</strong> Under the stated logical rule, yes: if a valid card always leads to an open door, a closed door rules out a valid card. The two sentences “valid card → door opens” and “door closed → card invalid” make the same claim about allowed combinations. But if the real door could jam, the policy may not describe its actual behavior. Logic tells us what follows <em>from the assumptions</em>, not whether the assumptions are true of every physical event.</p>
+        <div class="lens"><h3>Reasoning Lens · questions for a short proof</h3><ol><li><strong>Assume:</strong> What facts or general rule are we allowed to use?</li><li><strong>Claim:</strong> What exactly must be established?</li><li><strong>Justify:</strong> Why does each step follow?</li><li><strong>Scope:</strong> Does the argument cover every case in the stated domain?</li><li><strong>Limit:</strong> Which assumptions would need checking in a real system?</li></ol></div>
+        <div class="pipeline three" role="img" aria-label="Stated policy and closed door lead to a justified conditional conclusion"><div><strong>RULE</strong><br>Valid card → open door</div><div><strong>OBSERVATION</strong><br>Door did not open</div><div><strong>CONCLUSION</strong><br>Card not valid, under the rule</div></div>
+      </section>
+
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Class Guide</h2>
+        <p>By the end of Week 3, you should be able to:</p>
+        <ol><li>Distinguish an assumption, a claim, and a justified step in a short argument.</li><li>Use a truth table to test whether two statements are logically equivalent.</li><li>Recognize that <span class="formula">P → Q</span> and <span class="formula">¬Q → ¬P</span> are equivalent, while the converse <span class="formula">Q → P</span> need not be.</li><li>Write a short direct proof and a short proof by contraposition about even or odd integers.</li><li>Explain the idea of proof by contradiction, and use a counterexample to disprove an “every” claim.</li></ol>
+        <p><strong>Class schedule (180 minutes):</strong> 25 minutes for reasoning; 40 for direct proof; 35 for equivalence and truth tables; 35 for contraposition; 30 for contradiction; 15 for feedback and an exit check.</p>
+        <p><span class="core">Classroom essentials</span> Sections 01–10, one proof strip, and the exit check. <span class="core extension">Self-study</span> Extra practice and the optional Colab check. The workshop and proof-strip discussion are ungraded; a brief written proof assignment is the formal assessment.</p>
+      </section>
+
+      <!-- Argument Structure -->
+      <section class="chapter" id="arguments">
+        <h2>03 · What Counts as a Mathematical Argument?</h2>
+        <p>A mathematical argument begins with <strong>assumptions</strong> and reaches a <strong>claim</strong> through justified steps. A proof explains why the claim holds for <em>every</em> case covered by the assumptions. A correct example may help us discover a pattern, but it cannot by itself establish a universal claim.</p>
+        <div class="example"><span class="tag">Three levels · familiar → system → mathematics</span><h3>From a rule to a general statement</h3><p><strong>Familiar:</strong> “If I submit before the deadline, the portal accepts my work” is a rule; one accepted submission does not prove the rule always works. <strong>System:</strong> Four successful test accounts provide useful evidence about software, but not a proof of a policy for every account. <strong>Mathematics:</strong> “For every even integer <span class="formula">n</span>, <span class="formula">n²</span> is even” requires an argument for arbitrary <span class="formula">n</span>, not a list such as <span class="formula">2²=4</span> and <span class="formula">4²=16</span>.</p></div>
+        <div class="callout"><strong>Proof frame:</strong> “Let <span class="formula">n</span> be an arbitrary even integer. By definition, <span class="formula">n=2k</span> for some integer <span class="formula">k</span>. Therefore … . Thus the claim holds for every even <span class="formula">n</span>.” The word <em>arbitrary</em> is what lets the argument cover the whole domain.</div>
+      </section>
+
+      <!-- Logical Equivalence -->
+      <section class="chapter" id="equivalence">
+        <h2>04 · When Do Two Logical Statements Mean the Same Thing?</h2>
+        <p>Let <span class="formula">P</span> mean “the card is valid” and <span class="formula">Q</span> mean “the door opens.” Two compound statements are <strong>logically equivalent</strong> when their truth values agree for <em>every</em> possible assignment to <span class="formula">P</span> and <span class="formula">Q</span>. We write <span class="formula">A ≡ B</span>. This is a statement about truth values across all cases, not merely similar sounding words.</p>
+        <div class="mathline"><span class="formula">(P → Q) ≡ (¬Q → ¬P)</span></div>
+        <p>The expression on the right is the <strong>contrapositive</strong>: reverse the direction and negate both parts. In the door scenario, it says, “If the door does not open, the card is not valid.” The rule <span class="formula">Q → P</span> is the <strong>converse</strong>: “If the door opens, the card is valid.” A staff override might open the door, so the converse is a different claim.</p>
+        <figure class="equivalence-figure"><svg viewBox="0 0 680 175" role="img" aria-label="Original implication and contrapositive lead to the same truth pattern; converse is a different direction"><defs><marker id="equiv-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#087f84"/></marker></defs><rect x="15" y="15" width="285" height="58" rx="10" fill="#e8f6f4" stroke="#087f84"/><text x="157" y="43" text-anchor="middle" font-size="17" fill="#10263f">P → Q</text><text x="157" y="62" text-anchor="middle" font-size="12" fill="#506579">valid → open</text><rect x="380" y="15" width="285" height="58" rx="10" fill="#e8f6f4" stroke="#087f84"/><text x="522" y="43" text-anchor="middle" font-size="17" fill="#10263f">¬Q → ¬P</text><text x="522" y="62" text-anchor="middle" font-size="12" fill="#506579">closed → invalid</text><text x="340" y="50" text-anchor="middle" font-size="24" fill="#087f84">≡</text><rect x="195" y="104" width="290" height="57" rx="10" fill="#f2eef9" stroke="#66539c"/><text x="340" y="132" text-anchor="middle" font-size="17" fill="#10263f">Q → P</text><text x="340" y="150" text-anchor="middle" font-size="12" fill="#506579">converse · check separately</text></svg><figcaption>Figure 1. The two upper rules agree in every truth-table row; the converse can disagree.</figcaption></figure>
+        <div class="callout caution"><strong>Meaning matters:</strong> In real equipment, “door did not open” might mean the mechanism failed. The formal deduction is valid <em>if</em> the rule accurately models this event. Never quietly add “only valid cards can open it” to a one-way rule.</div>
+      </section>
+
+      <!-- Truth Table -->
+      <section class="chapter" id="truth-table">
+        <h2>05 · A Truth Table Tests Equivalence</h2>
+        <p>List the four possible pairs of truth values for <span class="formula">P,Q</span>. For an implication <span class="formula">A → B</span>, the only false case is <span class="formula">A=T, B=F</span>. Compare the completed columns:</p>
+        <div class="table-wrap"><table class="truth"><thead><tr><th>P</th><th>Q</th><th>¬P</th><th>¬Q</th><th>P → Q</th><th>¬Q → ¬P</th><th>Q → P</th></tr></thead><tbody><tr><td>T</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T</td><td>T</td></tr><tr><td>T</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td></tr><tr><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td><td>T</td><td>F</td></tr><tr><td>F</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td><td>T</td></tr></tbody></table></div>
+        <p>The <span class="formula">P → Q</span> and <span class="formula">¬Q → ¬P</span> columns match in all four rows. The converse differs when <span class="formula">P=F,Q=T</span>: an open door does not prove a valid card.</p>
+        <div class="example"><span class="tag">Worked row · P=F, Q=T</span><p>Here <span class="formula">P → Q=T</span> because <span class="formula">P</span> is false. Also <span class="formula">¬Q=F</span>, so <span class="formula">¬Q → ¬P=T</span>. But <span class="formula">Q → P=F</span>: it begins with a true open-door observation and incorrectly requires a valid card. This row disproves equivalence of the original and the converse.</p></div>
+        <p><strong>Small extension:</strong> The inverse <span class="formula">¬P → ¬Q</span> is also not generally equivalent to <span class="formula">P → Q</span>. The same <span class="formula">P=F,Q=T</span> row makes the inverse false. We will use the original and its contrapositive for this week's proofs.</p>
+      </section>
+
+      <!-- Direct Proof -->
+      <section class="chapter" id="direct">
+        <h2>06 · Direct Proof: Begin with the Assumption</h2>
+        <p>A direct proof of <span class="formula">P → Q</span> assumes <span class="formula">P</span> and derives <span class="formula">Q</span>. For integers, an even number has the form <span class="formula">2k</span> for some integer <span class="formula">k</span>; an odd number has the form <span class="formula">2k+1</span>. Those definitions give us a useful first step.</p>
+        <div class="example"><span class="tag">Worked proof · implication</span><h3>If an integer is even, its square is even</h3><ol><li>Let <span class="formula">n</span> be an arbitrary even integer. Then <span class="formula">n=2k</span> for some integer <span class="formula">k</span>.</li><li>Square the expression: <span class="formula">n²=(2k)²=4k²=2(2k²)</span>.</li><li>Since <span class="formula">2k²</span> is an integer, <span class="formula">n²</span> is twice an integer. Therefore <span class="formula">n²</span> is even.</li></ol><p>The calculation is not a sample value: <span class="formula">k</span> can be any integer. That is why it proves the implication for every even integer.</p></div>
+        <div class="callout"><strong>Proof strip · ungraded pair activity:</strong> Put these steps in a valid order and explain the link between each pair: “<span class="formula">n²=2(2k²)</span>”; “Let <span class="formula">n</span> be an arbitrary even integer”; “Therefore <span class="formula">n²</span> is even”; “<span class="formula">n=2k</span> for some integer <span class="formula">k</span>.”</div>
+      </section>
+
+      <!-- Proof by Contraposition -->
+      <section class="chapter" id="contraposition">
+        <h2>07 · Proof by Contraposition</h2>
+        <p>Sometimes the conclusion is hard to derive directly from the assumption. Since <span class="formula">P → Q</span> is equivalent to <span class="formula">¬Q → ¬P</span>, we may prove the contrapositive instead. We must <em>negate and reverse both parts</em>, and we must say which statement we actually proved.</p>
+        <div class="example"><span class="tag">Worked proof · parity</span><h3>If <span class="formula">n²</span> is even, then <span class="formula">n</span> is even</h3><p><strong>Target:</strong> <span class="formula">n²</span> even <span class="formula">→</span> <span class="formula">n</span> even. <strong>Contrapositive:</strong> <span class="formula">n</span> odd <span class="formula">→</span> <span class="formula">n²</span> odd.</p><ol><li>Assume <span class="formula">n</span> is odd, so <span class="formula">n=2k+1</span> for an integer <span class="formula">k</span>.</li><li>Then <span class="formula">n²=(2k+1)²=4k²+4k+1=2(2k²+2k)+1</span>.</li><li>The quantity <span class="formula">2k²+2k</span> is an integer. Thus <span class="formula">n²</span> is odd. We proved the contrapositive, hence the original implication.</li></ol></div>
+        <div class="callout caution"><strong>Do not prove the converse by accident:</strong> To prove “<span class="formula">n²</span> even → <span class="formula">n</span> even,” showing “<span class="formula">n</span> even → <span class="formula">n²</span> even” proves a different statement. Write the original and contrapositive side by side before calculating.</div>
+      </section>
+
+      <!-- Proof by Contradiction -->
+      <section class="chapter" id="contradiction">
+        <h2>08 · Proof by Contradiction: Reach an Impossible Result</h2>
+        <p>To prove a claim by contradiction, temporarily assume its opposite. If that assumption leads to something impossible while the mathematical definitions remain valid, the opposite assumption must be false. This week, a very short example is enough; long formal derivations are not needed.</p>
+        <div class="example"><span class="tag">Worked proof · no largest even integer</span><h3>Can there be a largest even integer?</h3><ol><li>Suppose, for contradiction, that <span class="formula">L</span> is the largest even integer.</li><li>Because <span class="formula">L</span> is even, <span class="formula">L+2</span> is also even. But <span class="formula">L+2&gt;L</span>.</li><li>This contradicts “largest.” Therefore there is no largest even integer.</li></ol><p>The conflicting statements are explicit: “<span class="formula">L</span> is largest” and “there is a larger even integer.” The argument applies no matter which even integer someone proposes as <span class="formula">L</span>.</p></div>
+        <div class="callout"><strong>Compare methods:</strong> Direct proof begins with the original assumption. Contraposition proves an equivalent if–then statement. Contradiction assumes the negation of the claim and derives a conflict. Choose a method that gives a short, clear justification.</div>
+      </section>
+
+      <!-- Counterexamples -->
+      <section class="chapter" id="counterexamples">
+        <h2>09 · A Counterexample Can Disprove “Every”</h2>
+        <p>To show “every object has property <span class="formula">R</span>” is false, find one object in the stated domain without <span class="formula">R</span>. This is a <strong>counterexample</strong>. By contrast, several agreeing examples do not prove a universal claim.</p>
+        <div class="example"><span class="tag">Worked challenge</span><h3>“Every even integer is divisible by 4”</h3><p>The integer <span class="formula">2</span> is even but is not divisible by <span class="formula">4</span>. This single example disproves the universal claim. Checking <span class="formula">4,8,12</span> would support a guess but would not prove it for every even integer.</p></div>
+        <p>A logical truth-table row can also be a counterexample: <span class="formula">P=F,Q=T</span> makes <span class="formula">P → Q</span> true but <span class="formula">Q → P</span> false, disproving the claim that the two formulas are equivalent.</p>
+      </section>
+
+      <!-- Equivalence Workshop -->
+      <section class="chapter" id="workshop">
+        <h2>10 · Equivalence Workshop: Predict → Test → Explain</h2>
+        <p><span class="core">Ungraded interaction</span> Predict the three rule values for each input pair. Toggle the two observations to test your prediction. Then explain which two expressions always match, and find a row that separates the converse.</p>
+        <div class="interactive screen-only" id="equivalence-lab"><h3>Compare three rules in a single case</h3><div class="choices"><button type="button" id="toggle-p" aria-pressed="false">P · Valid card: <strong id="p-value">FALSE</strong></button><button type="button" id="toggle-q" aria-pressed="true">Q · Door opens: <strong id="q-value">TRUE</strong></button></div><div class="grid2"><div class="mini"><strong>Original <span class="formula">P → Q</span></strong><p id="original-output" aria-live="polite"></p></div><div class="mini"><strong>Contrapositive <span class="formula">¬Q → ¬P</span></strong><p id="contra-output" aria-live="polite"></p></div><div class="mini"><strong>Converse <span class="formula">Q → P</span></strong><p id="converse-output" aria-live="polite"></p></div><div class="mini"><strong>Explain</strong><p id="row-explanation" aria-live="polite"></p></div></div><p class="status">Try all four cases. A single row of disagreement disproves equivalence.</p></div>
+        <div class="workbook print-only"><h3>Paper Equivalence Workshop</h3><p><strong>Predict:</strong> Complete the blank columns without looking at Section 05. <strong>Test:</strong> Compare them to that table. <strong>Explain:</strong> Which columns match in all four rows? Which row separates the converse?</p><div class="table-wrap"><table><thead><tr><th>P</th><th>Q</th><th>P → Q</th><th>¬Q → ¬P</th><th>Q → P</th></tr></thead><tbody><tr><td>T</td><td>T</td><td>____</td><td>____</td><td>____</td></tr><tr><td>T</td><td>F</td><td>____</td><td>____</td><td>____</td></tr><tr><td>F</td><td>T</td><td>____</td><td>____</td><td>____</td></tr><tr><td>F</td><td>F</td><td>____</td><td>____</td><td>____</td></tr></tbody></table></div><span class="answer-line"></span><span class="answer-line"></span></div>
+        <div class="interactive screen-only" id="proof-check"><h3>One claim · one counterexample</h3><p>“Every even integer is divisible by 4.” Which response settles the claim?</p><div class="choices"><button type="button" data-answer="test">Check 4, 8, and 12</button><button type="button" data-answer="counterexample">Use the even integer 2</button><button type="button" data-answer="guess">Assume the pattern continues</button></div><p id="proof-feedback" class="status" aria-live="polite"></p></div>
+      </section>
+
+      <!-- Computing Connection -->
+      <section class="chapter" id="systems">
+        <h2>11 · What This Means for a Computing System</h2>
+        <p>Suppose a written policy says <span class="formula">P → Q</span>: a valid card must open the door. A program that treats <span class="formula">Q → P</span> as the same policy might accept a green/open indication as proof of a valid card, even though an override could produce that indication. A truth table can expose this change of direction before the rule is implemented.</p>
+        <p>Proof is useful for checking a <em>logical specification</em>. Testing is still needed to see whether software and physical devices behave as specified. Neither a small set of successful tests nor a mathematical argument about an inaccurate rule guarantees a reliable real system.</p>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Google Colab Check</h2>
+        <p><span class="core extension">Self-study / optional</span> Complete the hand truth table first. Week 1 introduced Boolean values and <code>not</code>/<code>or</code>. In Python, <span class="formula">P → Q</span> can be checked with <code>(not p) or q</code>. Set one pair of input values, predict the outputs, then run the cell. No loops or new packages are needed.</p>
+        <div class="experiment"><h3>Predict → Test → Explain one row</h3><p>Start with <span class="formula">P=F,Q=T</span>. Predict original, contrapositive, and converse before running:</p><pre><code>p = False
+q = True
+
+original = (not p) or q
+contrapositive = q or (not p)  # (not (not q)) or (not p)
+converse = (not q) or p
+
+print(original, contrapositive, converse)</code></pre><p>Expected output: <code>True True False</code>. The contrapositive expression simplifies to <code>q or (not p)</code>. For a second row, change only <code>p</code> and <code>q</code>; explain what the output means in terms of the rule. Python checks chosen rows, while the complete truth table establishes equivalence for all four possible rows.</p></div>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice and Brief Written Assessment</h2>
+        <p>Answer 1–4 as classroom practice. Questions 5–6 extend the chapter. The instructor may collect a short proof from Question 3 or 4 as a formal assignment; the workshop remains ungraded.</p>
+        <ol><li>Let <span class="formula">P</span> mean “a request is authenticated” and <span class="formula">Q</span> mean “it is accepted.” Translate <span class="formula">P → Q</span>, its contrapositive, and its converse in words. Which two are equivalent?</li><li>Fill the row <span class="formula">P=F,Q=T</span> for <span class="formula">P → Q</span>, <span class="formula">¬Q → ¬P</span>, and <span class="formula">Q → P</span>. What does this row prove?</li><li>Prove directly: If <span class="formula">n</span> is an even integer, then <span class="formula">n+6</span> is even.</li><li>Use contraposition: If <span class="formula">n²</span> is odd, then <span class="formula">n</span> is odd. State the contrapositive first, then use a result from Section 06.</li><li>Explain in two or three steps why there is no largest multiple of <span class="formula">5</span>. Make the contradictory assumption explicit.</li><li>Disprove “every odd integer is prime” by one counterexample. Explain why three prime examples would not prove it.</li></ol>
+        <div class="workbook print-only"><p><strong>Proof planning space:</strong> Assumption: ____________________  Definition or rule: ____________________</p><span class="answer-line"></span><span class="answer-line"></span><p>Conclusion and justification: __________________________________________</p><span class="answer-line"></span></div>
+      </section>
+
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Misstep</th><th>Correction</th></tr></thead><tbody><tr><td>Several examples establish “for every.”</td><td>Examples suggest a claim; a proof must cover every case. One counterexample can refute it.</td></tr><tr><td>Switch <span class="formula">P → Q</span> to <span class="formula">Q → P</span>.</td><td>That is the converse. Test a separating truth-table row before treating it as equivalent.</td></tr><tr><td>Negate only one side for a contrapositive.</td><td>Reverse and negate both: <span class="formula">¬Q → ¬P</span>.</td></tr><tr><td>Call a calculation a proof without explaining its integer form.</td><td>Show that <span class="formula">n²=2m</span> with an explicitly integer <span class="formula">m</span>.</td></tr><tr><td>In a contradiction argument, never identify the conflict.</td><td>Name the original assumption and the incompatible derived statement.</td></tr><tr><td>Treat a valid derivation as proof that a sensor works.</td><td>Logic is conditional on the stated facts and model.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <p>Equivalent formulas agree in every truth-table row. An implication and its contrapositive are equivalent; its converse need not be. A direct proof starts from the assumption and derives the claim. A contrapositive proof proves an equivalent statement. A contradiction proof assumes the opposite and reaches an impossibility. A counterexample disproves a universal claim, while a few successful examples cannot prove it.</p>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Concept Map</h2>
+        <figure class="concept-figure"><svg viewBox="0 0 700 330" role="img" aria-label="Assumptions and claim lead to direct proof, equivalent contrapositive, or contradiction; counterexamples refute universal claims"><g fill="none" stroke="#087f84" stroke-width="2.4"><path d="M350 57V85 M350 125L125 155 M350 125V155 M350 125L575 155 M125 203L350 240 M350 203V240 M575 203L350 240 M350 276V289"/></g><g text-anchor="middle" font-family="DejaVu Sans,Arial" fill="#10263f" font-size="15"><rect x="235" y="15" width="230" height="42" rx="10" fill="#dcefed"/><text x="350" y="42">ASSUMPTIONS + CLAIM</text><rect x="235" y="84" width="230" height="42" rx="10" fill="#e8f0f5"/><text x="350" y="111">CHOOSE A JUSTIFICATION</text><rect x="25" y="157" width="200" height="46" rx="10" fill="#e6ecf7"/><text x="125" y="185">DIRECT PROOF</text><rect x="250" y="157" width="200" height="46" rx="10" fill="#f2eef9"/><text x="350" y="185">CONTRAPOSITION</text><rect x="475" y="157" width="200" height="46" rx="10" fill="#e6ecf7"/><text x="575" y="185">CONTRADICTION</text><rect x="215" y="240" width="270" height="38" rx="10" fill="#dcefed"/><text x="350" y="265">CLAIM JUSTIFIED FOR ALL CASES</text><rect x="177" y="290" width="346" height="34" rx="10" fill="#fff5e7"/><text x="350" y="313">OR REFUTED BY A COUNTEREXAMPLE</text></g></svg><figcaption>Figure 2. A proof justifies a claim for its stated scope; a counterexample refutes a universal claim.</figcaption></figure>
+      </section>
+
+      <section class="chapter" id="terms"><h2>17 · Key Terms</h2><div class="table-wrap"><table><thead><tr><th>Term</th><th>Working meaning</th></tr></thead><tbody><tr><td>Logical equivalence</td><td>Two expressions agree in truth value for every assignment.</td></tr><tr><td>Contrapositive</td><td><span class="formula">¬Q → ¬P</span> for <span class="formula">P → Q</span>; logically equivalent.</td></tr><tr><td>Converse</td><td><span class="formula">Q → P</span>; a different statement unless separately established.</td></tr><tr><td>Direct proof</td><td>Assume the premise; justify the conclusion.</td></tr><tr><td>Contradiction</td><td>Assume the opposite and derive an impossibility.</td></tr><tr><td>Counterexample</td><td>One object in the domain that disproves a universal claim.</td></tr></tbody></table></div></section>
+      <section class="chapter" id="next"><h2>18 · What Comes Next</h2><p>Week 4 will introduce mathematical induction: a method for proving a statement across a sequence of positive integers. The distinction between checking a few cases and proving every case will matter again. For now, write one sentence explaining which proof method you found clearest and why.</p></section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter selected-solutions" id="solutions"><h2>Selected Solutions and Explanations</h2>
+        <p><strong>Equivalence Workshop:</strong> In row order <span class="formula">TT,TF,FT,FF</span>, both <span class="formula">P → Q</span> and <span class="formula">¬Q → ¬P</span> are <span class="formula">T,F,T,T</span>; the converse is <span class="formula">T,T,F,T</span>. Row <span class="formula">FT</span> separates the original from its converse. The counterexample to “every even integer is divisible by 4” is <span class="formula">2</span>.</p>
+        <p><strong>Proof strip:</strong> “Let <span class="formula">n</span> be arbitrary even” → “<span class="formula">n=2k</span> for integer <span class="formula">k</span>” → “<span class="formula">n²=2(2k²)</span>” → “<span class="formula">n²</span> is even.”</p>
+        <p><strong>Practice 1–2:</strong> The contrapositive is “not accepted → not authenticated”; the converse is “accepted → authenticated.” The original and contrapositive are equivalent. For <span class="formula">P=F,Q=T</span>, the values are <span class="formula">T,T,F</span>; this one row disproves equivalence to the converse.</p>
+        <p><strong>Practice 3:</strong> Let <span class="formula">n=2k</span> for an integer <span class="formula">k</span>. Then <span class="formula">n+6=2(k+3)</span>, and <span class="formula">k+3</span> is an integer; so <span class="formula">n+6</span> is even. <strong>Practice 4:</strong> The contrapositive is “if <span class="formula">n</span> is even, then <span class="formula">n²</span> is even.” Section 06 proves this, so the original “<span class="formula">n²</span> odd → <span class="formula">n</span> odd” follows.</p>
+        <p><strong>Practice 5:</strong> Assume <span class="formula">L</span> is the largest multiple of <span class="formula">5</span>. Then <span class="formula">L+5</span> is also a multiple of <span class="formula">5</span> and exceeds <span class="formula">L</span>, a contradiction. <strong>Practice 6:</strong> <span class="formula">9</span> is odd but not prime because <span class="formula">9=3·3</span>. Positive examples such as <span class="formula">3,5,7</span> cannot cover all odd integers.</p>
+      </section>
+      <footer class="course-foot">Discrete Mathematics for BSAI · Week 03 · Dr. Hira Benish</footer>
+    </main>
+  </div>
+  <script>
+    "use strict";
+
+    // Equivalence Workshop: one pair of Boolean inputs controls all three rules.
+    let pValue = false;
+    let qValue = true;
+
+    function truthWord(value) {
+      return value ? "TRUE" : "FALSE";
+    }
+
+    function updateEquivalenceLab() {
+      const original = !pValue || qValue;
+      const contrapositive = qValue || !pValue;
+      const converse = !qValue || pValue;
+      document.getElementById("p-value").textContent = truthWord(pValue);
+      document.getElementById("q-value").textContent = truthWord(qValue);
+      document.getElementById("toggle-p").setAttribute("aria-pressed", String(pValue));
+      document.getElementById("toggle-q").setAttribute("aria-pressed", String(qValue));
+      document.getElementById("original-output").textContent = truthWord(original);
+      document.getElementById("contra-output").textContent = truthWord(contrapositive);
+      document.getElementById("converse-output").textContent = truthWord(converse);
+      document.getElementById("row-explanation").textContent = original === converse
+        ? "All three agree in this row. Try another input pair."
+        : "The converse differs here; this one row shows it is not equivalent to the original.";
+    }
+
+    function setupCounterexampleCheck() {
+      const feedback = document.getElementById("proof-feedback");
+      document.querySelectorAll("[data-answer]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("[data-answer]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          const correct = button.dataset.answer === "counterexample";
+          feedback.className = "status " + (correct ? "good" : "bad");
+          feedback.textContent = correct
+            ? "Correct. 2 is even but is not divisible by 4; one counterexample refutes 'every'."
+            : "Those examples may suggest a pattern, but they cannot settle a universal claim. Look for an even exception.";
+        });
+      });
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", () => window.print());
+      document.getElementById("toggle-p").addEventListener("click", () => { pValue = !pValue; updateEquivalenceLab(); });
+      document.getElementById("toggle-q").addEventListener("click", () => { qValue = !qValue; updateEquivalenceLab(); });
+      setupCounterexampleCheck();
+      updateEquivalenceLab();
+    }
+
+    initModule();
+  </script>
+</body>
+</html>

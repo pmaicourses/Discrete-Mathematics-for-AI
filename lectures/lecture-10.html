@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 11 of Discrete Mathematics for BSAI: counting foundations and permutations I.">
+  <title>Week 11 · Counting Foundations and Permutations I</title>
+  <style>
+
+
+
+
+
+
+
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "aₙ  ∑"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    /* Week 11 interactive counting cards. */
+    .case-card { border-left: 4px solid var(--teal); padding: .6rem 1rem; background: #edf5f7; border-radius: .4rem; }
+    .number-choices { display: flex; gap: .6rem; flex-wrap: wrap; margin: 1rem 0; }
+    .number-choices button, .activity-actions button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .48rem 1rem; }
+    .number-choices button:hover, .number-choices button[aria-pressed="true"], .activity-actions button { color: white; background: var(--teal); }
+    .number-choices button:disabled { opacity: .65; cursor: default; }
+    .activity-actions button:disabled { opacity: .5; cursor: default; }
+    .reasoning-reveal { border-left: 4px solid var(--violet); background: #f2eef9; padding: .65rem 1rem; margin-top: 1rem; }
+    .activity-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .8rem; }
+    .figure-wide { width: 100%; max-width: 700px; }
+    .feature-code { display: inline-block; min-width: 1.9rem; text-align: center; border-radius: .3rem; color: white; background: var(--teal); font-weight: 700; padding: 0 .3rem; }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 11</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Counting Foundations and Permutations I</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar">
+    <div class="toolbar-inner"><strong>Week 11 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div>
+  </div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a>
+      <a href="#objectives">02 Objectives and time</a>
+      <a href="#cases">03 Add separate cases</a>
+      <a href="#stages">04 Multiply stages</a>
+      <a href="#choose">05 Choose the method</a>
+      <a href="#overlap">06 Correct overlap</a>
+      <a href="#pigeonhole">07 Pigeonhole reasoning</a>
+      <a href="#order">08 Does order matter?</a>
+      <a href="#arrangements">09 Arrange distinct items</a>
+      <a href="#activity">10 Counting Detective</a>
+      <a href="#case-study">11 Feature-set case</a>
+      <a href="#python">12 Optional Colab</a>
+      <a href="#practice">13 Practice and quiz</a>
+      <a href="#mistakes">14 Common mistakes</a>
+      <a href="#summary">15 Summary</a>
+      <a href="#map">16 Concept map</a>
+      <a href="#next">17 Looking ahead</a>
+      <a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario: How Many Options?</h2>
+        <p class="lead">A student can take one of <strong>three routes</strong> to campus. For each route, there are <strong>two available travel modes</strong>. How many route-and-mode plans are possible?</p>
+        <p><strong>Predict:</strong> Sketch the choices first. Route A can pair with either mode, giving two plans. The same is true for routes B and C. There are <span class="formula">2+2+2=6</span> complete plans, also written <span class="formula">3×2=6</span>.</p>
+        <div class="pipeline three" role="img" aria-label="Choose a route, choose a mode, then count complete route-mode plans">
+          <div><strong>ROUTE</strong><br>3 choices</div>
+          <div><strong>MODE</strong><br>2 choices for each route</div>
+          <div><strong>PLAN</strong><br>3×2=6 pairs</div>
+        </div>
+        <div class="lens"><h3>Central question</h3><p>Are these alternative cases, consecutive stages, overlapping groups, or ordered positions? The structure of the question determines how to count.</p></div>
+      </section>
+
+      <!-- Objectives -->
+      <section class="chapter" id="objectives">
+        <h2>02 · Learning Objectives and Three-Hour Guide</h2>
+        <p>By the end of Week 11, you should be able to add counts for separate cases, multiply choices across stages, correct double counting for two overlapping sets, give a small pigeonhole argument, count ordered arrangements of distinct objects, and explain when order changes an outcome.</p>
+        <div class="table-wrap"><table><thead><tr><th>Class time</th><th>Essential work</th></tr></thead><tbody>
+          <tr><td>45 min</td><td>Addition and product rules with menu and travel choices</td></tr>
+          <tr><td>35 min</td><td>Overlap puzzle and two-set inclusion–exclusion</td></tr>
+          <tr><td>25 min</td><td>Pigeonhole challenge and explanation</td></tr>
+          <tr><td>60 min</td><td>Ordered cards and Major Case Study 3 setup</td></tr>
+          <tr><td>15 min</td><td>Counting-method quiz and feedback</td></tr>
+        </tbody></table></div>
+        <p><span class="core">Classroom essentials</span> Sections 01–11 and Practice 1–6. <span class="core extension">Optional self-study</span> Colab and Practice 7–8. The feature-set case continues in Week 12; this week establishes the distinction between selecting and ranking.</p>
+      </section>
+
+      <!-- Addition Rule -->
+      <section class="chapter" id="cases">
+        <h2>03 · Add Counts for Separate Cases</h2>
+        <p>A menu offers <strong>three soups</strong> or <strong>two salads</strong> as a single starter. No option is both a soup and a salad. To count one starter, list the disjoint cases: three soups plus two salads gives <span class="formula">3+2=5</span> choices.</p>
+        <div class="mathline"><span class="formula">|A∪B|=|A|+|B|</span> when <span class="formula">A∩B=∅</span>.</div>
+        <p>Here <span class="formula">A</span> is the set of soup choices and <span class="formula">B</span> the set of salad choices. The notation says the combined set has the sum of their sizes when the groups share no item. This is the <strong>addition rule for separate cases</strong>.</p>
+        <div class="example"><h3>Worked example</h3><p>A display shows four text themes or three image themes. If every theme belongs to exactly one category, there are <span class="formula">4+3=7</span> themes. If a theme appears in both categories, adding without correction counts it twice; we address overlap in Section 06.</p></div>
+        <div class="callout caution"><strong>Quick check:</strong> “Choose one soup <em>or</em> one salad” describes alternatives. It does not describe a soup-and-salad meal.</div>
+      </section>
+
+      <!-- Product Rule -->
+      <section class="chapter" id="stages">
+        <h2>04 · Multiply Counts Across Stages</h2>
+        <p>Now a meal consists of <strong>one of three soups</strong> <em>and then</em> <strong>one of two drinks</strong>. Each soup pairs with two drinks, so there are <span class="formula">3×2=6</span> meals. We count complete pairs, not individual menu items.</p>
+        <div class="table-wrap"><table><thead><tr><th>First stage</th><th>Complete outcomes at the second stage</th></tr></thead><tbody>
+          <tr><td>Soup S₁</td><td>(S₁,D₁), (S₁,D₂)</td></tr>
+          <tr><td>Soup S₂</td><td>(S₂,D₁), (S₂,D₂)</td></tr>
+          <tr><td>Soup S₃</td><td>(S₃,D₁), (S₃,D₂)</td></tr>
+        </tbody></table></div>
+        <p>This is the <strong>product rule</strong>: if stage 1 has <span class="formula">m</span> choices and <em>each</em> stage-1 choice permits <span class="formula">n</span> stage-2 choices, there are <span class="formula">m×n</span> complete outcomes. We need the same number of second-stage choices for every first-stage choice in this simple form.</p>
+        <div class="example"><h3>Unequal branches</h3><p>Suppose one route offers two modes and another offers three. Count its branches separately: <span class="formula">2+3=5</span>, not <span class="formula">2×3</span>. Sketching a tiny list often prevents a mistaken formula.</p></div>
+      </section>
+
+      <!-- Addition or Product -->
+      <section class="chapter" id="choose">
+        <h2>05 · Which Structure Is Present?</h2>
+        <p>Words such as “or” and “and” can help, but the <em>actual outcomes</em> decide the method. Ask whether one outcome comes from choosing a single case, or from completing several stages.</p>
+        <div class="table-wrap"><table><thead><tr><th>Question</th><th>What is one outcome?</th><th>Count</th></tr></thead><tbody>
+          <tr><td>One of 4 short stories or 3 poems</td><td>One reading item from separate categories</td><td>4+3=7</td></tr>
+          <tr><td>One of 4 stories and one of 3 discussion prompts</td><td>A story-prompt pair</td><td>4×3=12</td></tr>
+          <tr><td>Either a 2-step plan from one group or a 3-step plan from another</td><td>One plan after counting each branch</td><td>Count each branch, then add</td></tr>
+        </tbody></table></div>
+        <p>For the third row, a branch can itself use multiplication. The whole plan is counted by <strong>cases around stages</strong>. Check that cases do not overlap before adding.</p>
+      </section>
+
+      <!-- Inclusion Exclusion -->
+      <section class="chapter" id="overlap">
+        <h2>06 · Correct a Double Count</h2>
+        <p>In a small club survey, <strong>12 students chose coding</strong>, <strong>9 chose design</strong>, and <strong>4 chose both</strong>. How many chose coding or design, including those who chose both?</p>
+        <p>Adding <span class="formula">12+9=21</span> counts each of the four “both” students twice. Subtract one extra copy of each:</p>
+        <div class="mathline"><span class="formula">|C∪D|=|C|+|D|−|C∩D|=12+9−4=17.</span></div>
+        <figure class="overlap-figure figure-wide">
+          <svg viewBox="0 0 680 280" role="img" aria-labelledby="overlap-title">
+            <title id="overlap-title">Two overlapping groups: coding only 8, both 4, design only 5; total 17</title>
+            <circle cx="270" cy="132" r="108" fill="#e8f6f4" stroke="#087f84" stroke-width="3" fill-opacity=".88"/>
+            <circle cx="410" cy="132" r="108" fill="#f2eef9" stroke="#66539c" stroke-width="3" fill-opacity=".8"/>
+            <g fill="#10263f" text-anchor="middle" font-family="DejaVu Sans,Arial"><text x="228" y="83" font-size="18" font-weight="bold">Coding</text><text x="452" y="83" font-size="18" font-weight="bold">Design</text><text x="229" y="147" font-size="32">8</text><text x="340" y="147" font-size="32">4</text><text x="451" y="147" font-size="32">5</text><text x="340" y="267" font-size="16">8 + 4 + 5 = 17 distinct students</text></g>
+          </svg>
+          <figcaption>Figure 1. The intersection contains the four students who chose both categories. Count each person once.</figcaption>
+        </figure>
+        <p>The regions are <span class="formula">12−4=8</span> coding only, <span class="formula">4</span> both, and <span class="formula">9−4=5</span> design only. This is the <strong>inclusion–exclusion rule for two sets</strong>. It counts “at least one,” not “exactly one.” Exactly one would be <span class="formula">8+5=13</span>.</p>
+        <div class="callout caution"><strong>Quick check:</strong> If the overlap is zero, the formula becomes ordinary addition of separate cases.</div>
+      </section>
+
+      <!-- Pigeonhole Principle -->
+      <section class="chapter" id="pigeonhole">
+        <h2>07 · When Sharing Is Unavoidable</h2>
+        <p>Place <strong>four cards</strong> into <strong>three boxes</strong>. Is it possible for every box to hold at most one card? Three boxes could then hold at most three cards. The fourth card forces some box to have at least two.</p>
+        <div class="mathline"><span class="formula">4 objects → 3 boxes ⇒ at least one box contains 2 or more.</span></div>
+        <p>This is the <strong>pigeonhole principle</strong>: more objects than boxes force at least one shared box. It guarantees that a shared box exists; it does not say which box, or that every box is occupied.</p>
+        <div class="example"><h3>A slightly larger challenge</h3><p>Seven files go into three folders. If each folder held at most two, the folders would hold at most <span class="formula">2+2+2=6</span> files. Since there are seven, at least one folder has three or more. No exact placement is needed to prove this guarantee.</p></div>
+        <p><strong>Discuss:</strong> Does four cards in three boxes guarantee that <em>exactly</em> two share a box? No. All four cards could be in one box. The guarantee is “at least two.”</p>
+      </section>
+
+      <!-- Order Matters -->
+      <section class="chapter" id="order">
+        <h2>08 · Does Order Change the Outcome?</h2>
+        <p>Suppose the three distinct cards are <span class="formula">A,B,C</span>. Choosing cards A and B for a <em>set</em> gives the same selection as choosing B and A. But ranking A first and B second differs from ranking B first and A second.</p>
+        <div class="table-wrap"><table><thead><tr><th>Task</th><th>Does A,B differ from B,A?</th><th>Why?</th></tr></thead><tbody>
+          <tr><td>Select two cards to keep</td><td>No</td><td>The same two objects are present.</td></tr>
+          <tr><td>Assign a first and second place</td><td>Yes</td><td>Each position has a different role.</td></tr>
+          <tr><td>Choose two candidate measurements</td><td>No</td><td>The set is unchanged by writing order.</td></tr>
+          <tr><td>Rank the top two measurements</td><td>Yes</td><td>First and second rank are different roles.</td></tr>
+        </tbody></table></div>
+        <p>We will count <em>ordered</em> placements this week. Week 12 develops selection without order in more detail and compares the two systematically.</p>
+      </section>
+
+      <!-- Ordered Arrangements -->
+      <section class="chapter" id="arrangements">
+        <h2>09 · Arrange Distinct Objects</h2>
+        <p>Arrange three distinct cards A, B, C in a row. There are three choices for the first position, then two remaining choices for the second, and one for the third:</p>
+        <div class="mathline"><span class="formula">3×2×1=6</span> complete arrangements.</div>
+        <p>They are <span class="formula">ABC, ACB, BAC, BCA, CAB, CBA</span>. This is an ordered arrangement, or <strong>permutation</strong>, of distinct objects. We have counted them by stages, without needing a new formula.</p>
+        <div class="example"><h3>Only two positions</h3><p>Choose a chairperson and deputy from four distinct people. There are four choices for chairperson, then three remaining choices for deputy: <span class="formula">4×3=12</span> assignments. If the same person were allowed in both roles, the second count would change; the problem says distinct people and different roles.</p></div>
+        <p>For all four distinct cards in a row, the counts fall as the cards are used: <span class="formula">4×3×2×1=24</span>. These stages represent different positions, and no card is reused.</p>
+      </section>
+
+      <!-- Counting Detective Interactive Activity -->
+      <section class="chapter" id="activity">
+        <h2>10 · Counting Detective</h2>
+        <p><span class="core">Predict → Test → Explain</span> Read the entire outcome, decide how to count it, and select a number. After each answer, read the explanation before moving on.</p>
+        <div class="interactive screen-only" id="counting-detective">
+          <h3 id="detective-heading">Case 1 of 5</h3>
+          <p id="detective-prompt" class="case-card"></p>
+          <div id="detective-choices" class="number-choices" aria-label="Possible counts"></div>
+          <p id="detective-feedback" class="status" aria-live="polite">Predict before selecting.</p>
+          <div id="detective-reveal" class="reasoning-reveal" hidden></div>
+          <div class="activity-actions"><button id="next-case" type="button" disabled>Next case</button><button id="restart-cases" type="button">Start over</button></div>
+        </div>
+        <div class="workbook print-only">
+          <h3>Printable Counting Detective</h3>
+          <p>For each case, write a count and one sentence explaining the counting structure.</p>
+          <ol>
+            <li>Choose one of 3 soups or 2 salads (separate categories). Count: ____ Reason: __________________</li>
+            <li>Choose one of 3 soups and one of 2 drinks. Count: ____ Reason: __________________</li>
+            <li>12 chose coding, 9 chose design, 4 chose both. How many chose at least one? Count: ____ Reason: __________________</li>
+            <li>Four cards enter three boxes. What minimum number is guaranteed in some box? Count: ____ Reason: __________________</li>
+            <li>Assign first and second place among 4 distinct cards, no repeat. Count: ____ Reason: __________________</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Major Case Study 3 -->
+      <section class="chapter" id="case-study">
+        <h2>11 · Major Case Study 3 Begins: Exploring Possible Feature Sets</h2>
+        <p><strong>Scenario.</strong> A learning-support team considers eight candidate measurements for a future dashboard. The task here is purely combinatorial: count possible choices and rankings under stated rules. We have no evidence that any feature predicts learning well, and counting possibilities cannot assess predictive quality.</p>
+        <div class="table-wrap"><table><thead><tr><th>Code</th><th>Candidate measurement</th><th>Code</th><th>Candidate measurement</th></tr></thead><tbody>
+          <tr><td>Q</td><td>Quizzes completed</td><td>E</td><td>Exercises attempted</td></tr>
+          <tr><td>A</td><td>Practice accuracy</td><td>T</td><td>Time between attempts</td></tr>
+          <tr><td>R</td><td>Revision sessions</td><td>M</td><td>Missed checkpoints</td></tr>
+          <tr><td>H</td><td>Hints requested</td><td>C</td><td>Topics completed</td></tr>
+        </tbody></table></div>
+        <h3>Understand: what is one outcome?</h3>
+        <p>If the team <strong>selects three</strong> measurements, <span class="formula">{Q,E,A}</span> and <span class="formula">{A,Q,E}</span> represent the same chosen set. If the team <strong>ranks the top three</strong>, <span class="formula">(Q,E,A)</span> and <span class="formula">(A,Q,E)</span> are different assignments to first, second, and third place.</p>
+        <h3>Represent: count a ranking by stages</h3>
+        <p>For three ranked positions with no repeated measurement, there are eight choices for first, seven for second, and six for third. Thus <span class="formula">8×7×6=336</span> rankings. Do not use 336 as the number of three-feature <em>sets</em>: each selected set appears in several orders.</p>
+        <h3>Reason with a small sample</h3>
+        <p>Restrict attention temporarily to <span class="formula">Q,E,A</span>. For a pair, <span class="formula">(Q,E)</span> and <span class="formula">(E,Q)</span> are different ordered pairs but the same unordered selection <span class="formula">{Q,E}</span>. Write all ordered pairs from those three codes without repetition, then group pairs that select the same two codes. This prepares the Week 12 count from all eight features.</p>
+        <div class="workbook"><h3>Case record for next week</h3>
+          <p><strong>Given:</strong> eight distinct candidate measurements listed above; no repeats within a set or ranking.</p>
+          <p><strong>Questions to carry forward:</strong> How many two-feature subsets can be formed? How does that compare with ordered pairs? How many three-feature sets correspond to the 336 rankings? What changes if a measurement is required or two measurements cannot be used together?</p>
+          <p><strong>Interpretation limit:</strong> A count of feature sets says how many alternatives exist, not which alternative is useful, fair, reliable, or predictive.</p>
+        </div>
+        <p>We will resolve these counts and restrictions in Week 12. For now the deliverable is a clear written distinction between selection and ranking, plus the small-pair grouping.</p>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>12 · Optional Colab: Enumerate Tiny Outcomes</h2>
+        <p><span class="core extension">Self-study · mathematics first</span> Hand-list the six route-and-mode pairs and the six ordered two-card placements from A, B, C before using Python. These cells reuse lists and loops from Week 9; there are no imports.</p>
+        <h3>1 · Complete two stages</h3>
+        <p>The outer loop picks a route. For each route, the indented inner loop picks a mode. One printed line is one complete plan.</p>
+        <pre><code>routes = ["A", "B", "C"]
+modes = ["walk", "bus"]
+for route in routes:
+    for mode in modes:
+        print(route, mode)</code></pre>
+        <p>Predict six lines: A walk, A bus, B walk, B bus, C walk, C bus. The second stage has two possibilities for every first-stage choice.</p>
+        <h3>2 · Ordered placements without reuse</h3>
+        <p>Now the two roles are “first” and “second.” The <code>if</code> condition skips using the same card twice.</p>
+        <pre><code>cards = ["A", "B", "C"]
+for first in cards:
+    for second in cards:
+        if first != second:
+            print(first, second)</code></pre>
+        <p>Predict <span class="formula">3×2=6</span> printed placements: AB, AC, BA, BC, CA, CB. Explain why the outputs AB and BA are different rankings but describe the same two-card set. The code checks only tiny hand counts, not feature quality.</p>
+      </section>
+
+      <!-- Practice and Assessment -->
+      <section class="chapter" id="practice">
+        <h2>13 · Practice and Short Counting-Method Quiz</h2>
+        <p>For each problem, state what one complete outcome is. Show a short reason, not only an arithmetic expression.</p>
+        <ol>
+          <li>A menu has 4 teas or 3 juices as a single drink, with no drink in both groups. How many drink choices?</li>
+          <li>Choose one of 4 teas and one of 3 snacks. How many tea-snack pairs?</li>
+          <li>At a workshop, 15 students chose Python, 11 chose R, and 6 chose both. How many chose at least one? How many chose exactly one?</li>
+          <li>Eight objects go into three boxes. Explain why some box contains at least three objects.</li>
+          <li>Arrange three distinct books P, Q, R on a shelf. Count all orders, then list them.</li>
+          <li>Assign a first and second speaker from five distinct volunteers, without reusing a person. How many assignments?</li>
+          <li>A library offers two digital tutorials with two language options each, or three printed guides. How many single learning-resource options are there if each digital language version counts separately and no guide is also a digital version?</li>
+          <li>For case study codes Q, E, A, list the ordered pairs of distinct codes and group those with the same underlying two-feature selection. Explain why counting all ranked triples from eight codes does not directly count three-feature sets.</li>
+        </ol>
+        <div class="callout"><strong>15-minute formative quiz:</strong> Choose one of Problems 2, 3, 4, and 6 in sequence; identify stages, overlap, a forced shared box, and ordered roles. Discuss the reasoning after submission. The feature-set case record is preparation for Week 12, not a graded claim about model quality.</div>
+      </section>
+
+      <!-- Common Mistakes -->
+      <section class="chapter" id="mistakes">
+        <h2>14 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Tempting move</th><th>Repair</th></tr></thead><tbody>
+          <tr><td>Add choices for two required stages.</td><td>List complete pairs; multiply when each first-stage choice has the stated second-stage count.</td></tr>
+          <tr><td>Multiply separate one-item alternatives.</td><td>If an outcome belongs to one disjoint case, add the case counts.</td></tr>
+          <tr><td>Use 12+9 for students who chose coding or design when 4 chose both.</td><td>Subtract the 4 counted twice: 17 distinct students.</td></tr>
+          <tr><td>Say the pigeonhole argument identifies a particular box.</td><td>It guarantees existence of some crowded box, not its identity.</td></tr>
+          <tr><td>Use 4×4 for two distinct roles without reuse.</td><td>After the first choice, only three people remain: 4×3.</td></tr>
+          <tr><td>Count ordered rankings as unordered feature sets.</td><td>Check whether swapping selected items changes the outcome.</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <!-- Summary -->
+      <section class="chapter" id="summary">
+        <h2>15 · Summary</h2>
+        <ul>
+          <li>Add the counts of separate cases; multiply across stages when each first-stage choice has the stated number of continuations.</li>
+          <li>For two overlapping sets, subtract their intersection once: <span class="formula">|A∪B|=|A|+|B|−|A∩B|</span>.</li>
+          <li>More objects than boxes force some box to share; small capacity arguments give stronger guarantees.</li>
+          <li>An ordered assignment changes when roles or positions are exchanged. Distinct items cannot be reused if the task forbids it.</li>
+          <li>Counting candidate feature choices does not identify good features or evaluate any predictive model.</li>
+        </ul>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>16 · Visual Concept Map</h2>
+        <figure class="concept-figure">
+          <svg viewBox="0 0 700 330" role="img" aria-labelledby="map-title">
+            <title id="map-title">Count complete outcomes by separate cases or stages; check overlap and roles; pigeonhole reasoning guarantees a shared box</title>
+            <g stroke="#087f84" stroke-width="3" fill="none"><path d="M350 71 V95 H168 V115 M350 95 H532 V115"/><path d="M168 183 V225 H350 V244 M532 183 V225 H350"/></g>
+            <g font-family="DejaVu Sans,Arial" text-anchor="middle"><g stroke="#087f84" stroke-width="2"><rect x="210" y="15" width="280" height="57" rx="12" fill="#e8f6f4"/><rect x="25" y="115" width="285" height="70" rx="12" fill="#e8f6f4"/><rect x="390" y="115" width="285" height="70" rx="12" fill="#f2eef9" stroke="#66539c"/><rect x="195" y="243" width="310" height="72" rx="12" fill="#e8f6f4"/></g>
+              <g fill="#10263f" font-size="18" font-weight="bold"><text x="350" y="42">COUNT OUTCOMES</text><text x="168" y="143">SEPARATE CASES</text><text x="532" y="143">CONSECUTIVE STAGES</text><text x="350" y="273">CHECK THE DETAILS</text></g>
+              <g fill="#203349" font-size="13"><text x="350" y="62">Define one complete outcome</text><text x="168" y="166">add; correct overlap</text><text x="532" y="166">multiply; track remaining choices</text><text x="350" y="296">Does order matter? Is a shared box forced?</text></g></g>
+          </svg>
+          <figcaption>Begin with the structure of one outcome. Then check overlap, reuse, order, and guarantees.</figcaption>
+        </figure>
+      </section>
+
+      <!-- Transition -->
+      <section class="chapter" id="next">
+        <h2>17 · Looking Ahead</h2>
+        <p>Week 12 completes the feature-set case: count selections without order, compare them with rankings, and handle simple restrictions. We will introduce compact notation only after we have checked small examples by listing and grouping.</p>
+      </section>
+
+      <!-- Selected Solutions -->
+      <section class="chapter solutions" id="solutions">
+        <h2>Selected Solutions</h2>
+        <h3>Counting Detective</h3><p>1: <span class="formula">3+2=5</span> separate choices. 2: <span class="formula">3×2=6</span> soup-drink pairs. 3: <span class="formula">12+9−4=17</span> distinct students in at least one group. 4: at least <span class="formula">2</span> cards share a box, since three boxes cannot each hold at most one of four cards. 5: <span class="formula">4×3=12</span> ordered first-and-second assignments.</p>
+        <h3>1–2 · Menu choices</h3><p>One drink: <span class="formula">4+3=7</span>. A tea-snack pair: <span class="formula">4×3=12</span>.</p>
+        <h3>3 · Two overlapping groups</h3><p>At least one: <span class="formula">15+11−6=20</span>. Exactly one: <span class="formula">(15−6)+(11−6)=9+5=14</span>.</p>
+        <h3>4 · Pigeonhole argument</h3><p>If every box held at most two, the three boxes would hold at most six objects. Since there are eight, some box must hold at least three.</p>
+        <h3>5 · Three books</h3><p><span class="formula">3×2×1=6</span>: PQR, PRQ, QPR, QRP, RPQ, RQP.</p>
+        <h3>6 · Two speakers</h3><p>Five first-speaker choices and four remaining second-speaker choices give <span class="formula">5×4=20</span>.</p>
+        <h3>7 · Two branches</h3><p>Digital choices: <span class="formula">2×2=4</span> tutorial-language pairs. Add three separate printed guides: <span class="formula">4+3=7</span>.</p>
+        <h3>8 · Small feature pairs</h3><p>Ordered pairs: QE, QA, EQ, EA, AQ, AE. Group by the underlying selection: <span class="formula">{Q,E}</span> contains QE and EQ; <span class="formula">{Q,A}</span> contains QA and AQ; <span class="formula">{E,A}</span> contains EA and AE. Ranking assigns distinct positions; swapping positions can produce a new ranking of the same selected features. The full eight-feature selection count is resolved in Week 12.</p>
+      </section>
+      <footer class="page-footer"><p>Discrete Mathematics for BSAI · Week 11 · Dr. Hira Benish</p></footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Activity content is separate from the controls and feedback functions.
+    const detectiveCases = [
+      { prompt: "Choose one of 3 soups or 2 salads. Categories do not overlap. How many single starters?", options: [5, 6, 1], correct: 5, explanation: "One starter comes from one of two separate cases: 3 soups + 2 salads = 5." },
+      { prompt: "Choose one of 3 soups and one of 2 drinks. How many complete meals?", options: [5, 6, 9], correct: 6, explanation: "Each of 3 soups can pair with either of 2 drinks: 3 × 2 = 6 complete meals." },
+      { prompt: "12 students chose coding, 9 design, and 4 both. How many chose at least one?", options: [21, 17, 13], correct: 17, explanation: "The 4 in both groups were counted twice: 12 + 9 − 4 = 17 distinct students." },
+      { prompt: "Four cards enter three boxes. What minimum count is guaranteed in some box?", options: [1, 2, 3], correct: 2, explanation: "If each box held at most one card, only 3 cards could fit. A fourth forces at least 2 in some box; it need not force 3." },
+      { prompt: "Assign first and second place among 4 distinct cards without repetition. How many assignments?", options: [8, 12, 16], correct: 12, explanation: "There are 4 choices for first place and 3 remaining choices for second: 4 × 3 = 12. Order changes the assignment." }
+    ];
+    let caseIndex = 0;
+
+    function showDetectiveCase() {
+      const current = detectiveCases[caseIndex];
+      document.getElementById("detective-heading").textContent = "Case " + (caseIndex + 1) + " of " + detectiveCases.length;
+      document.getElementById("detective-prompt").textContent = current.prompt;
+      document.getElementById("detective-feedback").textContent = "Predict before selecting.";
+      document.getElementById("detective-feedback").className = "status";
+      const reveal = document.getElementById("detective-reveal");
+      reveal.textContent = "";
+      reveal.hidden = true;
+      const choiceRow = document.getElementById("detective-choices");
+      choiceRow.replaceChildren();
+      current.options.forEach(function (number) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = String(number);
+        button.addEventListener("click", function () { checkDetectiveAnswer(number); });
+        choiceRow.append(button);
+      });
+      document.getElementById("next-case").disabled = true;
+      document.getElementById("next-case").textContent = caseIndex === detectiveCases.length - 1 ? "Review from start" : "Next case";
+    }
+
+    function checkDetectiveAnswer(number) {
+      const current = detectiveCases[caseIndex];
+      const correct = number === current.correct;
+      const feedback = document.getElementById("detective-feedback");
+      feedback.textContent = correct ? "Correct. Explain the structure." : "Recheck what one complete outcome means.";
+      feedback.className = "status " + (correct ? "good" : "bad");
+      const reveal = document.getElementById("detective-reveal");
+      reveal.textContent = current.explanation;
+      reveal.hidden = false;
+      document.querySelectorAll("#detective-choices button").forEach(function (button) {
+        button.disabled = true;
+        button.setAttribute("aria-pressed", String(Number(button.textContent) === number));
+      });
+      document.getElementById("next-case").disabled = false;
+    }
+
+    function initializeModule() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+      document.getElementById("next-case").addEventListener("click", function () {
+        caseIndex = (caseIndex + 1) % detectiveCases.length;
+        showDetectiveCase();
+      });
+      document.getElementById("restart-cases").addEventListener("click", function () {
+        caseIndex = 0;
+        showDetectiveCase();
+      });
+      showDetectiveCase();
+    }
+    document.addEventListener("DOMContentLoaded", initializeModule);
+  </script>
+</body>
+</html>
