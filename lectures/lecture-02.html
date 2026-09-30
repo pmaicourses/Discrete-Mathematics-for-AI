@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Week 2 of Discrete Mathematics for BSAI: predicate logic, quantifiers, and careful system reasoning.">
+  <title>Week 2 · Predicate Logic and System Reasoning</title>
+  <style>
+    /* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "∀  ∃  →"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Week 02</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Predicate Logic and System Reasoning</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar"><div class="toolbar-inner"><strong>Week 2 · Dr. Hira Benish</strong><span><a href="#opening">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div></div>
+  <div class="layout">
+    <nav class="toc" aria-label="Chapter contents">
+      <h2>Contents</h2>
+      <a href="#opening">01 Opening scenario</a><a href="#purpose">02 Why this matters</a><a href="#objectives">03 Objectives</a>
+      <a href="#predicates">04 Predicates</a><a href="#quantifiers">05 Quantifiers</a><a href="#negation">06 Negating claims</a>
+      <a href="#reasoning">07 Facts and rules</a><a href="#examples">08 Worked examples</a><a href="#detective">09 Inference Detective</a>
+      <a href="#case-study">10 Major case study</a><a href="#python">11 Python exploration</a><a href="#practice">12 Practice</a>
+      <a href="#mistakes">13 Common mistakes</a><a href="#summary">14 Summary</a><a href="#map">15 Concept map</a>
+      <a href="#terms">16 Key terms</a><a href="#next">17 What comes next</a><a href="#solutions">Selected solutions</a>
+    </nav>
+    <main>
+      <!-- Opening Scenario -->
+      <section class="chapter" id="opening">
+        <h2>01 · Opening Scenario</h2>
+        <p class="lead">A study-support system knows that <strong>Ayesha missed the quiz</strong>. Its rule says: “Every learner who missed the quiz should be offered a review meeting.” The screen proposes: <strong>Offer Ayesha a review meeting.</strong></p>
+        <p><strong>Can the system conclude this?</strong> Yes. Ayesha satisfies the condition in the rule. Now suppose the system proposes: <strong>Offer Sara a review meeting.</strong> We have said nothing about Sara. Her case may qualify under this or another rule, but the information shown does not establish it.</p>
+        <div class="lens"><h3>The Reasoning Lens</h3><ol><li><strong>Given:</strong> separate recorded facts from general rules.</li><li><strong>Decide:</strong> state the exact proposed conclusion.</li><li><strong>Represent:</strong> identify who or what the rule is about.</li><li><strong>Follows:</strong> show each justified step.</li><li><strong>Does not follow:</strong> explain what remains unknown or what is contradicted.</li></ol><p>Week 1 taught what an “if–then” statement says. This week we apply rules to particular people or things, and we carefully distinguish a supported decision from an unsupported one.</p></div>
+        <div class="pipeline" role="img" aria-label="Facts lead to rules, then reasoning, then a supported conclusion"><div><strong>FACTS</strong><br>Ayesha missed quiz</div><div><strong>RULE</strong><br>Any learner who misses → review offer</div><div><strong>REASON</strong><br>Ayesha meets the condition</div><div><strong>CONCLUSION</strong><br>Offer Ayesha review</div></div>
+      </section>
+
+      <section class="chapter" id="purpose">
+        <h2>02 · Why This Matters</h2>
+        <p>A rule about “every learner” is broader than a rule about one named learner. To use it, we must say which people are under discussion and check whether the known facts meet its condition. This is useful in eligibility checks, reminders, access rules, and transparent support systems.</p>
+        <p><strong>Central question:</strong> Given some facts and rules, what can the system actually conclude? Logical reasoning can show a decision follows from a stated model. It cannot guarantee the recorded facts are accurate or that the policy itself is fair. Those are separate questions.</p>
+      </section>
+
+      <section class="chapter" id="objectives">
+        <h2>03 · Learning Objectives and Class Guide</h2>
+        <ol><li>Explain a predicate, variable, and domain in ordinary words and notation.</li><li>Read, translate, and negate simple “every” and “at least one” claims.</li><li>Use explicit facts and rules to justify a conclusion, reject a contradicted claim, or identify insufficient information.</li><li>Trace a short chain of two rules without reversing either rule.</li><li>Predict a decision by hand, then check a small Boolean Python example.</li></ol>
+        <p><strong>Three-hour class guide:</strong> 35 minutes for scenario and predicates; 40 for quantifiers and negations; 40 for facts, rules, and Inference Detective; 45 for the case study; 20 for a brief Colab demonstration, feedback, and exit check.</p>
+        <p><span class="core">Classroom essentials</span> Sections 01–10 and one Colab cell. <span class="core extension">Self-study</span> Remaining practice and selected solutions. Detective guesses, discussion, and Python experiments are ungraded; a brief quiz or case response may be formally assessed by the instructor.</p>
+      </section>
+
+      <!-- Predicates -->
+      <section class="chapter" id="predicates">
+        <h2>04 · Predicates: Statements with a Place to Fill</h2>
+        <p>“Ayesha missed the quiz” can be true or false in a specified context. But “<em>x</em> missed the quiz” has a blank: we need to know who <em>x</em> is. We call <span class="formula">M(x)</span> a <strong>predicate</strong> or <strong>propositional function</strong>. It becomes a proposition when we replace <span class="formula">x</span> with a particular learner (or quantify it, as we will shortly).</p>
+        <p>A <strong>variable</strong> is a placeholder such as <span class="formula">x</span>. A <strong>domain</strong> is the set of allowed values for that placeholder. For example, let <span class="formula">D = {Ayesha, Bilal, Sara}</span> be the learners in a small tutorial group. Then <span class="formula">M(Ayesha)</span> means “Ayesha missed the quiz.” The same notation does not automatically tell us whether <span class="formula">M(Sara)</span> is true.</p>
+        <div class="pipeline three" role="img" aria-label="Domain provides a person to a predicate, producing a true or false statement"><div><strong>DOMAIN</strong><br>Ayesha · Bilal · Sara</div><div><strong>PREDICATE</strong><br><span class="formula">M(x)</span>: x missed quiz</div><div><strong>TRUTH VALUE</strong><br><span class="formula">M(Ayesha)=T</span></div></div>
+        <div class="example"><span class="tag">Simple → system example</span><h3>Two domains, different meanings</h3><p>If the domain is the three learners, <span class="formula">R(x)</span> could mean “<em>x</em> requested help.” If the domain is campus rooms, <span class="formula">R(x)</span> could instead mean “room <em>x</em> is reserved.” The letter alone carries no meaning until the domain and predicate are defined. State both before using symbols.</p></div>
+        <div class="callout caution"><strong>Quick check:</strong> If <span class="formula">D={Ayesha, Bilal, Sara}</span> and we only know <span class="formula">M(Ayesha)</span>, is <span class="formula">M(Bilal)</span> false? <strong>No:</strong> no fact was supplied about Bilal. “Not stated” is not the same as “false.”</div>
+      </section>
+
+      <!-- Quantifiers -->
+      <section class="chapter" id="quantifiers">
+        <h2>05 · Quantifiers: “Every” and “At Least One”</h2>
+        <p>Ordinary language often talks about a whole group. The <strong>universal quantifier</strong> <span class="formula">∀</span> means “for every member of the stated domain.” The <strong>existential quantifier</strong> <span class="formula">∃</span> means “there is at least one member of the domain.” Say the domain aloud whenever you read a quantified expression.</p>
+        <div class="table-wrap"><table><thead><tr><th>Ordinary statement, domain <span class="formula">D</span></th><th>Mathematical statement</th><th>How to check in our finite group</th></tr></thead><tbody><tr><td>Every learner in <span class="formula">D</span> submitted the form.</td><td><span class="formula">∀x∈D, S(x)</span></td><td>Check Ayesha, Bilal, and Sara.</td></tr><tr><td>At least one learner in <span class="formula">D</span> submitted the form.</td><td><span class="formula">∃x∈D, S(x)</span></td><td>Find one named learner who submitted.</td></tr><tr><td>Every learner who missed the quiz needs a check-in.</td><td><span class="formula">∀x∈D, M(x) → C(x)</span></td><td>For each learner, a known miss must lead to a check-in.</td></tr></tbody></table></div>
+        <p>In the last row, <span class="formula">M(x) → C(x)</span> is inside the scope of “for every.” Learners who did not miss the quiz are not required by <em>this rule</em> to need a check-in. The rule also does not say that only learners who missed a quiz can need a check-in.</p>
+        <div class="example"><span class="tag">Worked example · specified domain</span><h3>Does a universal claim hold?</h3><p>Suppose <span class="formula">D={Ayesha, Bilal, Sara}</span> and the <em>complete</em> submission record for this group says Ayesha and Sara submitted; Bilal did not. The claim <span class="formula">∀x∈D, S(x)</span> is false because Bilal is a <strong>counterexample</strong>. The claim <span class="formula">∃x∈D, S(x)</span> is true because Ayesha is one witness. If the record were incomplete, an unlisted submission would remain unknown instead of false.</p></div>
+        <div class="callout caution"><strong>Domain warning:</strong> “Some learner submitted” means at least one; it does not mean “only some” or “not all.” Also, one counterexample disproves a universal claim, while one known example proves an existential claim.</div>
+        <div class="interactive screen-only" id="quantifier-check"><h3>Quick check · choose a claim</h3><p>Complete record for <span class="formula">D={Ayesha, Bilal, Sara}</span>: Ayesha and Sara submitted; Bilal did not. Which claim is true?</p><div class="choices"><button type="button" data-quantifier="all">Every learner submitted</button><button type="button" data-quantifier="some">At least one learner submitted</button><button type="button" data-quantifier="none">No learner submitted</button></div><p class="status" id="quantifier-feedback" aria-live="polite"></p></div>
+        <div class="workbook print-only"><strong>Paper quick check:</strong> Circle a true claim from the three above. Name a witness or counterexample and justify it.<span class="answer-line"></span><span class="answer-line"></span></div>
+      </section>
+
+      <!-- Negating Quantified Statements -->
+      <section class="chapter" id="negation">
+        <h2>06 · Negating “Every” and “At Least One”</h2>
+        <p>Suppose someone says, “Every learner submitted.” To show this is false, you need <em>one learner who did not submit</em>. Suppose someone says, “At least one learner submitted.” To show that is false, you need to establish that <em>none submitted</em>.</p>
+        <div class="mathline"><span class="formula">¬(∀x∈D, S(x)) ≡ ∃x∈D, ¬S(x)</span><br><span class="formula">¬(∃x∈D, S(x)) ≡ ∀x∈D, ¬S(x)</span></div>
+        <p>Here <span class="formula">¬</span> means “not” and <span class="formula">≡</span> means the two expressions make the same claim. To negate the whole claim, swap “every” with “at least one” and negate the property. Keep the same domain. This week we use the pattern to read claims; Week 3 will examine equivalence more systematically.</p>
+        <div class="example"><span class="tag">Worked translation</span><h3>From a notice to a logical claim</h3><p>“Every registered learner received a message” means <span class="formula">∀x∈D, R(x) → G(x)</span>, where <span class="formula">R(x)</span> means “<span class="formula">x</span> is registered,” and <span class="formula">G(x)</span> means “<span class="formula">x</span> received a message.” Its negation is <span class="formula">∃x∈D, R(x) ∧ ¬G(x)</span>: at least one registered learner did not receive a message. Merely finding an unregistered learner with no message would not refute the claim.</p></div>
+        <div class="callout caution"><strong>Misconception:</strong> Negating “all submitted” is not “none submitted.” “Not all” needs only one exception. A claim can fail without its strongest opposite being true.</div>
+      </section>
+
+      <!-- Facts and Rules -->
+      <section class="chapter" id="reasoning">
+        <h2>07 · Facts, Rules, and What Follows</h2>
+        <p>A <strong>fact</strong> is a stated item in our model, such as <span class="formula">M(Ayesha)</span>. A <strong>rule</strong> connects conditions to a consequence, such as <span class="formula">∀x∈D, M(x) → C(x)</span>. We may use the rule for Ayesha because she is in <span class="formula">D</span> and <span class="formula">M(Ayesha)</span> is known. Thus <span class="formula">C(Ayesha)</span> follows.</p>
+        <div class="mathline"><span class="formula">M(Ayesha)</span> and <span class="formula">∀x∈D(M(x) → C(x))</span><br>therefore <span class="formula">C(Ayesha)</span>.</div>
+        <p>We need three possible verdicts when checking a proposed conclusion <span class="formula">P</span>:</p>
+        <div class="table-wrap"><table><thead><tr><th>Verdict</th><th>Meaning in this module</th><th>Example</th></tr></thead><tbody><tr><td><strong>Follows</strong></td><td>The facts and rules establish <span class="formula">P</span>.</td><td>Ayesha missed; every missed learner needs a check-in.</td></tr><tr><td><strong>Contradicted</strong></td><td>The facts and rules establish <span class="formula">¬P</span>.</td><td>Fact: the gate is explicitly closed; proposal: the gate is open.</td></tr><tr><td><strong>Not enough information</strong></td><td>Neither <span class="formula">P</span> nor <span class="formula">¬P</span> follows.</td><td>No fact about whether Sara missed the quiz.</td></tr></tbody></table></div>
+        <p><strong>Distinguish the verdicts:</strong> A conclusion that <em>does not follow</em> is not necessarily false. Use <strong>Contradicted</strong> only when the opposite is established, and <strong>Not enough information</strong> when neither side is established.</p>
+        <div class="callout caution"><strong>No automatic negatives:</strong> If our fact list omits <span class="formula">M(Sara)</span>, we cannot conclude <span class="formula">¬M(Sara)</span>. A database may sometimes adopt an explicit “missing means false” policy, but none is assumed here.</div>
+        <h3>Two-rule chain</h3><p>Suppose every learner who misses a quiz needs a check-in, and every learner who needs a check-in should be offered a meeting. From <span class="formula">M(Ayesha)</span>, first obtain <span class="formula">C(Ayesha)</span>; then obtain <span class="formula">O(Ayesha)</span>. Writing the middle step keeps the reasoning inspectable.</p>
+      </section>
+
+      <!-- Worked Examples -->
+      <section class="chapter" id="examples">
+        <h2>08 · Worked Examples: Understand → Represent → Reason</h2>
+        <div class="example"><span class="tag">Example 1 · everyday system</span><h3>Reminder eligibility</h3><p><strong>Understand:</strong> Every appointment due today receives a reminder. Appointment A for Room 4 is due today. <strong>Represent:</strong> For the domain of appointments, <span class="formula">D(x)</span> means “due today” and <span class="formula">R(x)</span> means “receives reminder”; <span class="formula">∀x(D(x) → R(x))</span> and <span class="formula">D(a)</span>. <strong>Reason:</strong> The rule applies to <span class="formula">a</span>, so <span class="formula">R(a)</span> follows. <strong>Interpret:</strong> This establishes what the stated rule calls for, not that a device successfully sent a message.</p></div>
+        <div class="example"><span class="tag">Example 2 · insufficient information</span><h3>A green light is not proof of a scan</h3><p><strong>Understand:</strong> The gate rule says every valid scan makes a green light appear. We see a green light. <strong>Represent:</strong> <span class="formula">V(a) → G(a)</span> and <span class="formula">G(a)</span>. <strong>Reason:</strong> The rule starts with a valid scan; seeing its consequence does not establish its starting condition. A maintenance test might also turn the light green. <strong>Interpret:</strong> <span class="formula">V(a)</span> is unknown from these facts. This is the same direction-of-implication caution as Week 1.</p></div>
+        <div class="example"><span class="tag">Example 3 · explicit contradiction</span><h3>Is the room available?</h3><p><strong>Understand:</strong> The complete room-status record explicitly says Room B is occupied. The proposed claim is “Room B is available,” where available means unoccupied. <strong>Represent:</strong> Let <span class="formula">A(B)</span> mean available; the record supplies <span class="formula">¬A(B)</span>. <strong>Reason:</strong> The opposite of the proposal is known. <strong>Interpret:</strong> This time answer <strong>Contradicted</strong>, rather than “not enough information.”</p></div>
+        <div class="example"><span class="tag">Example 4 · quantified claim</span><h3>Who submitted?</h3><p>For the complete domain <span class="formula">D={Ayesha, Bilal, Sara}</span>, suppose all three are marked “submitted.” We may conclude <span class="formula">∀x∈D, S(x)</span> and also <span class="formula">∃x∈D, S(x)</span>, because the domain has members. If we knew only that Ayesha submitted, the existential claim would still follow but the universal claim would remain unestablished.</p></div>
+      </section>
+
+      <!-- Inference Detective -->
+      <section class="chapter" id="detective">
+        <h2>09 · Inference Detective</h2>
+        <p><span class="core">Ungraded exploration</span> First <strong>predict</strong> a verdict without pressing a button. Then <strong>test</strong> it and <strong>explain</strong> the reasoning in your own words. “Contradicted” means the opposite is established; “Not enough information” means neither side is established.</p>
+        <div class="pte"><span>1 Predict</span><span>2 Test</span><span>3 Explain</span></div>
+        <div id="detective-cases" class="interactive screen-only" aria-label="Inference Detective interactive cases"></div>
+        <div class="workbook print-only"><h3>Paper Inference Detective</h3><p>For each case, circle <strong>Follows / Contradicted / Not enough information</strong>. Write the decisive fact, the applicable rule, and your explanation. Check selected solutions only afterward.</p>
+          <ol><li><strong>Quiz:</strong> Every quiz absentee gets a catch-up link. Bilal missed the quiz. Proposal: Bilal gets a catch-up link. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+            <li><strong>Portal:</strong> A valid login causes a welcome page. Sara sees the welcome page. Proposal: Sara used a valid login. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+            <li><strong>Room:</strong> The record explicitly says Room B is occupied; “available” means unoccupied. Proposal: Room B is available. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+            <li><strong>Two steps:</strong> Every missed quiz triggers review; every review triggers a meeting offer. Ayesha missed. Proposal: Ayesha should be offered a meeting. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+            <li><strong>Quantified claim:</strong> In the complete group Ayesha, Bilal, Sara, Ayesha and Sara submitted, Bilal did not. Proposal: Every learner submitted. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+            <li><strong>Missing record:</strong> The system has no fact about whether Omar submitted. Proposal: Omar submitted. <strong>Verdict:</strong> ______ <span class="answer-line"></span></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Major Case Study -->
+      <section class="chapter" id="case-study">
+        <h2>10 · Major Case Study 1: Can the System Conclude This?</h2>
+        <p class="lead"><strong>Scenario.</strong> A student-support system suggests review meetings. It is meant to be transparent: a staff member can see exactly which recorded fact and policy rule support a suggestion. It does not diagnose a learner or evaluate academic ability.</p>
+        <h3>Understand · What is known?</h3>
+        <p>The domain for this miniature case is <span class="formula">D={Ayesha, Bilal, Sara}</span>. The recorded positive facts are: Ayesha missed the quiz; Bilal requested help. No quiz-status or help-request fact is supplied for Sara. The rules are:</p>
+        <ol><li>Every learner who missed the quiz needs a check-in.</li><li>Every learner who needs a check-in should be offered a review meeting.</li><li>Every learner who requested help should be offered a review meeting.</li></ol>
+        <h3>Represent · Build the mathematical model</h3>
+        <div class="table-wrap"><table><thead><tr><th>Predicate</th><th>Meaning for <span class="formula">x∈D</span></th></tr></thead><tbody><tr><td><span class="formula">M(x)</span></td><td>x missed the quiz</td></tr><tr><td><span class="formula">C(x)</span></td><td>x needs a check-in under this policy</td></tr><tr><td><span class="formula">H(x)</span></td><td>x requested help</td></tr><tr><td><span class="formula">O(x)</span></td><td>x should be offered a review meeting</td></tr></tbody></table></div>
+        <p><strong>Facts:</strong> <span class="formula">M(Ayesha)</span> and <span class="formula">H(Bilal)</span>.</p>
+        <p><strong>Rules:</strong> <span class="formula">∀x∈D(M(x) → C(x))</span>; <span class="formula">∀x∈D(C(x) → O(x))</span>; <span class="formula">∀x∈D(H(x) → O(x))</span>.</p>
+        <h3>Reason · Trace decisions step by step</h3>
+        <div class="pipeline" role="img" aria-label="Ayesha missed quiz, so needs check-in, so should be offered a meeting"><div><strong>FACT</strong><br><span class="formula">M(Ayesha)</span></div><div><strong>RULE 1</strong><br><span class="formula">M → C</span></div><div><strong>INTERMEDIATE</strong><br><span class="formula">C(Ayesha)</span></div><div><strong>RULE 2 / DECISION</strong><br><span class="formula">O(Ayesha)</span></div></div>
+        <p>Applying Rule 1 to Ayesha gives <span class="formula">C(Ayesha)</span>. Applying Rule 2 to that new conclusion gives <span class="formula">O(Ayesha)</span>. Separately, <span class="formula">H(Bilal)</span> and Rule 3 give <span class="formula">O(Bilal)</span>. Therefore <span class="formula">∃x∈D, O(x)</span> follows: Ayesha is already a witness (and Bilal is another).</p>
+        <div class="callout caution"><strong>Does <span class="formula">O(Sara)</span> follow?</strong> No evidence shown triggers any of the three rules for Sara. But <span class="formula">¬O(Sara)</span> also does not follow. The justified verdict is <strong>not enough information</strong>. Consequently <span class="formula">∀x∈D, O(x)</span> is not established either. Its negation is also not established from this incomplete record.</div>
+        <h3>Test · Predict, then inspect</h3>
+        <p>Before looking back at the steps, classify these three proposed decisions: <span class="formula">O(Ayesha)</span>; <span class="formula">O(Bilal)</span>; <span class="formula">O(Sara)</span>. State the first fact and last rule for each supported decision. Explain why no negative decision about Sara is justified.</p>
+        <div class="workbook print-only"><p><strong>Ayesha:</strong> ______ because ________________________________</p><p><strong>Bilal:</strong> ______ because ___________________________________</p><p><strong>Sara:</strong> ______ because ____________________________________</p><p><strong>What additional fact could support an offer to Sara?</strong></p><span class="answer-line"></span><span class="answer-line"></span></div>
+        <h3>Interpret · What does the mathematics say?</h3>
+        <p>The model justifies <em>offering</em> meetings under a stated policy; it does not say that anyone attended one. The case illustrates how universal rules apply to named individuals, how two rules can be chained, how one witness supports an existential statement, and why absent data should not be turned into a negative claim. Discuss whether a staff review and accurate records are needed before the system acts.</p>
+        <p><strong>Reflection:</strong> If the system later records <span class="formula">H(Sara)</span>, which new conclusion follows? Would that prove Sara missed the quiz? Explain both answers.</p>
+      </section>
+
+      <!-- Python Exploration -->
+      <section class="chapter" id="python">
+        <h2>11 · Python / Google Colab Exploration</h2>
+        <p>Do the case-study reasoning on paper first. In a Colab cell, a variable stores a value. Week 1 introduced <code>True</code>, <code>False</code>, and <code>print()</code>. This week <code>if</code> checks a Boolean condition; the indented line runs if it is true. <code>else</code> supplies an alternative branch. A colon begins each branch. We test only <em>one named learner</em>; this code does not implement the universal quantifier or solve the whole case study.</p>
+        <div class="experiment"><h3>Predict → Test → Explain</h3><p><strong>Predict:</strong> With <code>missed_quiz = True</code>, will the displayed suggestion appear? What happens if you change it to <code>False</code>?</p><figure class="python-bridge" aria-label="A condition leads to an action if true; if false, this rule alone does not establish the action">
+          <svg viewBox="0 0 660 145" role="img" aria-labelledby="python-bridge-title">
+            <title id="python-bridge-title">Condition branches to true and false outcomes</title>
+            <defs><marker id="python-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#087f84"/></marker></defs>
+            <rect x="245" y="5" width="170" height="43" rx="10" fill="#dcefed" stroke="#087f84"/>
+            <text x="330" y="33" text-anchor="middle" fill="#10263f" font-size="17">Condition</text>
+            <path d="M285 48 L170 75" fill="none" stroke="#087f84" stroke-width="2" marker-end="url(#python-arrow)"/>
+            <path d="M375 48 L490 75" fill="none" stroke="#087f84" stroke-width="2" marker-end="url(#python-arrow)"/>
+            <rect x="15" y="79" width="295" height="57" rx="10" fill="#e8f6f4" stroke="#087f84"/>
+            <text x="162" y="112" text-anchor="middle" fill="#10263f" font-size="15">If True: perform the action</text>
+            <rect x="350" y="79" width="295" height="57" rx="10" fill="#f2eef9" stroke="#66539c"/>
+            <text x="497" y="103" text-anchor="middle" fill="#10263f" font-size="14">If False: this rule alone</text>
+            <text x="497" y="121" text-anchor="middle" fill="#10263f" font-size="14">does not establish the action</text>
+          </svg>
+          <figcaption>Connect the mathematical condition to the two branches of the first Python example.</figcaption>
+        </figure><pre><code>missed_quiz = True
+
+if missed_quiz:
+    needs_check_in = True
+    offer_meeting = needs_check_in
+    print("Offer Ayesha a review meeting:", offer_meeting)
+else:
+    print("This rule alone does not decide about Ayesha.")</code></pre><p><strong>Test:</strong> Run both values in Colab. <strong>Explain:</strong> The <code>False</code> branch reports uncertainty under this one rule. It does <em>not</em> prove “do not offer a meeting,” since a separate help-request rule might apply.</p></div>
+        <div class="callout"><strong>Mathematics first:</strong> Python is checking the inputs we give it. It cannot fill in a missing fact or check whether a recorded fact is correct. Do not interpret the displayed <code>True</code> as an automatic real-world action.</div>
+      </section>
+
+      <!-- Practice -->
+      <section class="chapter" id="practice">
+        <h2>12 · Check Your Understanding and Practice</h2>
+        <p>Try 1–5 independently. Questions 6–7 extend the reasoning. Use the selected solutions at the end only after recording a prediction and an explanation.</p>
+        <ol><li>With domain <span class="formula">D={Ali, Sana}</span>, define <span class="formula">P(x)</span> as “x is present.” Is <span class="formula">P(x)</span> already a proposition? Is <span class="formula">P(Ali)</span> one?</li>
+          <li>Translate “Every registered student has an ID” and “Some registered student has an ID.” Define the predicates and domain before writing symbols.</li>
+          <li>Negate <span class="formula">∀x∈D, R(x)</span> in symbols and ordinary words. Negate <span class="formula">∃x∈D, R(x)</span>.</li>
+          <li>Rule: every overdue book triggers a notice. Fact: Book A is overdue. Does “Book A triggers a notice” follow? Show the particular fact and rule.</li>
+          <li>Rule: every valid card opens the gate. Fact: the gate opened for Bilal. Does “Bilal had a valid card” follow? Give another possible explanation.</li>
+          <li>For the <em>complete</em> domain <span class="formula">D={a,b,c}</span>, <span class="formula">P(a)=T</span>, <span class="formula">P(b)=T</span>, <span class="formula">P(c)=F</span>. Evaluate <span class="formula">∀x∈D, P(x)</span> and <span class="formula">∃x∈D, P(x)</span>. Identify a counterexample and a witness.</li>
+          <li>Facts: <span class="formula">R(Nida)</span>. Rules: <span class="formula">∀x(R(x)→C(x))</span> and <span class="formula">∀x(C(x)→S(x))</span>. Trace a two-step conclusion. Does <span class="formula">S(Omar)</span> follow if nothing is known about Omar?</li></ol>
+        <div class="workbook print-only"><p><strong>Working space · justify a verdict rather than only writing Yes/No:</strong></p><span class="answer-line"></span><span class="answer-line"></span><span class="answer-line"></span><span class="answer-line"></span></div>
+        <details class="screen-only"><summary>Reveal selected solutions</summary><p>Solutions are collected in the final section so you can work through the chapter before checking them.</p><a href="#solutions">Go to selected solutions</a></details>
+      </section>
+
+      <section class="chapter" id="mistakes">
+        <h2>13 · Common Mistakes</h2>
+        <div class="table-wrap"><table><thead><tr><th>Misstep</th><th>Better reasoning</th></tr></thead><tbody><tr><td>No fact about Sara, therefore Sara did not miss.</td><td>Missing data establishes neither a claim nor its negation.</td></tr><tr><td>The welcome page appeared, therefore the login was valid.</td><td>The rule gives valid login → welcome page, not the reverse.</td></tr><tr><td>“Not all submitted” means “none submitted.”</td><td>One learner who did not submit is enough to refute “all.”</td></tr><tr><td>One learner submitted, therefore everyone submitted.</td><td>One witness proves “at least one”; every member must be checked for “all.”</td></tr><tr><td>Rule says “should offer,” therefore a message was actually sent.</td><td>A policy conclusion and an observed event are different claims.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="chapter" id="summary">
+        <h2>14 · Summary</h2>
+        <p>A predicate <span class="formula">P(x)</span> becomes a statement about an individual when <span class="formula">x</span> is specified. A domain identifies which values <span class="formula">x</span> may take. <span class="formula">∀</span> means every domain member; <span class="formula">∃</span> means at least one. To negate “every,” exhibit one exception; to negate “some,” establish none. Apply rules only when their stated conditions are supported. A multi-step conclusion should show its intermediate step.</p>
+        <p><strong>Reasoning habit:</strong> A proposed conclusion may be established, contradicted, or undetermined. Ask which of those descriptions is justified by the information actually given.</p>
+      </section>
+
+      <!-- Concept Map -->
+      <section class="chapter" id="map">
+        <h2>15 · Concept Map</h2>
+        <figure><svg class="concept-map" viewBox="0 0 700 360" role="img" aria-label="Domain and predicates form statements; quantifiers express every or some; facts and rules support a chain of reasoning; verdict can be follows, contradicted, or unknown">
+          <defs><marker id="map-arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#087f84"/></marker></defs>
+          <g fill="none" stroke="#087f84" stroke-width="2.5" marker-end="url(#map-arrow)"><path d="M175 54 L350 85 M525 54 L350 85 M350 120 L180 155 M350 120 L520 155 M180 197 L350 224 M520 197 L350 224 M350 263 L350 291"/></g>
+          <g font-family="DejaVu Sans,Arial" fill="#10263f" text-anchor="middle" font-size="16">
+            <rect x="85" y="13" width="180" height="41" rx="10" fill="#dcefed"/><text x="175" y="40">DOMAIN D</text>
+            <rect x="435" y="13" width="180" height="41" rx="10" fill="#e6ecf7"/><text x="525" y="40">PREDICATE P(x)</text>
+            <rect x="240" y="83" width="220" height="41" rx="10" fill="#e8f0f5"/><text x="350" y="110">CLAIMS ABOUT D</text>
+            <rect x="70" y="157" width="220" height="41" rx="10" fill="#f2eef9"/><text x="180" y="184">∀ EVERY / ∃ SOME</text>
+            <rect x="410" y="157" width="220" height="41" rx="10" fill="#dcefed"/><text x="520" y="184">FACTS + RULES</text>
+            <rect x="230" y="224" width="240" height="41" rx="10" fill="#e8f0f5"/><text x="350" y="251">REASON STEP BY STEP</text>
+            <rect x="170" y="293" width="360" height="43" rx="10" fill="#dcefed"/><text x="350" y="321">FOLLOWS · CONTRADICTED · UNKNOWN</text>
+          </g></svg><figcaption>Figure 2. State the domain, translate the claim, and trace the evidence before deciding.</figcaption></figure>
+        <p><strong>Reflect:</strong> Which branch of the map prevents us from interpreting a missing record as false?</p>
+      </section>
+
+      <section class="chapter" id="terms">
+        <h2>16 · Key Terms</h2>
+        <div class="table-wrap"><table><thead><tr><th>Term</th><th>Working meaning</th></tr></thead><tbody><tr><td>Predicate / propositional function</td><td>A statement form whose truth depends on the value of a variable.</td></tr><tr><td>Variable; domain</td><td>A placeholder; the set of allowed values for it.</td></tr><tr><td>Universal <span class="formula">∀</span></td><td>For every member of the domain.</td></tr><tr><td>Existential <span class="formula">∃</span></td><td>For at least one member of the domain.</td></tr><tr><td>Witness; counterexample</td><td>A known example supporting “some”; an example refuting “every.”</td></tr><tr><td>Fact; rule; conclusion</td><td>Recorded premise; general condition; claim justified by them.</td></tr><tr><td>Insufficient information</td><td>Neither the proposed claim nor its negation is established.</td></tr></tbody></table></div>
+      </section>
+
+      <section class="chapter" id="next">
+        <h2>17 · What Comes Next</h2>
+        <p>In Week 3, we will ask why a reasoning pattern is valid across possible cases. We will connect implication with logical equivalence, then build short direct and indirect proofs. Keep this week’s central habit: write down exactly which conclusion follows from which facts and rules.</p>
+        <p><strong>Exit reflection:</strong> “When a fact is missing, I should ______, because ______.”</p>
+      </section>
+
+      <!-- Selected Solutions: printed at the end, never inside activities -->
+      <section class="chapter selected-solutions" id="solutions">
+        <h2>Selected Solutions and Explanations</h2>
+        <p><strong>Quantifier check:</strong> “At least one submitted” is true; Ayesha is a witness. “Every learner submitted” is false because Bilal is a counterexample; “none submitted” is false.</p>
+        <p><strong>Inference Detective:</strong> (1) Follows: Bilal missed and the rule covers every absentee. (2) Not enough information: a welcome page does not establish a valid login. (3) Contradicted by the explicit occupied status. (4) Follows: missed → review → offer. (5) Contradicted by Bilal’s recorded non-submission in the complete domain. (6) Not enough information: neither Omar’s submission nor its negation was given.</p>
+        <p><strong>Case study:</strong> <span class="formula">O(Ayesha)</span> follows through Rules 1 and 2. <span class="formula">O(Bilal)</span> follows from the help-request fact and Rule 3. <span class="formula">O(Sara)</span> remains unknown. Adding <span class="formula">H(Sara)</span> establishes <span class="formula">O(Sara)</span> but says nothing about <span class="formula">M(Sara)</span>.</p>
+        <p><strong>Practice 1:</strong> <span class="formula">P(x)</span> is an open statement until <span class="formula">x</span> is specified or quantified; <span class="formula">P(Ali)</span> is a proposition. <strong>2:</strong> If <span class="formula">D</span> is a domain of students, <span class="formula">R(x)</span> registered, and <span class="formula">I(x)</span> has an ID, then <span class="formula">∀x∈D(R(x)→I(x))</span> and <span class="formula">∃x∈D(R(x)∧I(x))</span>. <strong>3:</strong> <span class="formula">∃x∈D, ¬R(x)</span> (“some member is not R”); <span class="formula">∀x∈D, ¬R(x)</span> (“none is R”).</p>
+        <p><strong>Practice 4:</strong> Yes, Book A meets the rule’s overdue condition. <strong>5:</strong> Unknown: the gate could be opened by an administrator. <strong>6:</strong> Universal false (counterexample <span class="formula">c</span>); existential true (witness <span class="formula">a</span> or <span class="formula">b</span>). <strong>7:</strong> <span class="formula">R(Nida)→C(Nida)→S(Nida)</span>; nothing follows about Omar from this information.</p>
+      </section>
+      <footer class="course-foot">Discrete Mathematics for BSAI · Week 02 · Dr. Hira Benish</footer>
+    </main>
+  </div>
+
+  <script>
+    "use strict";
+
+    // Quantifier quick check: feedback refers to the complete three-person record.
+    function setupQuantifierCheck() {
+      const feedback = document.getElementById("quantifier-feedback");
+      document.querySelectorAll("[data-quantifier]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("[data-quantifier]").forEach((item) => {
+            item.setAttribute("aria-pressed", String(item === button));
+          });
+          const correct = button.dataset.quantifier === "some";
+          feedback.className = "status " + (correct ? "good" : "bad");
+          feedback.textContent = correct
+            ? "Correct. Ayesha is a witness; Bilal is a counterexample to 'every'."
+            : "Try again. One known submission proves 'at least one'; Bilal refutes 'every'.";
+        });
+      });
+    }
+
+    // Inference Detective cases: edit the facts, rules, proposal, verdict, and five explanation steps here.
+    const detectiveCases = [
+      {
+        title: "1 · The missed quiz",
+        facts: "Bilal missed the quiz.",
+        rules: "Every quiz absentee gets a catch-up link.",
+        proposal: "Bilal gets a catch-up link.",
+        verdict: "yes",
+        steps: ["Bilal missed the quiz.", "The rule covers every learner who missed.", "Bilal satisfies that condition.", "The rule gives Bilal a catch-up link.", "The proposed conclusion follows."]
+      },
+      {
+        title: "2 · The welcome page",
+        facts: "Sara sees the welcome page.",
+        rules: "A valid login causes a welcome page.",
+        proposal: "Sara used a valid login.",
+        verdict: "unknown",
+        steps: ["Only the welcome page is observed.", "The rule begins with a valid login.", "No valid-login fact was supplied.", "The rule does not establish how the page appeared.", "A test or another route is possible; neither the proposal nor its negation follows."]
+      },
+      {
+        title: "3 · A room-status contradiction",
+        facts: "The record explicitly states Room B is occupied. Available means unoccupied.",
+        rules: "An occupied room is not available by this definition.",
+        proposal: "Room B is available.",
+        verdict: "no",
+        steps: ["Room B is explicitly occupied.", "Available is defined as unoccupied.", "Room B fails the availability condition.", "The opposite, 'Room B is not available,' follows.", "The proposal is contradicted; this is stronger than mere missing information."]
+      },
+      {
+        title: "4 · A two-step chain",
+        facts: "Ayesha missed the quiz.",
+        rules: "Every missed quiz triggers a review; every review triggers a meeting offer.",
+        proposal: "Ayesha should be offered a meeting.",
+        verdict: "yes",
+        steps: ["Ayesha missed the quiz.", "Missed quiz → review; review → meeting offer.", "The first rule yields a review for Ayesha.", "The second rule yields a meeting offer.", "The proposal follows through an intermediate conclusion."]
+      },
+      {
+        title: "5 · Everyone submitted?",
+        facts: "Complete group: Ayesha and Sara submitted; Bilal did not.",
+        rules: "'Every learner submitted' requires submission by each person in the group.",
+        proposal: "Every learner in this group submitted.",
+        verdict: "no",
+        steps: ["Bilal's non-submission is explicit.", "A universal claim requires each member to satisfy it.", "Bilal is a counterexample.", "The negation 'at least one did not submit' follows.", "Therefore the proposal is contradicted."]
+      },
+      {
+        title: "6 · The missing record",
+        facts: "No fact about Omar's form is available.",
+        rules: "There is no rule that supplies Omar's form status.",
+        proposal: "Omar submitted the form.",
+        verdict: "unknown",
+        steps: ["No submission or non-submission fact was supplied.", "No rule can derive either status.", "There is no known condition to apply.", "Neither the proposal nor its negation follows.", "Seek the missing record before deciding."]
+      }
+    ];
+
+    const verdictLabels = {
+      yes: "Follows",
+      no: "Contradicted",
+      unknown: "Not enough information"
+    };
+
+    function renderExplanation(caseData, chosenVerdict) {
+      const correct = chosenVerdict === caseData.verdict;
+      const items = caseData.steps.map((step) => `<li>${step}</li>`).join("");
+      return `<p class="status ${correct ? "good" : "bad"}">${correct ? "Correct." : "Reconsider the distinction."} Justified verdict: ${verdictLabels[caseData.verdict]}.</p><ol class="steps">${items}</ol>`;
+    }
+
+    function setupInferenceDetective() {
+      const container = document.getElementById("detective-cases");
+      detectiveCases.forEach((caseData, index) => {
+        const article = document.createElement("article");
+        article.className = "row-card";
+        article.innerHTML = `<h3>${caseData.title}</h3><p><strong>Facts:</strong> ${caseData.facts}<br><strong>Rule:</strong> ${caseData.rules}<br><strong>Proposed conclusion:</strong> ${caseData.proposal}</p>`;
+        const choices = document.createElement("div");
+        choices.className = "choices";
+        const feedback = document.createElement("div");
+        feedback.className = "detective-feedback";
+        feedback.setAttribute("aria-live", "polite");
+        Object.entries(verdictLabels).forEach(([verdict, label]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.addEventListener("click", () => {
+            choices.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+            feedback.innerHTML = renderExplanation(caseData, verdict);
+          });
+          choices.appendChild(button);
+        });
+        article.append(choices, feedback);
+        container.appendChild(article);
+      });
+    }
+
+    function initModule() {
+      document.getElementById("print-button").addEventListener("click", () => window.print());
+      setupQuantifierCheck();
+      setupInferenceDetective();
+    }
+
+    initModule();
+  </script>
+</body>
+</html>
