@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Discrete Mathematics for BSAI: Case Study 2, Campus Inspection and Delivery Robot.">
+  <title>Case Study 2 · Campus Inspection and Delivery Robot</title>
+  <style>
+/* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "PMAI"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    
+    
+    
+    /* Week 15 decision tree and traversal interaction. */
+    .tree-figure { width: 100%; max-width: 740px; }
+    .tree-node { transition: fill .15s ease, stroke .15s ease; }
+    .tree-node.visited { fill: #087f84; stroke: #ffffff; }
+    .tree-node.current { fill: #66539c; stroke: #ffffff; }
+    .tree-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .tree-controls select { font: inherit; padding: .45rem; border: 1px solid #9eb9c5; border-radius: .45rem; }
+    .tree-controls button { font: inherit; cursor: pointer; border: 1px solid var(--teal); color: white; background: var(--teal); padding: .47rem .8rem; border-radius: .5rem; }
+    .tree-controls button.secondary { color: var(--teal); background: white; }
+    .tree-progress { background: #f2eef9; border-left: 4px solid var(--violet); padding: .7rem 1rem; margin: .7rem 0; }
+    .node-key { display: inline-block; min-width: 1.7rem; text-align: center; background: #e8f6f4; border-radius: .3rem; font-weight: 700; color: var(--teal); }
+    @media print { .tree-controls { display: none; } }
+    /* Case-study cover facts and worksheet layout. */
+    .case-meta {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin:1.2rem 0;}
+    .case-meta div {padding:.85rem 1rem;border:1px solid var(--line);background:#f5fbfa;border-radius:.7rem;}
+    .case-meta strong {display:block;color:var(--teal);font-size:.77rem;text-transform:uppercase;letter-spacing:.06em;}
+    .decision-label {font-weight:750;color:#075f63;}
+    .answer-space {min-height:3rem;border-bottom:1px solid #a7bac5;margin:.7rem 0;}
+    .diagram-legend {font-size:.87rem;color:var(--muted);}
+    @media(max-width:600px){.case-meta{grid-template-columns:1fr}}
+    @media print {.case-meta{grid-template-columns:1fr 1fr}.answer-space{min-height:1.8rem}}
+
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="eyebrow">BS Artificial Intelligence · Semester 1 · Case Study 2</div>
+    <h1>Discrete Mathematics for BSAI</h1>
+    <h2>Campus Inspection and Delivery Robot</h2>
+    <p class="lead">Two route questions on one small network</p>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar"><div class="toolbar-inner"><strong>Case Study 2 · Dr. Hira Benish</strong><span><a href="#scenario">Begin reading</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div></div>
+  <div class="layout"><nav class="toc" aria-label="Case-study contents"><h2>Contents</h2>
+      <a href="#scenario">01 Scenario and questions</a>
+      <a href="#data">02 Network model</a>
+      <a href="#inspection">03 Inspect every edge</a>
+      <a href="#delivery">04 Visit every vertex</a>
+      <a href="#change">05 Added walkway</a>
+      <a href="#coloring">06 Conflict scheduling</a>
+      <a href="#decision">07 Decisions and limits</a>
+      <a href="#python">08 Optional Python</a>
+      <a href="#tasks">09 Investigation tasks</a>
+      <a href="#answers">10 Selected answers</a>
+      <a href="#takeaways">11 Conclusions</a>
+    </nav><main>
+
+      <!-- Scenario and Investigation -->
+      <section class="chapter" id="scenario"><h2>01 · Scenario: A Campus Inspection and Delivery Robot</h2>
+        <p class="lead">A campus team draws a small walkway network. On inspection day a robot should cover <strong>every walkway exactly once</strong>. On delivery day it should visit <strong>every building exactly once</strong>. These sound similar but ask about different parts of a graph.</p>
+        <p>The network is a classroom abstraction. Every walkway is usable in both directions and every edge is treated as one unit for this case. Safety, time, battery and accessibility constraints are not supplied.</p>
+        <div class="case-meta"><div><strong>Application field</strong>Transparent route planning for a small campus network</div><div><strong>Mathematical focus</strong>Graph models, degree, Euler trails, Hamiltonian paths/cycles, planarity and coloring</div><div><strong>Course placement</strong>Weeks 13–14 major graph case; Week 16 comparison</div><div><strong>Tool</strong>Draw and trace by hand; optional small Python check</div></div>
+        <h3>Learning outcomes</h3><p>Build a labeled graph from a network; verify an Euler trail by degree and edge trace; exhibit a Hamiltonian route; check planar face counts and a small proper coloring; and interpret how a changed edge affects the decision.</p>
+        <h3>Investigation questions</h3><ol><li>Can the robot inspect all walkways once? Where must it start and finish?</li><li>Can it visit all four buildings once and return to the start?</li><li>What changes when one new walkway is added?</li><li>Can the two route requirements be checked by the same degree test?</li><li>How can a separate conflict graph schedule maintenance tasks?</li></ol>
+      </section>
+      <!-- Graph Data -->
+      <section class="chapter" id="data"><h2>02 · Draw and Label the Network</h2>
+        <p>Buildings are vertices <span class="formula">V={A,B,C,D}</span>. Walkways are undirected edges <span class="formula">E={AB,BC,CD,DA,AC}</span>. The four outside edges form a square; AC is a diagonal. A route written A→B→C uses walkways AB and BC. It does not automatically use AC.</p>
+        <figure class="case-diagram network-diagram"><svg viewBox="0 0 650 360" role="img" aria-labelledby="graph-title"><title id="graph-title">Square campus graph A B C D around the outside and diagonal A C</title>
+          <g fill="none" stroke="#087f84" stroke-width="5"><path d="M150 75 H500 V285 H150 Z M150 75 L500 285"/></g>
+          <g fill="#10263f" stroke="white" stroke-width="4"><circle cx="150" cy="75" r="27"/><circle cx="500" cy="75" r="27"/><circle cx="500" cy="285" r="27"/><circle cx="150" cy="285" r="27"/></g>
+          <g fill="white" font-family="Arial" font-size="22" font-weight="bold" text-anchor="middle" dominant-baseline="central"><text x="150" y="75">A</text><text x="500" y="75">B</text><text x="500" y="285">C</text><text x="150" y="285">D</text></g>
+        </svg><figcaption>Figure 1. Four buildings, five walkways. Routes may move in either direction along an edge.</figcaption></figure>
+        <div class="table-wrap"><table><thead><tr><th>Building</th><th>Neighbor list</th><th>Degree</th></tr></thead><tbody><tr><td>A</td><td>B, C, D</td><td>3</td></tr><tr><td>B</td><td>A, C</td><td>2</td></tr><tr><td>C</td><td>A, B, D</td><td>3</td></tr><tr><td>D</td><td>A, C</td><td>2</td></tr></tbody></table></div>
+        <p>The degree sum is 3+2+3+2=10, which equals twice the five edges. This cross-check catches a missed or duplicated walkway in the table.</p>
+      </section>
+      <!-- First Route -->
+      <section class="chapter" id="inspection"><h2>03 · Inspection: Each Edge Exactly Once</h2>
+        <p>The network is connected. Exactly two vertices, A and C, have odd degree. The Week 13 Euler criterion therefore permits an <strong>open Euler trail</strong> starting at one of A,C and ending at the other. It rules out a closed Euler circuit for this graph.</p>
+        <div class="mathline">A → B → C → D → A → C</div>
+        <div class="table-wrap"><table><thead><tr><th>Step</th><th>Walkway used</th><th>Used before?</th></tr></thead><tbody><tr><td>1</td><td>AB</td><td>No</td></tr><tr><td>2</td><td>BC</td><td>No</td></tr><tr><td>3</td><td>CD</td><td>No</td></tr><tr><td>4</td><td>DA</td><td>No</td></tr><tr><td>5</td><td>AC</td><td>No</td></tr></tbody></table></div>
+        <p>Every edge in E appears once. The route begins at A and ends at C, matching the two odd-degree vertices. It revisits buildings A and C, which is allowed because the <em>edges</em> are the inspection target.</p>
+        <div class="callout caution"><strong>Meaning of “once”:</strong> The route passes through some vertices more than once. That does not violate the edge-once requirement.</div>
+      </section>
+      <!-- Second Route -->
+      <section class="chapter" id="delivery"><h2>04 · Delivery: Each Vertex Once</h2>
+        <p>For delivery, a <strong>Hamiltonian path</strong> visits every building exactly once. One example is <span class="formula">A → B → C → D</span>. If returning to A is required, <span class="formula">A → B → C → D → A</span> is a Hamiltonian cycle: A appears again only to close the cycle.</p>
+        <p>The cycle uses AB, BC, CD and DA; it does not inspect AC. The inspection route used AC but repeated vertices. Both statements are true because they solve different tasks.</p>
+        <div class="table-wrap"><table><thead><tr><th>Task</th><th>Must use exactly once</th><th>Valid example</th><th>What it does not guarantee</th></tr></thead><tbody><tr><td>Inspect walkways</td><td>Every edge</td><td>A→B→C→D→A→C</td><td>One visit per building</td></tr><tr><td>Deliver to buildings</td><td>Every vertex</td><td>A→B→C→D→A (cycle)</td><td>Every walkway inspected</td></tr></tbody></table></div>
+        <p>There is no general rule in this module that uses just the number of odd-degree vertices to decide Hamiltonian routes. Here we establish the cycle by <em>showing a valid route</em>.</p>
+      </section>
+      <!-- Planarity and Changed Edge -->
+      <section class="chapter" id="change"><h2>05 · One New Walkway Changes the Inspection Decision</h2>
+        <p>Add a new walkway BD. The graph now has all six possible edges among A,B,C,D. Its degrees become 3,3,3,3. Because it is connected and has <strong>four</strong> odd-degree vertices, no Euler trail or circuit can traverse every edge once. But the earlier Hamiltonian cycle A→B→C→D→A still exists: the added edge does not remove that route.</p>
+        <div class="pipeline three"><div><strong>ORIGINAL</strong><br>5 edges; odd A,C</div><div><strong>ADD BD</strong><br>6 edges; four odd</div><div><strong>RESULT</strong><br>No edge-once trail; vertex cycle remains</div></div>
+        <p><strong>Planarity check:</strong> The original square and diagonal is a simple connected planar drawing. It has V=4, E=5 and F=3 (two inside regions plus the outside), so 4−5+3=2. The six-edge graph is also planar even if drawing both diagonals inside the square makes them cross: place one vertex inside the triangle formed by the other three and join it to all three. Then V=4, E=6, F=4, and 4−6+4=2.</p>
+        <div class="callout caution"><strong>Misconception warning:</strong> A crossing in one particular sketch does not prove a graph is nonplanar. Euler's planar formula is checked on a crossing-free drawing of a connected planar graph and counts the outside face.</div>
+      </section>
+      <!-- Separate Scheduling Graph -->
+      <section class="chapter" id="coloring"><h2>06 · Separate Question: Schedule Conflicting Tasks</h2>
+        <p>The maintenance team also has four tasks X,Y,Z,W. Conflicts are XY, YZ, ZX and ZW. These are <em>not</em> the building/walkway edges; this is a separate graph whose vertices are tasks and whose colors are time slots.</p>
+        <p>X,Y,Z form a triangle, so all three need different slots. W conflicts only with Z, so W may reuse X's slot. One valid coloring is X=Slot 1, Y=Slot 2, Z=Slot 3, W=Slot 1. It uses three slots, and fewer than three are impossible because of the triangle.</p>
+        <div class="table-wrap"><table><thead><tr><th>Graph question</th><th>Vertex means</th><th>Edge means</th><th>Decision</th></tr></thead><tbody><tr><td>Route graph</td><td>Building</td><td>Walkway</td><td>Choose a valid route</td></tr><tr><td>Conflict graph</td><td>Maintenance task</td><td>Cannot share a slot</td><td>Color adjacent tasks differently</td></tr></tbody></table></div>
+        <p>Same mathematical word “graph”, different objects and decisions. Always state the interpretation before calculating.</p>
+      </section>
+      <!-- Decision and Limitations -->
+      <section class="chapter" id="decision"><h2>07 · Operational Interpretation and Limits</h2>
+        <p><span class="decision-label">Inspection decision:</span> On the original network, use an edge-once route from A to C (or reverse). If the robot must return to its starting building without retracing any edge, the original five-edge network cannot satisfy that additional condition. After adding BD, no edge-once inspection route exists under the stated rules.</p>
+        <p><span class="decision-label">Delivery decision:</span> A→B→C→D→A is a closed route visiting every building once before returning, in both network versions. It does not cover every walkway.</p>
+        <p><strong>Practical limitations:</strong> The model treats each walkway as undirected and equally usable. It ignores lengths, closures, charging, obstacle detection, traffic, safety and service time. A topologically valid route may still be unsuitable for a physical robot; it must be checked against those operational constraints.</p>
+        <p><strong>Sensitivity:</strong> The added BD walkway makes travel options more numerous but removes the ability to inspect every edge exactly once. More edges do not automatically make the edge-once task easier.</p>
+      </section>
+      <!-- Optional Python -->
+      <section class="chapter" id="python"><h2>08 · Optional Python Check: Predict → Test → Explain</h2>
+        <p>First draw the graph and find the routes by hand. The code uses a small dictionary: each building name is a key; its list holds neighbors. The <code>len</code> of a neighbor list is its degree. The route check converts each consecutive pair into an unordered edge and compares the resulting set with the supplied walkway set. No new graph package is needed.</p>
+        <pre><code>neighbors = {
+    "A": ["B", "C", "D"],
+    "B": ["A", "C"],
+    "C": ["A", "B", "D"],
+    "D": ["A", "C"]
+}
+walkways = {frozenset(pair) for pair in [
+    ("A", "B"), ("B", "C"), ("C", "D"),
+    ("D", "A"), ("A", "C")
+]}
+inspection = ["A", "B", "C", "D", "A", "C"]
+used = [frozenset((inspection[i], inspection[i + 1]))
+        for i in range(len(inspection) - 1)]
+
+print({name: len(adj) for name, adj in neighbors.items()})
+print("Each walkway once:",
+      len(used) == len(set(used)) == len(walkways)
+      and set(used) == walkways)
+
+neighbors["B"].append("D")  # add BD in both directions
+neighbors["D"].append("B")
+print("Odd degrees after BD:",
+      [name for name, adj in neighbors.items() if len(adj) % 2 == 1])</code></pre>
+        <p><strong>Expected:</strong> degrees A=3, B=2, C=3, D=2; the proposed inspection route prints <code>True</code>; after BD the odd-degree list is A, B, C, D. <code>frozenset</code> makes AB and BA the same undirected edge. The program checks one given route and degrees; it does not search all routes.</p>
+      </section>
+      <!-- Student Tasks -->
+      <section class="chapter" id="tasks"><h2>09 · Student Investigation Tasks</h2>
+        <h3>Part A · Draw, count and inspect</h3><ol><li>Draw the original graph from V and E and compute all degrees. Check the degree sum against 2E.</li><li>Give a different Euler trail from C to A. List the used edges to verify no repeats.</li><li>Explain why an Euler circuit cannot exist on the original network.</li></ol>
+        <h3>Part B · Compare and change</h3><ol start="4"><li>Give a Hamiltonian path starting at D; explain whether it covers all five walkways.</li><li>Add BD. Recompute the degrees and explain why a single edge-once trail is impossible. Does a Hamiltonian cycle remain?</li><li>Compute V−E+F for both planar versions, counting the outside face. Explain why a crossing in a sketch is not decisive.</li></ol>
+        <h3>Part C · Distinct conflict model and limits</h3><ol start="7"><li>Color tasks X,Y,Z,W with the fewest slots under the stated conflicts. Explain why your number is minimal.</li><li>State one physical requirement that could invalidate the topologically valid robot route.</li><li>A colleague claims that the robot can use its delivery cycle to inspect all walkways. Identify the omitted edge.</li></ol>
+        <p><strong>Optional extension:</strong> Close walkway AC in the original graph. Recompute degrees and test whether the remaining square has an Euler circuit and a Hamiltonian cycle.</p>
+        <p><strong>Submission expectation:</strong> Two labeled graph drawings (original and changed), a degree table, edge and vertex route traces, the two planar checks, a justified task coloring and a short decision memo with two limitations. The Python output is an optional check after the drawings.</p>
+      </section>
+      <!-- Selected Answers -->
+      <section class="chapter selected-solutions" id="answers"><h2>10 · Selected Answers and Instructor Check</h2>
+        <div class="table-wrap"><table><thead><tr><th>Task</th><th>Answer / reasoning checkpoint</th></tr></thead><tbody>
+          <tr><td>1</td><td>Degrees (A,B,C,D)=(3,2,3,2); total 10=2×5.</td></tr>
+          <tr><td>2</td><td>Reverse the worked route: C→A→D→C→B→A uses CA, AD, DC, CB, BA once each.</td></tr>
+          <tr><td>3</td><td>A and C are odd. A closed Euler route would require all degrees even.</td></tr>
+          <tr><td>4</td><td>For example D→C→B→A visits four distinct buildings. It uses DC, CB, BA only, not all five edges.</td></tr>
+          <tr><td>5</td><td>After BD, degrees are (3,3,3,3). Four odd vertices prevent an Euler trail; A→B→C→D→A remains a Hamiltonian cycle.</td></tr>
+          <tr><td>6</td><td>Original: V=4, E=5, F=3 gives 2. Changed: V=4, E=6, F=4 gives 2 on a crossing-free drawing. One crossing sketch does not settle planarity.</td></tr>
+          <tr><td>7</td><td>Slots X=1,Y=2,Z=3,W=1. The X-Y-Z triangle forces at least three distinct slots.</td></tr>
+          <tr><td>8–9</td><td>Any relevant length, closure, battery, safety or direction constraint. The delivery cycle omits diagonal AC.</td></tr>
+        </tbody></table></div>
+        <p><strong>Extension answer:</strong> Removing AC leaves the square AB, BC, CD, DA. Every vertex has degree 2, so A→B→C→D→A is both an Euler circuit (each remaining edge once) and a Hamiltonian cycle (each building once before returning).</p>
+        <p><strong>Assessment focus:</strong> Credit the model interpretation and route verification, not just a list of letters. If this is assigned formally, announce the rubric and grading arrangement separately.</p>
+      </section>
+      <!-- Takeaways -->
+      <section class="chapter" id="takeaways"><h2>11 · Conclusions and Key Ideas</h2>
+        <ul><li>A graph model begins by stating what its vertices and edges mean.</li><li>Euler reasoning addresses an edge-once route under the connected-graph conditions taught in Week 13.</li><li>A Hamiltonian route concerns visiting vertices once; exhibit and check an actual route here.</li><li>Adding an edge can change parity and remove an edge-once trail without removing a vertex cycle.</li><li>Planarity concerns the existence of a crossing-free drawing; proper coloring concerns conflicts between adjacent vertices.</li><li>A mathematical route is only one part of a physical operating decision.</li></ul>
+        <p><strong>Key terms:</strong> vertex · edge · degree · connected graph · Euler trail/circuit · Hamiltonian path/cycle · planar drawing · face · proper coloring.</p>
+      </section>
+
+      <footer class="course-foot">Discrete Mathematics for BSAI · Case Study 2 · Dr. Hira Benish</footer>
+    </main></div>
+  <script>
+    "use strict";
+    // Print is deliberately independent of the mathematical content.
+    function initializeCaseStudy() {
+      document.getElementById("print-button").addEventListener("click", function () { window.print(); });
+    }
+    document.addEventListener("DOMContentLoaded", initializeCaseStudy);
+  </script>
+</body>
+</html>
