@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Discrete Mathematics for BSAI: Assignment 02 · Weeks 5–7.">
+  <title>Assignment 02 · Weeks 5–7 · Sets, Mappings and Relations</title><style>
+
+/* Course palette and base typography — keep these colors consistent with Week 1. */
+    :root {
+      --navy: #10263f; --teal: #087f84; --pale: #e8f6f4;
+      --violet: #66539c; --ink: #203349; --muted: #506579;
+      --line: #d7e2e8; --good: #136f53; --bad: #a33136;
+      --amber: #fff5e7;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #f5f8fa; color: var(--ink); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #e59630; outline-offset: 3px; }
+    .cover { min-height: 76vh; display: grid; align-content: center; padding: clamp(2rem, 8vw, 7rem); color: white; background: radial-gradient(circle at 80% 20%, #326b92 0, transparent 33%), linear-gradient(125deg, #10263f, #173d60 65%, #185b67); position: relative; overflow: hidden; }
+    .cover::after { content: "A"; position: absolute; right: -.04em; bottom: -.15em; color: #ffffff0d; font-size: clamp(8rem, 25vw, 23rem); white-space: nowrap; font-weight: 700; }
+    .cover > * { position: relative; z-index: 1; }
+    .eyebrow { color: #8be1d9; font-size: .85rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .cover h1 { font: 700 clamp(2.5rem, 6vw, 5.6rem)/1.08 Georgia, serif; max-width: 920px; margin: .5rem 0; }
+    .cover h2 { font-size: clamp(1.25rem, 2.8vw, 2rem); font-weight: 400; max-width: 760px; margin: .3rem 0 2rem; }
+    .cover .meta { border-left: 4px solid #76d6d1; padding-left: 1rem; }
+    .toolbar { position: sticky; top: 0; z-index: 4; background: white; border-bottom: 1px solid var(--line); box-shadow: 0 3px 10px #10263f12; }
+    .toolbar-inner { max-width: 1220px; margin: auto; display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1.25rem; }
+    .toolbar strong { font-size: .9rem; }
+    .toolbar button { border: 0; background: var(--teal); color: white; padding: .55rem .9rem; border-radius: .6rem; }
+    .layout { max-width: 1220px; margin: auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.6rem; padding: 2rem 1.25rem 5rem; }
+    .toc { align-self: start; position: sticky; top: 5rem; max-height: calc(100vh - 6rem); overflow: auto; }
+    .toc h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .1em; }
+    .toc a { display: block; padding: .42rem .5rem; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: .84rem; line-height: 1.25; }
+    .toc a:hover, .toc a:focus { color: var(--teal); border-color: var(--teal); }
+    main { min-width: 0; }
+    .chapter { background: white; border: 1px solid var(--line); border-radius: 1rem; padding: clamp(1.35rem, 3vw, 2.5rem); margin-bottom: 1.35rem; box-shadow: 0 5px 20px #10263f09; scroll-margin-top: 5rem; }
+    .chapter h2 { font: 700 clamp(1.4rem, 2.6vw, 2.1rem)/1.2 Georgia, serif; color: var(--navy); margin: 0 0 1.1rem; }
+    .chapter h3 { font-size: 1.05rem; color: var(--teal); margin: 1.5rem 0 .5rem; }
+    p { margin: .7rem 0 1rem; }
+    .lead { font-size: 1.12rem; line-height: 1.75; }
+    .formula { font-family: "DejaVu Sans", "Cambria Math", Georgia, serif; white-space: nowrap; color: #203a72; }
+    .mathline { text-align: center; font-size: 1.18rem; background: #f2f4fb; padding: 1rem; border-radius: .6rem; overflow: auto; }
+    .callout, .lens { background: var(--pale); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; border-radius: .3rem .7rem .7rem .3rem; margin: 1.15rem 0; }
+    .lens { background: linear-gradient(110deg, #e8f6f4, #f3f1fa); border: 2px solid #91cfca; border-radius: 1rem; }
+    .caution { background: var(--amber); border-left-color: #e59630; }
+    .example { border: 1px solid #bcd9dc; border-radius: .75rem; padding: 1rem 1.2rem; margin: 1.25rem 0; }
+    .tag { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--violet); }
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+    th, td { border: 1px solid var(--line); padding: .55rem .7rem; text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #eaf1f5; }
+    figure { margin: 1.3rem 0; text-align: center; background: #f6fafb; border: 1px solid var(--line); border-radius: .8rem; padding: 1rem; }
+    figcaption { color: var(--muted); font-size: .88rem; margin-top: .6rem; }
+    svg { max-width: 100%; height: auto; }
+    .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .7rem; margin: 1.2rem 0; }
+    .pipeline.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .pipeline > div { border: 1px solid #a7ced0; border-radius: .8rem; padding: 1rem; text-align: center; background: #f2faf9; position: relative; }
+    .pipeline > div + div::before { content: "→"; position: absolute; left: -.65rem; color: var(--teal); font-weight: 800; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .mini { background: #f1f6f8; padding: 1rem; border-radius: .7rem; }
+    .experiment { background: #f0edf8; border: 1px solid #d9d2ed; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    pre { background: #12283f; color: #eef9fb; border-radius: .7rem; padding: 1.1rem; white-space: pre-wrap; overflow-x: auto; font: 14px/1.55 ui-monospace, Consolas, monospace; }
+    code { font: .91em ui-monospace, Consolas, monospace; }
+    .interactive { border: 1px solid #78c7c7; background: #f5fbfa; border-radius: .8rem; padding: 1.2rem; margin: 1.2rem 0; }
+    .interactive h3 { margin-top: 0; }
+    .choices { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .choices button { border: 1px solid var(--teal); color: var(--teal); background: white; border-radius: .5rem; padding: .4rem .75rem; }
+    .choices button:hover, .choices button[aria-pressed="true"] { color: white; background: var(--teal); }
+    .status { min-height: 1.8em; color: var(--navy); font-weight: 650; }
+    .status.good { color: var(--good); } .status.bad { color: var(--bad); }
+    .row-card { border-top: 1px solid var(--line); padding: 1rem 0; }
+    .row-card:first-of-type { border: 0; }
+    .steps { margin: .45rem 0; padding-left: 1.5rem; }
+    .steps li, ol li, ul li { padding: .16rem 0; }
+    details { background: #f4f7fa; padding: .7rem 1rem; border-radius: .65rem; margin: 1rem 0; }
+    summary { cursor: pointer; color: var(--teal); font-weight: 700; }
+    .core { display: inline-block; color: #075f63; background: #e8f6f4; border-radius: 1rem; padding: .18rem .65rem; font-size: .78rem; font-weight: 750; text-transform: uppercase; }
+    .extension { color: #5e4a8d; background: #f2eef9; }
+    .pte { display: flex; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .pte span { padding: .38rem .7rem; border-radius: .4rem; background: #e9f3f5; font-size: .82rem; font-weight: 700; }
+    .workbook { background: #f7fafb; border: 1px solid var(--line); padding: 1rem; margin: .8rem 0; border-radius: .5rem; }
+    .answer-line { display: block; border-bottom: 1px solid #b1bec8; height: 1.5rem; margin: .3rem 0; }
+    .concept-map { width: 100%; max-width: 700px; }
+    .course-foot { color: var(--muted); font-size: .83rem; text-align: center; padding: 2rem 0; }
+    .print-only { display: none; }
+    @media (max-width: 870px) {
+      .layout { display: block; }
+      .toc { position: static; max-height: none; display: flex; gap: .2rem; overflow-x: auto; white-space: nowrap; padding-bottom: 1rem; }
+      .toc h2 { display: none; }
+      .toc a { border: 1px solid var(--line); border-radius: 20px; padding: .35rem .6rem; }
+      .chapter { padding: 1.35rem; }
+    }
+    @media (max-width: 600px) {
+      body { font-size: 16px; }
+      .cover { min-height: 65vh; }
+      .toolbar-inner { flex-wrap: wrap; }
+      .pipeline, .pipeline.three, .grid2 { grid-template-columns: 1fr; }
+      .pipeline > div + div::before { content: "↓"; left: 50%; top: -.95rem; transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; transition: none !important; } }
+    @page { size: A4; margin: 17mm 16mm 18mm; }
+    @media print {
+      body { background: white; font-size: 10pt; color: #182839; }
+      .cover { min-height: 0; height: 250mm; page-break-after: always; print-color-adjust: exact; padding: 18mm; margin: -17mm -16mm -18mm; }
+      .cover h1 { font-size: 32pt; } .cover h2 { font-size: 17pt; }
+      .toolbar, .toc, .screen-only { display: none !important; }
+      .print-only { display: block !important; }
+      .layout { display: block; padding: 0; }
+      .chapter { border: 0; box-shadow: none; border-radius: 0; padding: 0; margin: 0 0 1rem; break-inside: auto; }
+      .chapter h2, .chapter h3 { break-after: avoid; }
+      .example, .callout, .lens, figure, table, pre, .workbook, .pipeline { break-inside: avoid; }
+      .interactive { border: 0; padding: 0; background: none; }
+      .course-foot { display: none; }
+      .selected-solutions { break-before: page; }
+      .answer-line { height: 1.2rem; }
+    }
+  
+    
+    
+    
+    
+    
+    
+    /* Week 15 decision tree and traversal interaction. */
+    .tree-figure { width: 100%; max-width: 740px; }
+    .tree-node { transition: fill .15s ease, stroke .15s ease; }
+    .tree-node.visited { fill: #087f84; stroke: #ffffff; }
+    .tree-node.current { fill: #66539c; stroke: #ffffff; }
+    .tree-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin: .7rem 0; }
+    .tree-controls select { font: inherit; padding: .45rem; border: 1px solid #9eb9c5; border-radius: .45rem; }
+    .tree-controls button { font: inherit; cursor: pointer; border: 1px solid var(--teal); color: white; background: var(--teal); padding: .47rem .8rem; border-radius: .5rem; }
+    .tree-controls button.secondary { color: var(--teal); background: white; }
+    .tree-progress { background: #f2eef9; border-left: 4px solid var(--violet); padding: .7rem 1rem; margin: .7rem 0; }
+    .node-key { display: inline-block; min-width: 1.7rem; text-align: center; background: #e8f6f4; border-radius: .3rem; font-weight: 700; color: var(--teal); }
+    @media print { .tree-controls { display: none; } }
+    /* Case-study cover facts and worksheet layout. */
+    .case-meta {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin:1.2rem 0;}
+    .case-meta div {padding:.85rem 1rem;border:1px solid var(--line);background:#f5fbfa;border-radius:.7rem;}
+    .case-meta strong {display:block;color:var(--teal);font-size:.77rem;text-transform:uppercase;letter-spacing:.06em;}
+    .decision-label {font-weight:750;color:#075f63;}
+    .answer-space {min-height:3rem;border-bottom:1px solid #a7bac5;margin:.7rem 0;}
+    .diagram-legend {font-size:.87rem;color:var(--muted);}
+    @media(max-width:600px){.case-meta{grid-template-columns:1fr}}
+    @media print {.case-meta{grid-template-columns:1fr 1fr}.answer-space{min-height:1.8rem}}
+
+  
+    /* Assignment blocks and mark labels. */
+    .marks {float:right;color:var(--violet);font-weight:750;font-size:.92rem;}
+    .assignment-block {border-top:1px solid var(--line);padding-top:.7rem;margin-top:1.3rem;}
+    .assignment-block h3 {clear:both;}
+    .space {height:2.6rem;border-bottom:1px solid #b5c6d0;margin:.3rem 0 1rem;}
+    .space.tall {height:4rem;}
+    .admin-grid {display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1rem 0;}
+    .admin-grid div {padding:.65rem;background:var(--pale);border:1px solid var(--line);border-radius:.5rem;}
+    @media(max-width:600px){.admin-grid{grid-template-columns:1fr}}
+    @media print {.space{height:1.5rem}.space.tall{height:2.5rem}}
+
+  </style></head>
+<body>
+  <header class="cover"><div class="eyebrow">BS Artificial Intelligence · Semester 1 · Assignment 02 · Weeks 5–7</div>
+    <h1>Discrete Mathematics for BSAI</h1><h2>Sets, Mappings and Relations</h2>
+    <p class="meta"><strong>Dr. Hira Benish</strong><br>Associate Professor &amp; HoD, Mathematics<br>PMAI Lab, <strong>Mathematics Behind AI</strong></p>
+  </header>
+  <div class="toolbar"><div class="toolbar-inner"><strong>Assignment 02 · Weeks 5–7</strong><span><a href="#overview">Begin</a> &nbsp; <button type="button" id="print-button">Print / save as PDF</button></span></div></div>
+  <div class="layout"><nav class="toc" aria-label="Document contents"><h2>Contents</h2><a href="#overview">Overview</a><a href="#tasks">Questions</a><a href="#submission">Submission checklist</a></nav><main>
+
+      <!-- Assignment Overview -->
+      <section class="chapter" id="overview"><h2>01 · Assignment Overview</h2><p class="lead">Organize a small learning system with sets, a mapping, two kinds of relations, and a repeating arithmetic check. Complete after Week 7, before the Week 8 midterm.</p>
+        <div class="admin-grid"><div><strong>Coverage</strong><br>Weeks 5–7</div><div><strong>Points</strong><br>25</div><div><strong>Estimated work</strong><br>75–90 minutes</div></div><p><strong>Instructions:</strong> Show the mathematical steps and explain each conclusion in one or two sentences. State any assumption you use. Hand reasoning and diagrams are required; Python or Colab may check a prediction but cannot replace the argument. Write your name and roll number on the first page.</p><p><strong>Submission:</strong> One readable PDF of your own written or typed work, with pages in question order. Include diagrams and tables where requested. The instructor will announce the date and course-grade weight separately; the 25 points below describe only this assignment's internal rubric.</p></section>
+      <!-- Student Tasks -->
+      <section class="chapter" id="tasks"><h2>02 · Questions</h2>
+        <div class="assignment-block"><h3>Q1 · Sets and ordered pairs <span class="marks">5 points</span></h3>
+          <p>The universe is U={a,b,c,d,e}; A={a,b,c} are learners who completed a practice set; B={b,d} are learners who asked for help. Compute A∩B, A∪B, A−B, U−A, and A×{0,1}. Show the six pairs in the product. <strong>(1 point each result)</strong></p>
+        </div>
+        <div class="assignment-block"><h3>Q2 · A specified mapping <span class="marks">6 points</span></h3>
+          <p>Let f:{0,1,2,3}→{red,blue,green} be f(0)=red, f(1)=blue, f(2)=blue, f(3)=green. Let g map red→1, blue→0 and green→1.</p>
+          <ol><li>Draw the arrow diagram and state the domain, codomain and range of f. <strong>(2)</strong></li><li>Is f one-to-one? Onto its stated codomain? Explain each answer. <strong>(2)</strong></li><li>Find (g∘f)(2). Does f have an inverse function from {red,blue,green} to {0,1,2,3}? Explain. <strong>(2)</strong></li></ol>
+        </div>
+        <div class="assignment-block"><h3>Q3 · Grouping learners <span class="marks">6 points</span></h3>
+          <p>Four learners A,B,C,D have exactly one support category each. A,C have category 1; B,D have category 2. Define x~y if x and y have the same category.</p>
+          <ol><li>List all ordered pairs in ~, including pairs of a learner with themselves. <strong>(2)</strong></li><li>Test reflexive, symmetric and transitive; give a one-sentence reason for each. <strong>(3)</strong></li><li>Write the partition into equivalence classes. <strong>(1)</strong></li></ol>
+        </div>
+        <div class="assignment-block"><h3>Q4 · Prerequisite order <span class="marks">5 points</span></h3>
+          <p>Modules are F (Foundations), L (Logic) and G (Graphs). F is a prerequisite for both L and G; neither L nor G is a prerequisite of the other. Define X≤Y to mean X=Y or X must be completed before Y.</p>
+          <ol><li>List all pairs in ≤. <strong>(2)</strong></li><li>Draw a Hasse diagram with F below L and G. Are L and G comparable? <strong>(2)</strong></li><li>Name the three partial-order properties and give one sentence explaining why they hold here. <strong>(1)</strong></li></ol>
+        </div>
+        <div class="assignment-block"><h3>Q5 · Number-theory check <span class="marks">3 points</span></h3>
+          <p>Use the Euclidean algorithm to find gcd(84,30). Then compute the remainder of 17 on division by 5, and write the corresponding congruence. <strong>(2+1)</strong></p>
+        </div>
+      </section>
+      <!-- Submission Checklist -->
+      <section class="chapter" id="submission"><h2>03 · Submission Checklist</h2><ul><li>State the universe for the complement and keep ordered pairs in the Cartesian product.</li><li>Draw the arrow and Hasse diagrams clearly.</li><li>Show relation properties using the stated meanings, not by name alone.</li><li>Show Euclidean divisions and the congruence.</li></ul><p><strong>Mark distribution:</strong> 5 + 6 + 6 + 5 + 3 = 25.</p></section>
+
+    <footer class="course-foot">Discrete Mathematics for BSAI · Assignment 02 · Weeks 5–7 · Dr. Hira Benish</footer>
+  </main></div>
+  <script>
+    "use strict";
+    // The printable HTML is the editable source of this handout.
+    function initializeHandout() { document.getElementById("print-button").addEventListener("click", function () { window.print(); }); }
+    document.addEventListener("DOMContentLoaded", initializeHandout);
+  </script>
+</body></html>
